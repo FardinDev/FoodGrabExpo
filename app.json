@@ -1,12 +1,12 @@
 {
   "expo": {
-    "name": "test-2",
-    "slug": "test-2",
+    "name": "FoodGrab",
+    "slug": "foodgrab",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icons/profile.png",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/icons/profile.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -17,13 +17,17 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.fardin.foodgrab",
+      "buildNumber": "1.0.0"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.fardin.foodgrab",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"
