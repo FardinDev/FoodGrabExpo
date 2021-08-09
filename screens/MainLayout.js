@@ -254,7 +254,7 @@ const MainLayout = ({ drawerAnimationStyle, navigation, selectedTab, setSelected
                 containerStyle={{
                     height: 50,
                     paddingHorizontal: SIZES.padding,
-                    marginTop: 40,
+                    marginTop: Platform.OS === 'ios' ? 40 : 10,
                     alignItems: 'center',
                 }}
                 title={selectedTab.toUpperCase()}

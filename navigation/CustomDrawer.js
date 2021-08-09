@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
     View,
     Text,
@@ -23,9 +23,14 @@ import {
     dummyData
 } from "../constants";
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import{ AuthContext } from '../components/context';
 const Drawer = createDrawerNavigator()
 
 const CustomDrawerItem = ({ label, icon, isFocused, onPress }) => {
+
+    
     return (
         <TouchableOpacity
             style={{
@@ -62,6 +67,27 @@ const CustomDrawerItem = ({ label, icon, isFocused, onPress }) => {
 }
 
 const CustomDrawerContent = ({ navigation, selectedTab, setSelectedTab }) => {
+
+const [loggedinUserName, setLoggedinUserName] = React.useState('');
+
+    useEffect(() => {
+        setTimeout(async () => {
+          // setIsLoading(false);
+        
+          try {
+            const UserName = await AsyncStorage.getItem("userName");
+            
+            setLoggedinUserName(String(UserName));
+          } catch (e) {
+            console.log(e);
+          }
+          // console.log('user token: ', userToken);
+          dispatch({ type: "RETRIEVE_USERNAME", name: userName });
+        }, 1000);
+      }, []);
+    
+
+    const { signOut } = React.useContext(AuthContext);
     return (
         <DrawerContentScrollView
             scrollEnabled={true}
@@ -121,7 +147,7 @@ const CustomDrawerContent = ({ navigation, selectedTab, setSelectedTab }) => {
                             marginLeft: SIZES.radius
                         }}
                     >
-                        <Text style={{ color: COLORS.white, ...FONTS.h3 }}>{dummyData.myProfile?.name}</Text>
+                        <Text style={{ color: COLORS.white, ...FONTS.h3 }}>{loggedinUserName}</Text>
                         <Text style={{ color: COLORS.white, ...FONTS.body4 }}>View your profile</Text>
                     </View>
                 </TouchableOpacity>
@@ -217,6 +243,7 @@ const CustomDrawerContent = ({ navigation, selectedTab, setSelectedTab }) => {
                     <CustomDrawerItem
                         label="Logout"
                         icon={icons.logout}
+                        onPress={() => {signOut()}}
                     />
                 </View>
             </View>

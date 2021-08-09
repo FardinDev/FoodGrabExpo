@@ -42,6 +42,7 @@ const basket = require("../assets/icons/shopping-basket.png");
 const sushi = require("../assets/icons/sushi.png");
 const user = require("../assets/icons/user.png");
 const logout = require("../assets/icons/logout.png");
+const next = require("../assets/icons/next.png");
 
 
 export default {
@@ -90,6 +91,7 @@ export default {
     star,
     sushi,
     user,
+    next
 }
 
 
