@@ -16,9 +16,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Stack = createStackNavigator();
 
+
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
 const App = () => {
+
+ 
   const initialLoginState = {
     isLoading: true,
     userName: null,
@@ -124,7 +127,7 @@ const App = () => {
   if (loginState.isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="small" />
       </View>
     );
   }

@@ -25,10 +25,13 @@ import Users from "../../../model/users";
 import { COLORS, SIZES } from "../../../constants";
 
 import Api from "../../../api/api";
+import { useFonts } from "expo-font";
 
 const SignInScreen = ({ navigation }) => {
 
-  
+  const [loaded] = useFonts({
+    PoppinsLight: require('../../../assets/fonts/Poppins-Light.ttf'),
+  });
   const [isLoading, setIsloading] = React.useState(false);
   const [loginData, setLoginDaata] = React.useState({});
   const api = new Api();
@@ -170,6 +173,14 @@ const SignInScreen = ({ navigation }) => {
     // }
     // signIn(foundUser);
   };
+
+  if (!loaded) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="small" />
+      </View>
+    );
+  }
 
   return (
     <KeyboardAvoidingView
@@ -352,12 +363,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.primary,
+    fontFamily: "PoppinsLight",
   },
   header: {
     flex: 1,
     justifyContent: "flex-end",
     paddingHorizontal: 20,
     paddingBottom: 50,
+    fontFamily: "PoppinsLight",
   },
   footer: {
     flex: 3,
@@ -366,15 +379,18 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 30,
     paddingHorizontal: 20,
     paddingVertical: 30,
+    fontFamily: "PoppinsLight",
   },
   text_header: {
     color: "#fff",
     fontWeight: "bold",
     fontSize: 30,
+    fontFamily: "PoppinsLight",
   },
   text_footer: {
     color: "#05375a",
     fontSize: 18,
+    fontFamily: "PoppinsLight",
   },
   action: {
     flexDirection: "row",
@@ -382,6 +398,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#f2f2f2",
     paddingBottom: 5,
+    fontFamily: "PoppinsLight",
   },
   actionError: {
     flexDirection: "row",
@@ -389,20 +406,24 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#FF0000",
     paddingBottom: 5,
+    fontFamily: "PoppinsLight",
   },
   textInput: {
     flex: 1,
     marginTop: Platform.OS === "ios" ? 0 : -12,
     paddingLeft: 10,
     color: "#05375a",
+    fontFamily: "PoppinsLight",
   },
   errorMsg: {
     color: "#FF0000",
     fontSize: 14,
+    fontFamily: "PoppinsLight",
   },
   button: {
     alignItems: "center",
     marginTop: 50,
+    fontFamily: "PoppinsLight",
   },
   signIn: {
     width: "100%",
@@ -410,9 +431,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 10,
+    fontFamily: "PoppinsLight",
   },
   textSign: {
     fontSize: 18,
     fontWeight: "bold",
+    fontFamily: "PoppinsLight",
   },
 });

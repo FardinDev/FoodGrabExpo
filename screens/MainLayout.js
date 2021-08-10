@@ -6,7 +6,8 @@ import {
     TouchableWithoutFeedback,
     Image,
     FlatList,
-    Platform
+    Platform,
+    ActivityIndicator
 } from 'react-native';
 import Animated, {
     useSharedValue,
@@ -34,6 +35,9 @@ import {
     dummyData,
     images
 } from "../constants";
+
+import { useFonts } from 'expo-font';
+
 
 const TabButton = ({ label, icon, isFocused, outerContainerStyle, innerContainerStyle, onPress }) => {
     return (
@@ -93,6 +97,15 @@ const TabButton = ({ label, icon, isFocused, outerContainerStyle, innerContainer
 const MainLayout = ({ drawerAnimationStyle, navigation, selectedTab, setSelectedTab }) => {
     
     const flatListRef = React.useRef()
+
+    const [loaded] = useFonts({
+       
+        PoppinsRegular: require('../assets/fonts/Poppins-Regular.ttf'),
+        PoppinsBold: require('../assets/fonts/Poppins-Bold.ttf'),
+        PoppinsSemiBold: require('../assets/fonts/Poppins-Bold.ttf'),
+        PoppinsBlack: require('../assets/fonts/Poppins-Black.ttf'),
+        PoppinsLight: require('../assets/fonts/Poppins-Light.ttf'),
+      });
 
     // Reanimated Shared Value
 
@@ -239,6 +252,15 @@ const MainLayout = ({ drawerAnimationStyle, navigation, selectedTab, setSelected
             notificationTabColor.value = withTiming(COLORS.white, { duration: 300 })
         }
     }, [selectedTab])
+
+
+    if (!loaded) {
+        return (
+          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            <ActivityIndicator size="small" />
+          </View>
+        );
+      }
 
     return (
         <Animated.View

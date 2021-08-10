@@ -6,7 +6,13 @@ import {
   ColorPropType,
   Image,
   TouchableOpacity,
+  ActivityIndicator,
+  InteractionManager,
+  Platform,
 } from "react-native";
+
+import { connect } from "react-redux";
+import { addToCart, addQuantity, subtractQuantity, removeItem } from "../../stores/cart/cartActions";
 import { IconButton, TextButton } from "../../components";
 import { AddToCartModal } from "../";
 import { COLORS, SIZES, icons, images, FONTS } from "../../constants";
@@ -14,6 +20,10 @@ import { BlurView } from "expo-blur";
 import ItemCard from "../../components/ItemCard";
 
 import { SwipeablePanel } from "rn-swipeable-panel";
+import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+import { useFonts } from "expo-font";
+import {CartVal} from "./CartVal";
+
 const HEADER_HEIGHT = 250;
 
 const RenderRatingCard = ({ restaurant }) => {
@@ -45,23 +55,27 @@ const RenderRatingCard = ({ restaurant }) => {
 
 const Details = ({ route, navigation }) => {
   const [selectedRestaurant, setSelectedRestaurant] = React.useState(null);
+  const [selectedCategories, setSelectedCategories] = React.useState(null);
   const [isPanelActive, setIsPanelActive] = React.useState(false);
-
   const [selectedItem, setSelectedItem] = React.useState(null);
 
-    const showPanel = (item) => {
-      
-      setSelectedItem(item);
-      setIsPanelActive(true);
-    };
-    const closePanel = () => {
-      setIsPanelActive(false);
-      setSelectedItem(null);
-    };
-  
+  const [isReady, setIsReady] = React.useState(false);
+
+  const showPanel = (item) => {
+    setSelectedItem(item);
+    setIsPanelActive(true);
+  };
+  const closePanel = () => {
+    setIsPanelActive(false);
+    setSelectedItem(null);
+  };
+
   React.useEffect(() => {
     let { item } = route.params;
     setSelectedRestaurant(item);
+    setSelectedCategories(item.categories);
+
+    InteractionManager.runAfterInteractions(() => setIsReady(true));
   }, []);
 
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -243,15 +257,25 @@ const Details = ({ route, navigation }) => {
     );
   }
 
-  return (
+  // {
+  //   !isReady ?
+  //   return( <ActivityIndicator/>)
+  //   : null
+  // }
+
+  return !isReady ? (
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <ActivityIndicator size="small" />
+    </View>
+  ) : (
     <View
       style={{
         flex: 1,
-        backgroundColor: COLORS.white,
+        backgroundColor: COLORS.lightGray2,
       }}
     >
       <Animated.FlatList
-        data={selectedRestaurant?.menu}
+        data={selectedCategories}
         keyExtractor={(item) => `${item.id}`}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
@@ -274,12 +298,34 @@ const Details = ({ route, navigation }) => {
           { useNativeDriver: true }
         )}
         renderItem={({ item }) => (
-          <TouchableOpacity
-         
-          onPress={() => showPanel(item)}
+          <View
+            style={{
+              marginBottom: 20,
+              paddingHorizontal: SIZES.padding,
+              backgroundColor: COLORS.white,
+            }}
           >
-            <ItemCard item={item}  />
-          </TouchableOpacity>
+            <Text
+              style={{
+                marginTop: 20,
+                color: COLORS.darkGray,
+                ...FONTS.h2,
+              }}
+            >
+              {item.name}
+            </Text>
+
+            {item.items.map((food) => {
+              return (
+                <TouchableWithoutFeedback
+                  key={food.id}
+                  onPress={() => showPanel(food)}
+                >
+                  <ItemCard item={food} />
+                </TouchableWithoutFeedback>
+              );
+            })}
+          </View>
         )}
       />
 
@@ -295,10 +341,11 @@ const Details = ({ route, navigation }) => {
         style={{
           flex: 1,
           marginTop: 50,
+          paddingHorizontal: SIZES.padding,
         }}
       >
         <View style={{ flex: 2 }}></View>
-        <ItemCard item={selectedItem}  />
+        <ItemCard item={selectedItem} />
         <View
           style={{
             flex: 1,
@@ -308,7 +355,6 @@ const Details = ({ route, navigation }) => {
             justifyContent: "space-between",
           }}
         >
-
           <View style={{}}>
             <Text
               style={{
@@ -324,7 +370,30 @@ const Details = ({ route, navigation }) => {
                 ...FONTS.body2,
               }}
             >
-              fixed footer
+              <View
+                style={{
+                  
+                  left: 0,
+                  right: 0,
+                  height: 110,
+                  paddingHorizontal: SIZES.padding,
+                  paddingVertical: SIZES.radius,
+                  backgroundColor: COLORS.white,
+                }}
+              >
+                <TextButton
+                  label="Add To Cart"
+                  buttonContainerStyle={{
+                    height: 50,
+                    borderRadius: SIZES.base,
+                    backgroundColor: COLORS.primary,
+                  }}
+                  onPress={() => addToCart(selectedItem?.id)}
+                />
+
+                    <CartVal />
+                
+              </View>
             </Text>
           </View>
         </View>
@@ -342,4 +411,16 @@ const Details = ({ route, navigation }) => {
   );
 };
 
-export default Details;
+const mapStateToProps = (state)=>{
+  return {
+    items: state.items
+  }
+}
+const mapDispatchToProps= (dispatch)=>{
+  
+  return{
+      addToCart: (id)=>{dispatch(addToCart(id))}
+  }
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(Details)

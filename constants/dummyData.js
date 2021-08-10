@@ -32,7 +32,7 @@ const restaurantData = [
         id: 1,
         name: "Downtown Sirajganj",
         rating: 4.8,
-        categories: [1,2,3],
+        reataurant_categories: [1,2,3],
         priceRating: affordable,
         photo: images.burger_restaurant_1,
         duration: "30 - 45 min",
@@ -41,129 +41,158 @@ const restaurantData = [
             longitude: 110.35632207358996,
         },
         courier: {
-            avatar: images.avatar_1,
+            avatar: images.profile,
             name: "Amy"
         },
-        menu: [
+        categories: [
             {
                 id: 1,
-                name: "Crispy Chicken Burger",
-                photo: images.crispy_chicken_burger,
-                description: "Burger with crispy chicken, cheese and lettuce",
-                calories: 200,
-                price: 10
+                name: "Chicken Burger",
+                icon: "",
+                items: [
+                    {
+                        id: 231,
+                        name: "Crispy Chicken Burger",
+                        photo: images.crispy_chicken_burger,
+                        description: "Burger with crispy chicken, cheese and lettuce",
+                        calories: 200,
+                        price: 10
+                    },
+                    {
+                        id: 245,
+                        name: "Chicken Burger",
+                        photo: images.honey_mustard_chicken_burger,
+                        description: "Crispy Chicken Burger with Honey Mustard Coleslaw",
+                        calories: 250,
+                        price: 15
+                    },
+                    {
+                        id: 8753,
+                        name: "French Fries",
+                        photo: images.baked_fries,
+                        description: "Crispy Baked French Fries",
+                        calories: 194,
+                        price: 8
+                    }
+                ]
             },
             {
                 id: 2,
-                name: "Chicken Burger",
-                photo: images.honey_mustard_chicken_burger,
-                description: "Crispy Chicken Burger with Honey Mustard Coleslaw",
-                calories: 250,
-                price: 15
+                name: "Beef Burger",
+                icon: "",
+                items: [
+                    {
+                        id: 1754,
+                        name: "Crispy Chicken Burger",
+                        photo: images.crispy_chicken_burger,
+                        description: "Burger with crispy chicken, cheese and lettuce",
+                        calories: 200,
+                        price: 10
+                    },
+                    {
+                        id: 968756,
+                        name: "Chicken Burger",
+                        photo: images.honey_mustard_chicken_burger,
+                        description: "Crispy Chicken Burger with Honey Mustard Coleslaw",
+                        calories: 250,
+                        price: 15
+                    },
+                    {
+                        id: 23456,
+                        name: "Tomato Pasta",
+                        photo: images.tomato_pasta,
+                        description: "Pasta with fresh tomatoes",
+                        calories: 100,
+                        price: 10
+                    },
+                    {
+                        id: 34560,
+                        name: "Mediterranean Chopped Salad ",
+                        photo: images.salad,
+                        description: "Finely chopped lettuce, tomatoes, cucumbers",
+                        calories: 100,
+                        price: 10
+                    }
+                ]
             },
             {
                 id: 3,
-                name: "French Fries",
-                photo: images.baked_fries,
-                description: "Crispy Baked French Fries",
-                calories: 194,
-                price: 8
-            },
-            {
-                id: 4,
-                name: "Hawaiian Pizza",
-                photo: images.hawaiian_pizza,
-                description: "Canadian bacon, homemade pizza crust, pizza sauce",
-                calories: 250,
-                price: 15
-            },
-            {
-                id: 5,
-                name: "Tomato & Basil Pizza",
-                photo: images.pizza,
-                description: "Fresh tomatoes, aromatic basil pesto and melted bocconcini",
-                calories: 250,
-                price: 20
-            },
-            {
-                id: 6,
-                name: "Tomato Pasta",
-                photo: images.tomato_pasta,
-                description: "Pasta with fresh tomatoes",
-                calories: 100,
-                price: 10
-            },
-            {
-                id: 7,
-                name: "Mediterranean Chopped Salad ",
-                photo: images.salad,
-                description: "Finely chopped lettuce, tomatoes, cucumbers",
-                calories: 100,
-                price: 10
-            },
-            {
-                id: 8,
-                name: "Crispy Chicken Burger",
-                photo: images.crispy_chicken_burger,
-                description: "Burger with crispy chicken, cheese and lettuce",
-                calories: 200,
-                price: 10
-            },
-            {
-                id: 9,
-                name: "Chicken Burger",
-                photo: images.honey_mustard_chicken_burger,
-                description: "Crispy Chicken Burger with Honey Mustard Coleslaw",
-                calories: 250,
-                price: 15
-            },
-            {
-                id: 10,
-                name: "French Fries",
-                photo: images.baked_fries,
-                description: "Crispy Baked French Fries",
-                calories: 194,
-                price: 8
-            },
-            {
-                id: 11,
-                name: "Hawaiian Pizza",
-                photo: images.hawaiian_pizza,
-                description: "Canadian bacon, homemade pizza crust, pizza sauce",
-                calories: 250,
-                price: 15
-            },
-            {
-                id: 12,
-                name: "Tomato & Basil Pizza",
-                photo: images.pizza,
-                description: "Fresh tomatoes, aromatic basil pesto and melted bocconcini",
-                calories: 250,
-                price: 20
-            },
-            {
-                id: 13,
-                name: "Tomato Pasta",
-                photo: images.tomato_pasta,
-                description: "Pasta with fresh tomatoes",
-                calories: 100,
-                price: 10
-            },
-            {
-                id: 14,
-                name: "Mediterranean Chopped Salad ",
-                photo: images.salad,
-                description: "Finely chopped lettuce, tomatoes, cucumbers",
-                calories: 100,
-                price: 10
-            },
+                name: "Sandwich",
+                icon: "",
+                items: [
+                    {
+                        id: 2498765,
+                        name: "Crispy Chicken Burger",
+                        photo: images.crispy_chicken_burger,
+                        description: "Burger with crispy chicken, cheese and lettuce",
+                        calories: 200,
+                        price: 10
+                    },
+                    {
+                        id: 12,
+                        name: "Chicken Burger",
+                        photo: images.honey_mustard_chicken_burger,
+                        description: "Crispy Chicken Burger with Honey Mustard Coleslaw",
+                        calories: 250,
+                        price: 15
+                    },
+                    {
+                        id: 569,
+                        name: "Chicken Burger",
+                        photo: images.honey_mustard_chicken_burger,
+                        description: "Crispy Chicken Burger with Honey Mustard Coleslaw",
+                        calories: 250,
+                        price: 15
+                    },
+                    {
+                        id: 4567890,
+                        name: "French Fries",
+                        photo: images.baked_fries,
+                        description: "Crispy Baked French Fries",
+                        calories: 194,
+                        price: 8
+                    },
+                    {
+                        id: 234567897654,
+                        name: "Hawaiian Pizza",
+                        photo: images.hawaiian_pizza,
+                        description: "Canadian bacon, homemade pizza crust, pizza sauce",
+                        calories: 250,
+                        price: 15
+                    },
+                    {
+                        id: 34525362,
+                        name: "Tomato & Basil Pizza",
+                        photo: images.pizza,
+                        description: "Fresh tomatoes, aromatic basil pesto and melted bocconcini",
+                        calories: 250,
+                        price: 20
+                    },
+                    {
+                        id: 9098765,
+                        name: "Tomato Pasta",
+                        photo: images.tomato_pasta,
+                        description: "Pasta with fresh tomatoes",
+                        calories: 100,
+                        price: 10
+                    },
+                    {
+                        id: 234567,
+                        name: "Mediterranean Chopped Salad ",
+                        photo: images.salad,
+                        description: "Finely chopped lettuce, tomatoes, cucumbers",
+                        calories: 100,
+                        price: 10
+                    }
+                ]
+            }
         ]
     },
     {
         id: 2,
         name: "Downtown Pizza",
         rating: 4.8,
-        categories: [2, 4, 6],
+        reataurant_categories: [2, 4, 6],
         priceRating: expensive,
         photo: images.pizza_restaurant,
         duration: "15 - 20 min",
@@ -175,38 +204,147 @@ const restaurantData = [
             avatar: images.avatar_2,
             name: "Jackson"
         },
-        menu: [
+        categories: [
             {
-                id: 4,
-                name: "Hawaiian Pizza",
-                photo: images.hawaiian_pizza,
-                description: "Canadian bacon, homemade pizza crust, pizza sauce",
-                calories: 250,
-                price: 15
+                id: 1,
+                name: "Chicken Burger",
+                icon: "",
+                items: [
+                    {
+                        id: 231,
+                        name: "Crispy Chicken Burger",
+                        photo: images.crispy_chicken_burger,
+                        description: "Burger with crispy chicken, cheese and lettuce",
+                        calories: 200,
+                        price: 10
+                    },
+                    {
+                        id: 245,
+                        name: "Chicken Burger",
+                        photo: images.honey_mustard_chicken_burger,
+                        description: "Crispy Chicken Burger with Honey Mustard Coleslaw",
+                        calories: 250,
+                        price: 15
+                    },
+                    {
+                        id: 8753,
+                        name: "French Fries",
+                        photo: images.baked_fries,
+                        description: "Crispy Baked French Fries",
+                        calories: 194,
+                        price: 8
+                    }
+                ]
             },
             {
-                id: 5,
-                name: "Tomato & Basil Pizza",
-                photo: images.pizza,
-                description: "Fresh tomatoes, aromatic basil pesto and melted bocconcini",
-                calories: 250,
-                price: 20
+                id: 2,
+                name: "Beef Burger",
+                icon: "",
+                items: [
+                    {
+                        id: 1754,
+                        name: "Crispy Chicken Burger",
+                        photo: images.crispy_chicken_burger,
+                        description: "Burger with crispy chicken, cheese and lettuce",
+                        calories: 200,
+                        price: 10
+                    },
+                    {
+                        id: 968756,
+                        name: "Chicken Burger",
+                        photo: images.honey_mustard_chicken_burger,
+                        description: "Crispy Chicken Burger with Honey Mustard Coleslaw",
+                        calories: 250,
+                        price: 15
+                    },
+                    {
+                        id: 23456,
+                        name: "Tomato Pasta",
+                        photo: images.tomato_pasta,
+                        description: "Pasta with fresh tomatoes",
+                        calories: 100,
+                        price: 10
+                    },
+                    {
+                        id: 34560,
+                        name: "Mediterranean Chopped Salad ",
+                        photo: images.salad,
+                        description: "Finely chopped lettuce, tomatoes, cucumbers",
+                        calories: 100,
+                        price: 10
+                    }
+                ]
             },
             {
-                id: 6,
-                name: "Tomato Pasta",
-                photo: images.tomato_pasta,
-                description: "Pasta with fresh tomatoes",
-                calories: 100,
-                price: 10
-            },
-            {
-                id: 7,
-                name: "Mediterranean Chopped Salad ",
-                photo: images.salad,
-                description: "Finely chopped lettuce, tomatoes, cucumbers",
-                calories: 100,
-                price: 10
+                id: 3,
+                name: "Sandwich",
+                icon: "",
+                items: [
+                    {
+                        id: 2498765,
+                        name: "Crispy Chicken Burger",
+                        photo: images.crispy_chicken_burger,
+                        description: "Burger with crispy chicken, cheese and lettuce",
+                        calories: 200,
+                        price: 10
+                    },
+                    {
+                        id: 12,
+                        name: "Chicken Burger",
+                        photo: images.honey_mustard_chicken_burger,
+                        description: "Crispy Chicken Burger with Honey Mustard Coleslaw",
+                        calories: 250,
+                        price: 15
+                    },
+                    {
+                        id: 569,
+                        name: "Chicken Burger",
+                        photo: images.honey_mustard_chicken_burger,
+                        description: "Crispy Chicken Burger with Honey Mustard Coleslaw",
+                        calories: 250,
+                        price: 15
+                    },
+                    {
+                        id: 4567890,
+                        name: "French Fries",
+                        photo: images.baked_fries,
+                        description: "Crispy Baked French Fries",
+                        calories: 194,
+                        price: 8
+                    },
+                    {
+                        id: 234567897654,
+                        name: "Hawaiian Pizza",
+                        photo: images.hawaiian_pizza,
+                        description: "Canadian bacon, homemade pizza crust, pizza sauce",
+                        calories: 250,
+                        price: 15
+                    },
+                    {
+                        id: 34525362,
+                        name: "Tomato & Basil Pizza",
+                        photo: images.pizza,
+                        description: "Fresh tomatoes, aromatic basil pesto and melted bocconcini",
+                        calories: 250,
+                        price: 20
+                    },
+                    {
+                        id: 23098765,
+                        name: "Tomato Pasta",
+                        photo: images.tomato_pasta,
+                        description: "Pasta with fresh tomatoes",
+                        calories: 100,
+                        price: 10
+                    },
+                    {
+                        id: 234567,
+                        name: "Mediterranean Chopped Salad ",
+                        photo: images.salad,
+                        description: "Finely chopped lettuce, tomatoes, cucumbers",
+                        calories: 100,
+                        price: 10
+                    }
+                ]
             }
         ]
     },
@@ -214,7 +352,7 @@ const restaurantData = [
         id: 3,
         name: "Downtown Hotdogs",
         rating: 4.8,
-        categories: [3],
+        reataurant_categories: [3],
         priceRating: expensive,
         photo: images.hot_dog_restaurant,
         duration: "20 - 25 min",
@@ -226,14 +364,147 @@ const restaurantData = [
             avatar: images.avatar_3,
             name: "James"
         },
-        menu: [
+        categories: [
             {
-                id: 8,
-                name: "Chicago Style Hot Dog",
-                photo: images.chicago_hot_dog,
-                description: "Fresh tomatoes, all beef hot dogs",
-                calories: 100,
-                price: 20
+                id: 1,
+                name: "Chicken Burger",
+                icon: "",
+                items: [
+                    {
+                        id: 231,
+                        name: "Crispy Chicken Burger",
+                        photo: images.crispy_chicken_burger,
+                        description: "Burger with crispy chicken, cheese and lettuce",
+                        calories: 200,
+                        price: 10
+                    },
+                    {
+                        id: 245,
+                        name: "Chicken Burger",
+                        photo: images.honey_mustard_chicken_burger,
+                        description: "Crispy Chicken Burger with Honey Mustard Coleslaw",
+                        calories: 250,
+                        price: 15
+                    },
+                    {
+                        id: 8753,
+                        name: "French Fries",
+                        photo: images.baked_fries,
+                        description: "Crispy Baked French Fries",
+                        calories: 194,
+                        price: 8
+                    }
+                ]
+            },
+            {
+                id: 2,
+                name: "Beef Burger",
+                icon: "",
+                items: [
+                    {
+                        id: 1754,
+                        name: "Crispy Chicken Burger",
+                        photo: images.crispy_chicken_burger,
+                        description: "Burger with crispy chicken, cheese and lettuce",
+                        calories: 200,
+                        price: 10
+                    },
+                    {
+                        id: 968756,
+                        name: "Chicken Burger",
+                        photo: images.honey_mustard_chicken_burger,
+                        description: "Crispy Chicken Burger with Honey Mustard Coleslaw",
+                        calories: 250,
+                        price: 15
+                    },
+                    {
+                        id: 23456,
+                        name: "Tomato Pasta",
+                        photo: images.tomato_pasta,
+                        description: "Pasta with fresh tomatoes",
+                        calories: 100,
+                        price: 10
+                    },
+                    {
+                        id: 34560,
+                        name: "Mediterranean Chopped Salad ",
+                        photo: images.salad,
+                        description: "Finely chopped lettuce, tomatoes, cucumbers",
+                        calories: 100,
+                        price: 10
+                    }
+                ]
+            },
+            {
+                id: 3,
+                name: "Sandwich",
+                icon: "",
+                items: [
+                    {
+                        id: 2498765,
+                        name: "Crispy Chicken Burger",
+                        photo: images.crispy_chicken_burger,
+                        description: "Burger with crispy chicken, cheese and lettuce",
+                        calories: 200,
+                        price: 10
+                    },
+                    {
+                        id: 12,
+                        name: "Chicken Burger",
+                        photo: images.honey_mustard_chicken_burger,
+                        description: "Crispy Chicken Burger with Honey Mustard Coleslaw",
+                        calories: 250,
+                        price: 15
+                    },
+                    {
+                        id: 569,
+                        name: "Chicken Burger",
+                        photo: images.honey_mustard_chicken_burger,
+                        description: "Crispy Chicken Burger with Honey Mustard Coleslaw",
+                        calories: 250,
+                        price: 15
+                    },
+                    {
+                        id: 4567890,
+                        name: "French Fries",
+                        photo: images.baked_fries,
+                        description: "Crispy Baked French Fries",
+                        calories: 194,
+                        price: 8
+                    },
+                    {
+                        id: 234567897654,
+                        name: "Hawaiian Pizza",
+                        photo: images.hawaiian_pizza,
+                        description: "Canadian bacon, homemade pizza crust, pizza sauce",
+                        calories: 250,
+                        price: 15
+                    },
+                    {
+                        id: 34525362,
+                        name: "Tomato & Basil Pizza",
+                        photo: images.pizza,
+                        description: "Fresh tomatoes, aromatic basil pesto and melted bocconcini",
+                        calories: 250,
+                        price: 20
+                    },
+                    {
+                        id: 9998765,
+                        name: "Tomato Pasta",
+                        photo: images.tomato_pasta,
+                        description: "Pasta with fresh tomatoes",
+                        calories: 100,
+                        price: 10
+                    },
+                    {
+                        id: 234567,
+                        name: "Mediterranean Chopped Salad ",
+                        photo: images.salad,
+                        description: "Finely chopped lettuce, tomatoes, cucumbers",
+                        calories: 100,
+                        price: 10
+                    }
+                ]
             }
         ]
     },
@@ -241,7 +512,7 @@ const restaurantData = [
         id: 4,
         name: "Downtown Sushi",
         rating: 4.8,
-        categories: [8],
+        reataurant_categories: [8],
         priceRating: expensive,
         photo: images.japanese_restaurant,
         duration: "10 - 15 min",
@@ -253,14 +524,147 @@ const restaurantData = [
             avatar: images.avatar_4,
             name: "Ahmad"
         },
-        menu: [
+        categories: [
             {
-                id: 9,
-                name: "Sushi sets",
-                photo: images.sushi,
-                description: "Fresh salmon, sushi rice, fresh juicy avocado",
-                calories: 100,
-                price: 50
+                id: 1,
+                name: "Chicken Burger",
+                icon: "",
+                items: [
+                    {
+                        id: 231,
+                        name: "Crispy Chicken Burger",
+                        photo: images.crispy_chicken_burger,
+                        description: "Burger with crispy chicken, cheese and lettuce",
+                        calories: 200,
+                        price: 10
+                    },
+                    {
+                        id: 245,
+                        name: "Chicken Burger",
+                        photo: images.honey_mustard_chicken_burger,
+                        description: "Crispy Chicken Burger with Honey Mustard Coleslaw",
+                        calories: 250,
+                        price: 15
+                    },
+                    {
+                        id: 8753,
+                        name: "French Fries",
+                        photo: images.baked_fries,
+                        description: "Crispy Baked French Fries",
+                        calories: 194,
+                        price: 8
+                    }
+                ]
+            },
+            {
+                id: 2,
+                name: "Beef Burger",
+                icon: "",
+                items: [
+                    {
+                        id: 1754,
+                        name: "Crispy Chicken Burger",
+                        photo: images.crispy_chicken_burger,
+                        description: "Burger with crispy chicken, cheese and lettuce",
+                        calories: 200,
+                        price: 10
+                    },
+                    {
+                        id: 968756,
+                        name: "Chicken Burger",
+                        photo: images.honey_mustard_chicken_burger,
+                        description: "Crispy Chicken Burger with Honey Mustard Coleslaw",
+                        calories: 250,
+                        price: 15
+                    },
+                    {
+                        id: 23456,
+                        name: "Tomato Pasta",
+                        photo: images.tomato_pasta,
+                        description: "Pasta with fresh tomatoes",
+                        calories: 100,
+                        price: 10
+                    },
+                    {
+                        id: 34560,
+                        name: "Mediterranean Chopped Salad ",
+                        photo: images.salad,
+                        description: "Finely chopped lettuce, tomatoes, cucumbers",
+                        calories: 100,
+                        price: 10
+                    }
+                ]
+            },
+            {
+                id: 3,
+                name: "Sandwich",
+                icon: "",
+                items: [
+                    {
+                        id: 2498765,
+                        name: "Crispy Chicken Burger",
+                        photo: images.crispy_chicken_burger,
+                        description: "Burger with crispy chicken, cheese and lettuce",
+                        calories: 200,
+                        price: 10
+                    },
+                    {
+                        id: 12,
+                        name: "Chicken Burger",
+                        photo: images.honey_mustard_chicken_burger,
+                        description: "Crispy Chicken Burger with Honey Mustard Coleslaw",
+                        calories: 250,
+                        price: 15
+                    },
+                    {
+                        id: 569,
+                        name: "Chicken Burger",
+                        photo: images.honey_mustard_chicken_burger,
+                        description: "Crispy Chicken Burger with Honey Mustard Coleslaw",
+                        calories: 250,
+                        price: 15
+                    },
+                    {
+                        id: 4567890,
+                        name: "French Fries",
+                        photo: images.baked_fries,
+                        description: "Crispy Baked French Fries",
+                        calories: 194,
+                        price: 8
+                    },
+                    {
+                        id: 234567897654,
+                        name: "Hawaiian Pizza",
+                        photo: images.hawaiian_pizza,
+                        description: "Canadian bacon, homemade pizza crust, pizza sauce",
+                        calories: 250,
+                        price: 15
+                    },
+                    {
+                        id: 34525362,
+                        name: "Tomato & Basil Pizza",
+                        photo: images.pizza,
+                        description: "Fresh tomatoes, aromatic basil pesto and melted bocconcini",
+                        calories: 250,
+                        price: 20
+                    },
+                    {
+                        id: 18765,
+                        name: "Tomato Pasta",
+                        photo: images.tomato_pasta,
+                        description: "Pasta with fresh tomatoes",
+                        calories: 100,
+                        price: 10
+                    },
+                    {
+                        id: 234567,
+                        name: "Mediterranean Chopped Salad ",
+                        photo: images.salad,
+                        description: "Finely chopped lettuce, tomatoes, cucumbers",
+                        calories: 100,
+                        price: 10
+                    }
+                ]
             }
         ]
     },
@@ -268,7 +672,7 @@ const restaurantData = [
         id: 5,
         name: "Downtown Cuisine",
         rating: 4.8,
-        categories: [1, 2],
+        reataurant_categories: [1, 2],
         priceRating: affordable,
         photo: images.noodle_shop,
         duration: "15 - 20 min",
@@ -280,40 +684,148 @@ const restaurantData = [
             avatar: images.avatar_4,
             name: "Muthu"
         },
-        menu: [
+        categories: [
             {
-                id: 10,
-                name: "Kolo Mee",
-                photo: images.kolo_mee,
-                description: "Noodles with char siu",
-                calories: 200,
-                price: 5
+                id: 1,
+                name: "Chicken Burger",
+                icon: "",
+                items: [
+                    {
+                        id: 231,
+                        name: "Crispy Chicken Burger",
+                        photo: images.crispy_chicken_burger,
+                        description: "Burger with crispy chicken, cheese and lettuce",
+                        calories: 200,
+                        price: 10
+                    },
+                    {
+                        id: 245,
+                        name: "Chicken Burger",
+                        photo: images.honey_mustard_chicken_burger,
+                        description: "Crispy Chicken Burger with Honey Mustard Coleslaw",
+                        calories: 250,
+                        price: 15
+                    },
+                    {
+                        id: 8753,
+                        name: "French Fries",
+                        photo: images.baked_fries,
+                        description: "Crispy Baked French Fries",
+                        calories: 194,
+                        price: 8
+                    }
+                ]
             },
             {
-                id: 11,
-                name: "Sarawak Laksa",
-                photo: images.sarawak_laksa,
-                description: "Vermicelli noodles, cooked prawns",
-                calories: 300,
-                price: 8
+                id: 2,
+                name: "Beef Burger",
+                icon: "",
+                items: [
+                    {
+                        id: 1754,
+                        name: "Crispy Chicken Burger",
+                        photo: images.crispy_chicken_burger,
+                        description: "Burger with crispy chicken, cheese and lettuce",
+                        calories: 200,
+                        price: 10
+                    },
+                    {
+                        id: 968756,
+                        name: "Chicken Burger",
+                        photo: images.honey_mustard_chicken_burger,
+                        description: "Crispy Chicken Burger with Honey Mustard Coleslaw",
+                        calories: 250,
+                        price: 15
+                    },
+                    {
+                        id: 23456,
+                        name: "Tomato Pasta",
+                        photo: images.tomato_pasta,
+                        description: "Pasta with fresh tomatoes",
+                        calories: 100,
+                        price: 10
+                    },
+                    {
+                        id: 34560,
+                        name: "Mediterranean Chopped Salad ",
+                        photo: images.salad,
+                        description: "Finely chopped lettuce, tomatoes, cucumbers",
+                        calories: 100,
+                        price: 10
+                    }
+                ]
             },
             {
-                id: 12,
-                name: "Nasi Lemak",
-                photo: images.nasi_lemak,
-                description: "A traditional Malay rice dish",
-                calories: 300,
-                price: 8
-            },
-            {
-                id: 13,
-                name: "Nasi Briyani with Mutton",
-                photo: images.nasi_briyani_mutton,
-                description: "A traditional Indian rice dish with mutton",
-                calories: 300,
-                price: 8
-            },
-
+                id: 3,
+                name: "Sandwich",
+                icon: "",
+                items: [
+                    {
+                        id: 2498765,
+                        name: "Crispy Chicken Burger",
+                        photo: images.crispy_chicken_burger,
+                        description: "Burger with crispy chicken, cheese and lettuce",
+                        calories: 200,
+                        price: 10
+                    },
+                    {
+                        id: 12,
+                        name: "Chicken Burger",
+                        photo: images.honey_mustard_chicken_burger,
+                        description: "Crispy Chicken Burger with Honey Mustard Coleslaw",
+                        calories: 250,
+                        price: 15
+                    },
+                    {
+                        id: 569,
+                        name: "Chicken Burger",
+                        photo: images.honey_mustard_chicken_burger,
+                        description: "Crispy Chicken Burger with Honey Mustard Coleslaw",
+                        calories: 250,
+                        price: 15
+                    },
+                    {
+                        id: 4567890,
+                        name: "French Fries",
+                        photo: images.baked_fries,
+                        description: "Crispy Baked French Fries",
+                        calories: 194,
+                        price: 8
+                    },
+                    {
+                        id: 234567897654,
+                        name: "Hawaiian Pizza",
+                        photo: images.hawaiian_pizza,
+                        description: "Canadian bacon, homemade pizza crust, pizza sauce",
+                        calories: 250,
+                        price: 15
+                    },
+                    {
+                        id: 34525362,
+                        name: "Tomato & Basil Pizza",
+                        photo: images.pizza,
+                        description: "Fresh tomatoes, aromatic basil pesto and melted bocconcini",
+                        calories: 250,
+                        price: 20
+                    },
+                    {
+                        id: 205,
+                        name: "Tomato Pasta",
+                        photo: images.tomato_pasta,
+                        description: "Pasta with fresh tomatoes",
+                        calories: 100,
+                        price: 10
+                    },
+                    {
+                        id: 234567,
+                        name: "Mediterranean Chopped Salad ",
+                        photo: images.salad,
+                        description: "Finely chopped lettuce, tomatoes, cucumbers",
+                        calories: 100,
+                        price: 10
+                    }
+                ]
+            }
         ]
     },
     {
@@ -321,7 +833,7 @@ const restaurantData = [
         id: 6,
         name: "Downtown Dessets",
         rating: 4.9,
-        categories: [9, 10],
+        reataurant_categories: [9, 10],
         priceRating: affordable,
         photo: images.kek_lapis_shop,
         duration: "35 - 40 min",
@@ -330,33 +842,150 @@ const restaurantData = [
             longitude: 110.35568783282145,
         },
         courier: {
-            avatar: images.avatar_1,
+            avatar: images.profile,
             name: "Jessie"
         },
-        menu: [
+        categories: [
             {
-                id: 12,
-                name: "Teh C Peng",
-                photo: images.teh_c_peng,
-                description: "Three Layer Teh C Peng",
-                calories: 100,
-                price: 2
+                id: 1,
+                name: "Chicken Burger",
+                icon: "",
+                items: [
+                    {
+                        id: 231,
+                        name: "Crispy Chicken Burger",
+                        photo: images.crispy_chicken_burger,
+                        description: "Burger with crispy chicken, cheese and lettuce",
+                        calories: 200,
+                        price: 10
+                    },
+                    {
+                        id: 245,
+                        name: "Chicken Burger",
+                        photo: images.honey_mustard_chicken_burger,
+                        description: "Crispy Chicken Burger with Honey Mustard Coleslaw",
+                        calories: 250,
+                        price: 15
+                    },
+                    {
+                        id: 8753,
+                        name: "French Fries",
+                        photo: images.baked_fries,
+                        description: "Crispy Baked French Fries",
+                        calories: 194,
+                        price: 8
+                    }
+                ]
             },
             {
-                id: 13,
-                name: "ABC Ice Kacang",
-                photo: images.ice_kacang,
-                description: "Shaved Ice with red beans",
-                calories: 100,
-                price: 3
+                id: 2,
+                name: "Beef Burger",
+                icon: "",
+                items: [
+                    {
+                        id: 1754,
+                        name: "Crispy Chicken Burger",
+                        photo: images.crispy_chicken_burger,
+                        description: "Burger with crispy chicken, cheese and lettuce",
+                        calories: 200,
+                        price: 10
+                    },
+                    {
+                        id: 968756,
+                        name: "Chicken Burger",
+                        photo: images.honey_mustard_chicken_burger,
+                        description: "Crispy Chicken Burger with Honey Mustard Coleslaw",
+                        calories: 250,
+                        price: 15
+                    },
+                    {
+                        id: 23456,
+                        name: "Tomato Pasta",
+                        photo: images.tomato_pasta,
+                        description: "Pasta with fresh tomatoes",
+                        calories: 100,
+                        price: 10
+                    },
+                    {
+                        id: 34560,
+                        name: "Mediterranean Chopped Salad ",
+                        photo: images.salad,
+                        description: "Finely chopped lettuce, tomatoes, cucumbers",
+                        calories: 100,
+                        price: 10
+                    }
+                ]
             },
             {
-                id: 14,
-                name: "Kek Lapis",
-                photo: images.kek_lapis,
-                description: "Layer cakes",
-                calories: 300,
-                price: 20
+                id: 3,
+                name: "Sandwich",
+                icon: "",
+                items: [
+                    {
+                        id: 2498765,
+                        name: "Crispy Chicken Burger",
+                        photo: images.crispy_chicken_burger,
+                        description: "Burger with crispy chicken, cheese and lettuce",
+                        calories: 200,
+                        price: 10
+                    },
+                    {
+                        id: 12,
+                        name: "Chicken Burger",
+                        photo: images.honey_mustard_chicken_burger,
+                        description: "Crispy Chicken Burger with Honey Mustard Coleslaw",
+                        calories: 250,
+                        price: 15
+                    },
+                    {
+                        id: 569,
+                        name: "Chicken Burger",
+                        photo: images.honey_mustard_chicken_burger,
+                        description: "Crispy Chicken Burger with Honey Mustard Coleslaw",
+                        calories: 250,
+                        price: 15
+                    },
+                    {
+                        id: 4567890,
+                        name: "French Fries",
+                        photo: images.baked_fries,
+                        description: "Crispy Baked French Fries",
+                        calories: 194,
+                        price: 8
+                    },
+                    {
+                        id: 234567897654,
+                        name: "Hawaiian Pizza",
+                        photo: images.hawaiian_pizza,
+                        description: "Canadian bacon, homemade pizza crust, pizza sauce",
+                        calories: 250,
+                        price: 15
+                    },
+                    {
+                        id: 34525362,
+                        name: "Tomato & Basil Pizza",
+                        photo: images.pizza,
+                        description: "Fresh tomatoes, aromatic basil pesto and melted bocconcini",
+                        calories: 250,
+                        price: 20
+                    },
+                    {
+                        id: 865,
+                        name: "Tomato Pasta",
+                        photo: images.tomato_pasta,
+                        description: "Pasta with fresh tomatoes",
+                        calories: 100,
+                        price: 10
+                    },
+                    {
+                        id: 234567,
+                        name: "Mediterranean Chopped Salad ",
+                        photo: images.salad,
+                        description: "Finely chopped lettuce, tomatoes, cucumbers",
+                        calories: 100,
+                        price: 10
+                    }
+                ]
             }
         ]
 
@@ -425,7 +1054,7 @@ const hamburger = {
     id: 1,
     name: "Hamburger",
     description: "Chicken patty hamburger",
-    categories: [1, 2],
+    reataurant_categories: [1, 2],
     price: 15.99,
     calories: 78,
     isFavourite: true,
@@ -436,7 +1065,7 @@ const hotTacos = {
     id: 2,
     name: "Hot Tacos",
     description: "Mexican tortilla & tacos",
-    categories: [1, 3],
+    reataurant_categories: [1, 3],
     price: 10.99,
     calories: 78,
     isFavourite: false,
@@ -447,7 +1076,7 @@ const vegBiryani = {
     id: 3,
     name: "Veg Biryani",
     description: "Indian Vegetable Biryani",
-    categories: [1, 2, 3],
+    reataurant_categories: [1, 2, 3],
     price: 10.99,
     calories: 78,
     isFavourite: true,
@@ -458,7 +1087,7 @@ const wrapSandwich = {
     id: 4,
     name: "Wrap Sandwich",
     description: "Grilled vegetables sandwich",
-    categories: [1, 2],
+    reataurant_categories: [1, 2],
     price: 10.99,
     calories: 78,
     isFavourite: true,

@@ -11,15 +11,17 @@ const ItemCard = ({ item, onPress }) => {
     <Animated.View>
       <View
         style={{
-          marginVertical: SIZES.padding,
+         paddingVertical: SIZES.padding,
+          borderColor: 'transparent',
+          borderBottomColor: COLORS.lightGray2,
+          borderWidth: 1
         }}
 
       >
         <View
           style={{
             flexDirection: "row",
-            paddingHorizontal: SIZES.padding,
-            marginVertical: 5,
+
           }}
         >
           {/* icon */}
@@ -47,20 +49,27 @@ const ItemCard = ({ item, onPress }) => {
 
           <View
             style={{
-              flex: 1,
-              paddingHorizontal: 20,
-              justifyContent: "center",
+              flex: 2,
+              paddingHorizontal: 10,
+              justifyContent: 'flex-end',
             }}
           >
             <Text
               style={{
                 marginBottom: 1,
-                ...FONTS.body3,
+                ...FONTS.body2,
+                color: COLORS.darkGray,
+                fontWeight: 'bold',
+                fontSize: 16
+                
               }}
             >
               {item?.name}
             </Text>
-            <Text>{item?.description}</Text>
+            <Text style={{
+              fontFamily: 'PoppinsLight',
+              color: COLORS.gray
+            }}>{item?.description}</Text>
           </View>
 
           {/* price */}
@@ -75,9 +84,11 @@ const ItemCard = ({ item, onPress }) => {
               style={{
                 marginBottom: 1,
                 ...FONTS.body3,
+                color: COLORS.darkGray,
+                fontWeight: 'bold'
               }}
             >
-              {item?.price}
+              TK. {item?.price}
             </Text>
           </View>
         </View>

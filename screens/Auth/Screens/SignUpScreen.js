@@ -12,16 +12,21 @@ import {
     StatusBar,
     KeyboardAvoidingView,
     TouchableWithoutFeedback,
-    Keyboard
+    Keyboard,
+    ActivityIndicator
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import {LinearGradient} from 'expo-linear-gradient';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 import { COLORS } from '../../../constants';
-
+import { useFonts } from 'expo-font';
 const SignInScreen = ({navigation}) => {
 
+    const [loaded] = useFonts({
+      
+        PoppinsLight: require('../../../assets/fonts/Poppins-Light.ttf'),
+      });
     const [data, setData] = React.useState({
         username: '',
         password: '',
@@ -74,6 +79,14 @@ const SignInScreen = ({navigation}) => {
             confirm_secureTextEntry: !data.confirm_secureTextEntry
         });
     }
+
+    if (!loaded) {
+        return (
+          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            <ActivityIndicator size="small" />
+          </View>
+        );
+      }
 
     return (
         <KeyboardAvoidingView
@@ -235,13 +248,15 @@ export default SignInScreen;
 const styles = StyleSheet.create({
     container: {
       flex: 1, 
-      backgroundColor: COLORS.primary
+      backgroundColor: COLORS.primary,
+      fontFamily: "PoppinsLight",
     },
     header: {
         flex: 1,
         justifyContent: 'flex-end',
         paddingHorizontal: 20,
-        paddingBottom: 50
+        paddingBottom: 50,
+        fontFamily: "PoppinsLight",
     },
     footer: {
         flex: Platform.OS === 'ios' ? 3 : 5,
@@ -249,51 +264,61 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
         paddingHorizontal: 20,
-        paddingVertical: 30
+        paddingVertical: 30,
+        fontFamily: "PoppinsLight",
     },
     text_header: {
         color: '#fff',
         fontWeight: 'bold',
-        fontSize: 30
+        fontSize: 30,
+        fontFamily: "PoppinsLight",
     },
     text_footer: {
         color: '#05375a',
-        fontSize: 18
+        fontSize: 18,
+        fontFamily: "PoppinsLight",
     },
     action: {
         flexDirection: 'row',
         marginTop: 10,
         borderBottomWidth: 1,
         borderBottomColor: '#f2f2f2',
-        paddingBottom: 5
+        paddingBottom: 5,
+        fontFamily: "PoppinsLight",
     },
     textInput: {
         flex: 1,
         marginTop: Platform.OS === 'ios' ? 0 : -12,
         paddingLeft: 10,
         color: '#05375a',
+        fontFamily: "PoppinsLight",
     },
     button: {
         alignItems: 'center',
-        marginTop: 50
+        marginTop: 50,
+        fontFamily: "PoppinsLight",
     },
     signIn: {
         width: '100%',
         height: 50,
         justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: 10
+        borderRadius: 10,
+        fontFamily: "PoppinsLight",
     },
     textSign: {
         fontSize: 18,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        fontFamily: "PoppinsLight",
     },
     textPrivate: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        marginTop: 20
+        marginTop: 20,
+        fontFamily: "PoppinsLight",
     },
     color_textPrivate: {
-        color: 'grey'
+        color: 'grey',
+        fontFamily: "PoppinsLight",
     }
   });

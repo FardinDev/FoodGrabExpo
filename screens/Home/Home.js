@@ -115,13 +115,13 @@ const Home = ({navigation}) => {
         let selectedMenu = dummyData.menu.find(a => a.id == menuTypeId)
 
         // Set the popular menu based on the categoryId
-        setPopular(selectedPopular?.list.filter(a => a.categories.includes(categoryId)))
+        setPopular(selectedPopular?.list.filter(a => a.reataurant_categories.includes(categoryId)))
 
         // Set the recommended menu based on the categoryId
-        setRecommends(selectedRecommend?.list.filter(a => a.categories.includes(categoryId)))
+        setRecommends(selectedRecommend?.list.filter(a => a.reataurant_categories.includes(categoryId)))
 
         // Set the menu based on the categoryId
-        setMenuList(selectedMenu?.list.filter(a => a.categories.includes(categoryId)))
+        setMenuList(selectedMenu?.list.filter(a => a.reataurant_categories.includes(categoryId)))
 
         setRestaurants(dummyData.restaurantData);
     }
@@ -385,7 +385,7 @@ const Home = ({navigation}) => {
         const renderItem = ({ item }) => (
             <TouchableOpacity
                 style={{ marginBottom: 0, padding: SIZES.padding}}
-                onPress={() => navigation.push('Details', {item: item})}
+                onPress={() => navigation.navigate('Details', {item: item})}
             >
                 {/* Image */}
                 <View
@@ -452,7 +452,7 @@ const Home = ({navigation}) => {
                         }}
                     >
                         {
-                            item.categories.map((categoryId) => {
+                            item.reataurant_categories.map((categoryId) => {
                                 return (
                                     <View
                                         style={{ flexDirection: 'row' }}

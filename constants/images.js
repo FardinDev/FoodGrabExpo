@@ -1,10 +1,10 @@
 const profile = require("../assets/images/profile.png");
 const fardin = require("../assets/images/fardin.jpg");
-const avatar_1 = require("../assets/images/avatar-1.jpg");
-const avatar_2 = require("../assets/images/avatar-2.jpg");
-const avatar_3 = require("../assets/images/avatar-3.jpg");
-const avatar_4 = require("../assets/images/avatar-4.jpg");
-const avatar_5 = require("../assets/images/avatar-5.jpg");
+// const avatar_1 = require("../assets/images/avatar-1.jpg");
+// const avatar_2 = require("../assets/images/avatar-2.jpg");
+// const avatar_3 = require("../assets/images/avatar-3.jpg");
+// const avatar_4 = require("../assets/images/avatar-4.jpg");
+// const avatar_5 = require("../assets/images/avatar-5.jpg");
 const baked_fries = require("../assets/images/baked-fries.jpg");
 const burger_restaurant_1 = require("../assets/images/burger-restaurant.jpg");
 const burger_restaurant_2 = require("../assets/images/burger-restaurant-2.jpg");
@@ -36,11 +36,11 @@ export default {
   help,
   profile,
   fardin,
-  avatar_1,
-  avatar_2,
-  avatar_3,
-  avatar_4,
-  avatar_5,
+  // avatar_1,
+  // avatar_2,
+  // avatar_3,
+  // avatar_4,
+  // avatar_5,
   baked_fries,
   burger_restaurant_1,
   burger_restaurant_2,
