@@ -5,7 +5,7 @@ export default class Api {
   constructor() {
     this.api_token = null;
     this.client = null;
-    this.api_url = "https://reqres.in/api";
+    this.api_url = "http://logitav2-api.sslwireless.com/api";
   }
 
   init = () => {
@@ -21,7 +21,7 @@ export default class Api {
 
     this.client = axios.create({
       baseURL: this.api_url,
-      timeout: 31000,
+      timeout: 500000,
       headers: headers,
     });
 
@@ -32,7 +32,7 @@ export default class Api {
     return this.init().get("/users", { params: params });
   };
 
-  addNewUser = (data) => {
-    return this.init().post("/users", data);
+  login = (data) => {
+    return this.init().post("/v1/login", data);
   };
 }

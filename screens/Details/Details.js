@@ -1,41 +1,64 @@
 import React, { useRef, useState } from "react";
-import { View, Text, Animated, ColorPropType, Image, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  Animated,
+  ColorPropType,
+  Image,
+  TouchableOpacity,
+} from "react-native";
 import { IconButton, TextButton } from "../../components";
 import { AddToCartModal } from "../";
 import { COLORS, SIZES, icons, images, FONTS } from "../../constants";
 import { BlurView } from "expo-blur";
+import ItemCard from "../../components/ItemCard";
 
+import { SwipeablePanel } from "rn-swipeable-panel";
 const HEADER_HEIGHT = 250;
 
-const RenderRatingCard = ({restaurant}) => {
-    return (
-        <View
-        
+const RenderRatingCard = ({ restaurant }) => {
+  return (
+    <View
+      style={{
+        flex: 1,
+        borderRadius: SIZES.radius / 2,
+        backgroundColor: COLORS.transparentBlack1,
+        borderColor: COLORS.white,
+        borderWidth: 1,
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <Text
         style={{
-            flex: 1,
-            borderRadius: SIZES.radius/2,
-            backgroundColor: COLORS.transparentBlack1,
-            borderColor: COLORS.white,
-            borderWidth: 1,
-            alignItems: 'center',
-            justifyContent: 'center'
+          color: COLORS.white,
+          ...FONTS.h3,
+          fontSize: 20,
+          fontWeight: "bold",
         }}
-        
-        >
-<Text
-style={{
-    color: COLORS.white,
-    ...FONTS.h3, fontSize: 20, fontWeight: 'bold'
-}}
->{restaurant?.name}</Text>
-        </View>
-    )
-}
-
+      >
+        {restaurant?.name}
+      </Text>
+    </View>
+  );
+};
 
 const Details = ({ route, navigation }) => {
   const [selectedRestaurant, setSelectedRestaurant] = React.useState(null);
+  const [isPanelActive, setIsPanelActive] = React.useState(false);
 
+  const [selectedItem, setSelectedItem] = React.useState(null);
+
+    const showPanel = (item) => {
+      
+      setSelectedItem(item);
+      setIsPanelActive(true);
+    };
+    const closePanel = () => {
+      setIsPanelActive(false);
+      setSelectedItem(null);
+    };
+  
   React.useEffect(() => {
     let { item } = route.params;
     setSelectedRestaurant(item);
@@ -47,6 +70,7 @@ const Details = ({ route, navigation }) => {
     isVisible: false,
     product: null,
   });
+
   function renderRestaurantHeader() {
     return (
       <View
@@ -88,141 +112,137 @@ const Details = ({ route, navigation }) => {
             left: 30,
             right: 30,
             height: 50,
-            transform: [{
+            transform: [
+              {
                 translateY: scrollY.interpolate({
-                    inputRange: [0, 100, 230],
-                    outputRange: [0,0, 100],
-                    extrapolate: 'clamp'
-                })
-            }]
+                  inputRange: [0, 100, 230],
+                  outputRange: [0, 0, 100],
+                  extrapolate: "clamp",
+                }),
+              },
+            ],
           }}
         >
-
-            <RenderRatingCard restaurant={selectedRestaurant}/>
+          <RenderRatingCard restaurant={selectedRestaurant} />
         </Animated.View>
       </View>
     );
   }
 
-  function renderHeaderBar(){
-      return (
-          <View
+  function renderHeaderBar() {
+    return (
+      <View
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: Platform.OS === "ios" ? 90 : 80,
+          flexDirection: "row",
+          alignItems: "flex-end",
+          justifyContent: "space-between",
+          paddingHorizontal: SIZES.padding,
+          paddingBottom: 10,
+        }}
+      >
+        {/* screen overlay */}
+
+        <Animated.View
           style={{
-              position: "absolute",
-              top: 0,
-              left:0,
-              right:0,
-              height: Platform.OS === 'ios' ? 90 : 60,
-              flexDirection: 'row',
-              alignItems: 'flex-end',
-              justifyContent: 'space-between',
-              paddingHorizontal: SIZES.padding,
-              paddingBottom: 10
-
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: COLORS.white2,
+            opacity: scrollY.interpolate({
+              inputRange: [HEADER_HEIGHT - 100, HEADER_HEIGHT - 70],
+              outputRange: [0, 1],
+            }),
           }}
+        />
 
-         
+        {/* header title */}
+
+        <Animated.View
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            alignItems: "center",
+            justifyContent: Platform.OS === "ios" ? "flex-end" : "center",
+            paddingBottom: Platform.OS === "ios" ? 20 : 0,
+            paddingTop: Platform.OS === "ios" ? 0 : 20,
+
+            opacity: scrollY.interpolate({
+              inputRange: [HEADER_HEIGHT - 100, HEADER_HEIGHT - 50],
+              outputRange: [0, 1],
+            }),
+          }}
+        >
+          <Text
+            style={{
+              color: COLORS.primary,
+              ...FONTS.h3,
+            }}
           >
+            {selectedRestaurant?.name}
+          </Text>
+        </Animated.View>
 
-              {/* screen overlay */}
+        {/* back button */}
+        <TouchableOpacity
+          style={{
+            alignItems: "center",
+            justifyContent: "center",
+            height: 35,
+            width: 35,
+            borderRadius: 18,
 
-              <Animated.View
-              style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  backgroundColor: COLORS.white2,
-                  opacity: scrollY.interpolate({
-                      inputRange: [HEADER_HEIGHT -100, HEADER_HEIGHT -70],
-                      outputRange: [0, 1]
-                  })
-              }}
-              />
+            backgroundColor: COLORS.primary,
+          }}
+          onPress={() => navigation.goBack()}
+        >
+          <Image
+            source={icons.back}
+            style={{
+              width: 15,
+              height: 15,
+              tintColor: COLORS.white,
+            }}
+          />
+        </TouchableOpacity>
+        {/* headertext */}
 
+        {/* Love button */}
 
-              {/* header title */}
-
-              <Animated.View
-              style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  alignItems: 'center',
-                  justifyContent: Platform.OS === 'ios' ? 'flex-end' : 'center' ,
-                  paddingBottom: Platform.OS === 'ios' ? 18 : 0,
-
-                  opacity: scrollY.interpolate({
-                      inputRange: [HEADER_HEIGHT -100, HEADER_HEIGHT -50],
-                      outputRange: [0, 1]
-                  })
-              }}>
-
-              <Text
-              style={{
-                  color: COLORS.primary, ...FONTS.h3
-              }}
-              >{selectedRestaurant?.name}</Text>
-
-              </Animated.View>
-              
-{/* back button */}
-<TouchableOpacity
-style={{
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 35,
-    width: 35,
-    borderRadius: 18,
-   
- 
-    backgroundColor: COLORS.primary
-}}
-
-onPress={()=> navigation.goBack()}
->
-<Image
-source={icons.back}
-style={{
-    width: 15,
-    height: 15,
-    tintColor: COLORS.white
-}}
-/>
-</TouchableOpacity>
-{/* headertext */}
-
-{/* Love button */}
-
-<TouchableOpacity
-style={{
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 35,
-    width: 35,
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: COLORS.primary,
-    backgroundColor: COLORS.transparentBlack1,
-}}
-
-
->
-<Image
-source={icons.love}
-style={{
-    width: 15,
-    height: 15,
-    tintColor: COLORS.primary
-}}
-/>
-</TouchableOpacity>
-          </View>
-      )
+        <TouchableOpacity
+          style={{
+            alignItems: "center",
+            justifyContent: "center",
+            height: 35,
+            width: 35,
+            borderRadius: 18,
+            borderWidth: 1,
+            borderColor: COLORS.primary,
+            backgroundColor: COLORS.transparentBlack1,
+          }}
+        >
+          <Image
+            source={icons.love}
+            style={{
+              width: 15,
+              height: 15,
+              tintColor: COLORS.primary,
+            }}
+          />
+        </TouchableOpacity>
+      </View>
+    );
   }
+
   return (
     <View
       style={{
@@ -254,84 +274,63 @@ style={{
           { useNativeDriver: true }
         )}
         renderItem={({ item }) => (
-         <TouchableOpacity
-         style={{
-             marginVertical: SIZES.padding
-         }}
-         onPress={() => SetCartModalData({isVisible: true, product: item})}
-         >
-              <View
-            style={{
-              flexDirection: "row",
-              paddingHorizontal: SIZES.padding,
-              marginVertical: 5,
-            }}
+          <TouchableOpacity
+         
+          onPress={() => showPanel(item)}
           >
-            {/* icon */}
-            <View
-              style={{
-                alignItems: "center",
-                justifyContent: "center",
-                height: 100,
-                width: 100,
-                borderRadius: 5,
-                backgroundColor: COLORS.lightGray1,
-              }}
-            >
-              <Image
-                source={item?.photo}
-                style={{
-                  height: 90,
-                  width: 90,
-                }}
-              />
-            </View>
-
-            {/* description */}
-
-            <View
-              style={{
-                flex: 1,
-                paddingHorizontal: 20,
-                justifyContent: "center",
-              }}
-            >
-              <Text
-                style={{
-                  marginBottom: 1,
-                  ...FONTS.body3,
-                }}
-              >
-                {item?.name}
-              </Text>
-              <Text>{item?.description}</Text>
-            </View>
-
-            {/* price */}
-
-            <View
-              style={{
-                alignItems: "flex-end",
-                justifyContent: "center",
-              }}
-            >
-              <Text
-                style={{
-                  marginBottom: 1,
-                  ...FONTS.body3,
-                }}
-              >
-                {item?.price}
-              </Text>
-            </View>
-          </View>
-         </TouchableOpacity>
+            <ItemCard item={item}  />
+          </TouchableOpacity>
         )}
       />
 
-{/* header bar */}
+      {/* header bar */}
 
-{renderHeaderBar()}
+      <SwipeablePanel
+        fullWidth
+        closeOnTouchOutside
+        onlySmall
+        isActive={isPanelActive}
+        onClose={closePanel}
+        onPressCloseButton={closePanel}
+        style={{
+          flex: 1,
+          marginTop: 50,
+        }}
+      >
+        <View style={{ flex: 2 }}></View>
+        <ItemCard item={selectedItem}  />
+        <View
+          style={{
+            flex: 1,
+            flexDirection: "row",
+            paddingHorizontal: SIZES.padding,
+            marginVertical: 5,
+            justifyContent: "space-between",
+          }}
+        >
+
+          <View style={{}}>
+            <Text
+              style={{
+                ...FONTS.body2,
+              }}
+            >
+              fixed footer
+            </Text>
+          </View>
+          <View style={{}}>
+            <Text
+              style={{
+                ...FONTS.body2,
+              }}
+            >
+              fixed footer
+            </Text>
+          </View>
+        </View>
+      </SwipeablePanel>
+
+      {renderHeaderBar()}
       {cartModalData.isVisible && (
         <AddToCartModal
           isVisible={cartModalData.isVisible}

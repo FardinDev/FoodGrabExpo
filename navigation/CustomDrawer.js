@@ -3,7 +3,8 @@ import {
     View,
     Text,
     Image,
-    TouchableOpacity
+    TouchableOpacity,
+    Alert
 } from 'react-native';
 import {
     createDrawerNavigator,
@@ -209,6 +210,7 @@ const [loggedinUserName, setLoggedinUserName] = React.useState('');
                     <CustomDrawerItem
                         label="Track Your Order"
                         icon={icons.location}
+                        onPress={() => Alert.alert('Stay Tuned', 'This Feature is comming soon!')}
                     />
 
                     <CustomDrawerItem
@@ -230,7 +232,7 @@ const [loggedinUserName, setLoggedinUserName] = React.useState('');
                         label="Help Center"
                         icon={icons.help}
                         onPress={() => {
-                            navigation.push("Help")
+                            navigation.push("Help", {navigation})
                         }}
                     />
                 </View>

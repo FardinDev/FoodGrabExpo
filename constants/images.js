@@ -30,8 +30,10 @@ const sushi = require("../assets/images/sushi.jpg");
 const teh_c_peng = require("../assets/images/teh-c-peng.jpg");
 const tomato_pasta = require("../assets/images/tomato-pasta.jpg");
 const background = require("../assets/images/background.svg");
+const help = require("../assets/images/help.gif");
 
 export default {
+  help,
   profile,
   fardin,
   avatar_1,

@@ -11,6 +11,7 @@ import {
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
+  ActivityIndicator,
 } from "react-native";
 import * as Animatable from "react-native-animatable";
 import { LinearGradient } from "expo-linear-gradient";
@@ -20,18 +21,62 @@ import Feather from "react-native-vector-icons/Feather";
 import { useTheme } from "@react-navigation/native";
 
 import { AuthContext } from "../../../components/context";
-
 import Users from "../../../model/users";
-import { COLORS } from "../../../constants";
+import { COLORS, SIZES } from "../../../constants";
+
+import Api from "../../../api/api";
 
 const SignInScreen = ({ navigation }) => {
+
+  
+  const [isLoading, setIsloading] = React.useState(false);
+  const [loginData, setLoginDaata] = React.useState({});
+  const api = new Api();
+
+  const loginViaApi = async (mobile, password) => {
+    
+    if (mobile.length == 0 || password.length == 0) {
+      Alert.alert(
+        "Wrong Input!",
+        "Mobile no. or password field cannot be empty.",
+        [{ text: "Okay" }]
+        );
+        return;
+      }
+      setIsloading(true);
+    return await api
+      .login({ mobile: mobile, password: password })
+      .then((resData) => {
+        setLoginDaata();
+
+        if (!resData.data.data) {
+          Alert.alert("Invalid User!", "Mobile no. or password is incorrect.", [
+            { text: "Okay" },
+          ]);
+          return;
+        }
+        let user = {
+          username: resData.data.data.user.name,
+          userToken: resData.data.data.token,
+        };
+
+        setIsloading(false);
+        signIn([user]);
+
+        return;
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
   const [data, setData] = React.useState({
-    username: "",
+    mobile: "",
     password: "",
     check_textInputChange: false,
     secureTextEntry: true,
-    isValidUser: true,
-    isValidPassword: true,
+    isValidUser: false,
+    isValidPassword: false,
   });
 
   const { colors } = useTheme();
@@ -39,17 +84,17 @@ const SignInScreen = ({ navigation }) => {
   const { signIn } = React.useContext(AuthContext);
 
   const textInputChange = (val) => {
-    if (val.trim().length >= 4) {
+    if (val.trim().length == 11) {
       setData({
         ...data,
-        username: val,
+        mobile: val,
         check_textInputChange: true,
         isValidUser: true,
       });
     } else {
       setData({
         ...data,
-        username: val,
+        mobile: val,
         check_textInputChange: false,
         isValidUser: false,
       });
@@ -80,7 +125,7 @@ const SignInScreen = ({ navigation }) => {
   };
 
   const handleValidUser = (val) => {
-    if (val.trim().length >= 4) {
+    if (val.trim().length == 11) {
       setData({
         ...data,
         isValidUser: true,
@@ -94,26 +139,36 @@ const SignInScreen = ({ navigation }) => {
   };
 
   const loginHandle = (userName, password) => {
-    const foundUser = Users.filter((item) => {
-      return userName == item.username && password == item.password;
+    setIsloading(true);
+    loginViaApi().then(() => {
+      console.log("====================================");
+      console.log(loginData);
+      console.log("====================================");
+      let user = { username: loginData.user.name, userToken: loginData.token };
+      setIsloading(false);
+      signIn(user);
     });
 
-    if (data.username.length == 0 || data.password.length == 0) {
-      Alert.alert(
-        "Wrong Input!",
-        "Username or password field cannot be empty.",
-        [{ text: "Okay" }]
-      );
-      return;
-    }
+    // if (userName.length == 0 || password.length == 0) {
+    //   Alert.alert(
+    //     "Wrong Input!",
+    //     "Username or password field cannot be empty.",
+    //     [{ text: "Okay" }]
+    //   );
+    //   return;
+    // }
 
-    if (foundUser.length == 0) {
-      Alert.alert("Invalid User!", "Username or password is incorrect.", [
-        { text: "Okay" },
-      ]);
-      return;
-    }
-    signIn(foundUser);
+    // const foundUser = Users.filter((item) => {
+    //     return userName == item.username && password == item.password;
+    //   });
+
+    // if (foundUser.length == 0) {
+    //   Alert.alert("Invalid User!", "Username or password is incorrect.", [
+    //     { text: "Okay" },
+    //   ]);
+    //   return;
+    // }
+    // signIn(foundUser);
   };
 
   return (
@@ -147,12 +202,13 @@ const SignInScreen = ({ navigation }) => {
                 },
               ]}
             >
-              Username
+              Mobile No.
             </Text>
             <View style={styles.action}>
               <FontAwesome name="user-o" color={colors.text} size={20} />
               <TextInput
-                placeholder="Your Username"
+                placeholder="Mobile no."
+                keyboardType='numeric'
                 placeholderTextColor="#666666"
                 style={[
                   styles.textInput,
@@ -170,10 +226,10 @@ const SignInScreen = ({ navigation }) => {
                 </Animatable.View>
               ) : null}
             </View>
-            {data.isValidUser ? null : (
+            {data.isValidUser || (data.mobile.length === 0) ? null : (
               <Animatable.View animation="fadeInLeft" duration={500}>
                 <Text style={styles.errorMsg}>
-                  Username must be 4 characters long.
+                  Mobile No must be 11 characters long.
                 </Text>
               </Animatable.View>
             )}
@@ -212,10 +268,10 @@ const SignInScreen = ({ navigation }) => {
                 )}
               </TouchableOpacity>
             </View>
-            {data.isValidPassword ? null : (
+            {data.isValidPassword || (data.password.length === 0) ? null : (
               <Animatable.View animation="fadeInLeft" duration={500}>
                 <Text style={styles.errorMsg}>
-                  Password must be 8 characters long.
+                  Password must be 8 characters long. 
                 </Text>
               </Animatable.View>
             )}
@@ -228,24 +284,35 @@ const SignInScreen = ({ navigation }) => {
             <View style={styles.button}>
               <TouchableOpacity
                 style={styles.signIn}
+                disabled={isLoading || !(data.isValidUser && data.isValidPassword)}
                 onPress={() => {
-                  loginHandle(data.username, data.password);
+                  loginViaApi(data.mobile, data.password);
                 }}
               >
                 <LinearGradient
                   colors={[COLORS.primary, COLORS.primary]}
-                  style={styles.signIn}
+                  style={{
+                    width: "100%",
+                    height: 50,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    borderRadius: 10,
+                    opacity: data.isValidUser && data.isValidPassword ? 1 : 0.5}}
                 >
-                  <Text
-                    style={[
-                      styles.textSign,
-                      {
-                        color: "#fff",
-                      },
-                    ]}
-                  >
-                    Sign In
-                  </Text>
+                  {!isLoading ? (
+                    <Text
+                      style={[
+                        styles.textSign,
+                        {
+                          color: "#fff",
+                        },
+                      ]}
+                    >
+                      Sign In
+                    </Text>
+                  ) : (
+                    <ActivityIndicator color={COLORS.white} size={"small"} />
+                  )}
                 </LinearGradient>
               </TouchableOpacity>
 
