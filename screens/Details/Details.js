@@ -9,10 +9,13 @@ import {
   ActivityIndicator,
   InteractionManager,
   Platform,
+  Button,
+  StyleSheet,
+  SafeAreaView,
 } from "react-native";
 
-import { connect } from "react-redux";
-import { addToCart, addQuantity, subtractQuantity, removeItem } from "../../stores/cart/cartActions";
+import { connect, useSelector } from "react-redux";
+// import { addToCart, addQuantity, subtractQuantity, removeItem } from "../../stores/cart/cartActions";
 import { IconButton, TextButton } from "../../components";
 import { AddToCartModal } from "../";
 import { COLORS, SIZES, icons, images, FONTS } from "../../constants";
@@ -22,7 +25,9 @@ import ItemCard from "../../components/ItemCard";
 import { SwipeablePanel } from "rn-swipeable-panel";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { useFonts } from "expo-font";
-import {CartVal} from "./CartVal";
+import CartVal from "./CartVal";
+import { addToCart } from "../../stores/cart/cartActions";
+import CartTab from "../Cart/CartTab";
 
 const HEADER_HEIGHT = 250;
 
@@ -53,11 +58,13 @@ const RenderRatingCard = ({ restaurant }) => {
   );
 };
 
-const Details = ({ route, navigation }) => {
+const Details = ({ route, navigation, cartItems, addToCart }) => {
   const [selectedRestaurant, setSelectedRestaurant] = React.useState(null);
   const [selectedCategories, setSelectedCategories] = React.useState(null);
   const [isPanelActive, setIsPanelActive] = React.useState(false);
+  const [isCartPanelActive, setIsCartPanelActive] = React.useState(false);
   const [selectedItem, setSelectedItem] = React.useState(null);
+  const [itemCount, setItemCount] = React.useState(1);
 
   const [isReady, setIsReady] = React.useState(false);
 
@@ -70,6 +77,24 @@ const Details = ({ route, navigation }) => {
     setSelectedItem(null);
   };
 
+  const showCartPanel = () => {
+    setIsCartPanelActive(true);
+  };
+  const closeCartPanel = () => {
+    setIsCartPanelActive(false);
+  };
+
+  const addItemsTOCart = () => {
+    selectedItem.quantity = itemCount;
+    selectedItem.item_total = itemCount * selectedItem.price;
+    selectedItem.restaurant_id = selectedRestaurant.id;
+
+    addToCart(selectedItem);
+    setIsPanelActive(false);
+    setSelectedItem(null);
+    setItemCount(1);
+  };
+
   React.useEffect(() => {
     let { item } = route.params;
     setSelectedRestaurant(item);
@@ -77,6 +102,8 @@ const Details = ({ route, navigation }) => {
 
     InteractionManager.runAfterInteractions(() => setIsReady(true));
   }, []);
+
+  React.useEffect(() => {}, [cartItems]);
 
   const scrollY = useRef(new Animated.Value(0)).current;
 
@@ -230,7 +257,7 @@ const Details = ({ route, navigation }) => {
         </TouchableOpacity>
         {/* headertext */}
 
-        {/* Love button */}
+        {/* cart button */}
 
         <TouchableOpacity
           style={{
@@ -243,9 +270,32 @@ const Details = ({ route, navigation }) => {
             borderColor: COLORS.primary,
             backgroundColor: COLORS.transparentBlack1,
           }}
+          onPress={() => showCartPanel()}
         >
+          {!cartItems.length ? null : (
+            <View
+              style={{
+                position: "absolute",
+                top: -5,
+                left: -5,
+                height: 20,
+                width: 20,
+                borderRadius: 20,
+                backgroundColor: COLORS.primary,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <CartVal
+                style={{
+                  ...FONTS.h3,
+                  color: COLORS.white,
+                }}
+              />
+            </View>
+          )}
           <Image
-            source={icons.love}
+            source={icons.cart}
             style={{
               width: 15,
               height: 15,
@@ -344,7 +394,6 @@ const Details = ({ route, navigation }) => {
           paddingHorizontal: SIZES.padding,
         }}
       >
-        <View style={{ flex: 2 }}></View>
         <ItemCard item={selectedItem} />
         <View
           style={{
@@ -355,15 +404,125 @@ const Details = ({ route, navigation }) => {
             justifyContent: "space-between",
           }}
         >
-          <View style={{}}>
+          <View
+            style={{
+              flex: 1,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <TouchableOpacity
+              style={{
+                opacity: itemCount < 2 ? 0.5 : 1,
+              }}
+              disabled={itemCount < 2}
+              onPress={() => setItemCount(itemCount - 1)}
+            >
+              <View
+                style={{
+                  width: 35,
+                  height: 35,
+
+                  justifyContent: "center",
+
+                  backgroundColor: COLORS.primary,
+                }}
+              >
+                <Text
+                  style={{
+                    textAlign: "center",
+                    ...FONTS.h2,
+                    color: COLORS.white,
+                  }}
+                >
+                  -
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+          <View
+            style={{
+              flex: 1,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
             <Text
               style={{
-                ...FONTS.body2,
+                ...FONTS.largeTitle,
+                color: COLORS.darkGray,
+                textAlign: "center",
               }}
             >
-              fixed footer
+              {itemCount}
             </Text>
           </View>
+          <View
+            style={{
+              flex: 1,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <TouchableOpacity
+              style={{
+                height: 35,
+                alignItems: "center",
+                justifyContent: "center",
+                width: 35,
+                opacity: 1,
+              }}
+              onPress={() => setItemCount(itemCount + 1)}
+            >
+              <View
+                style={{
+                  width: 35,
+                  height: 35,
+
+                  justifyContent: "center",
+
+                  backgroundColor: COLORS.primary,
+                }}
+              >
+                <Text
+                  style={{
+                    textAlign: "center",
+                    ...FONTS.h2,
+                    color: COLORS.white,
+                  }}
+                >
+                  +
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+
+          {/* <View style={styles.container}>
+              <View style={styles.buttonContainer}>
+              <TextButton
+                  label="-"
+                  buttonContainerStyle={{
+                    height: 40,
+                    // borderRadius: 20,
+                    width: 40,
+                    backgroundColor: COLORS.primary,
+                  }}
+                  
+                />
+              </View>
+              <View style={styles.buttonContainer}>
+              <TextButton
+                  label="+"
+                  buttonContainerStyle={{
+                    height: 40,
+                    // borderRadius: 20,
+                    width: 40,
+                    backgroundColor: COLORS.primary,
+                  }}
+                  
+                />
+              </View>
+            </View>
           <View style={{}}>
             <Text
               style={{
@@ -384,17 +543,88 @@ const Details = ({ route, navigation }) => {
                 <TextButton
                   label="Add To Cart"
                   buttonContainerStyle={{
-                    height: 50,
+                    height: 100,
                     borderRadius: SIZES.base,
                     backgroundColor: COLORS.primary,
                   }}
-                  onPress={() => addToCart(selectedItem?.id)}
+                  onPress={() => addItems(selectedItem)}
                 />
 
-                    <CartVal />
-                
-              </View>
+            
+
+              
+              </View> 
             </Text>
+          </View>*/}
+        </View>
+        <View style={{ flex: 1 }}>
+          <TouchableOpacity
+            onPress={() => addItemsTOCart()}
+            style={{
+              borderColor: COLORS.primary,
+              borderWidth: 1,
+
+              width: "100%",
+              height: 50,
+              justifyContent: "center",
+              alignItems: "center",
+              borderRadius: 10,
+              fontFamily: "PoppinsLight",
+            }}
+          >
+            <Text
+              style={{
+                color: COLORS.primary,
+                fontSize: 18,
+                fontWeight: "bold",
+                fontFamily: "PoppinsLight",
+              }}
+            >
+              Add To Cart
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </SwipeablePanel>
+
+      <SwipeablePanel
+        fullWidth
+        closeOnTouchOutside
+        onlyLarge
+        scrollViewProps={{
+
+          showsVerticalScrollIndicator:false
+        }}
+        isActive={isCartPanelActive}
+        onClose={closeCartPanel}
+        onPressCloseButton={closeCartPanel}
+        style={{
+          flex: 1,
+          marginTop: 50,
+          paddingHorizontal: SIZES.padding,
+        }}
+      >
+        <View
+          style={{
+            flex: 1,
+            flexDirection: "column",
+            justifyContent: "center",
+          }}
+        >
+          <View
+            style={{
+              flex: 3,
+            }}
+          >
+            <CartTab />
+          </View>
+          <View
+            style={{
+              flex: 3,
+              backgroundColor: "red",
+            }}
+          >
+
+
           </View>
         </View>
       </SwipeablePanel>
@@ -411,16 +641,42 @@ const Details = ({ route, navigation }) => {
   );
 };
 
-const mapStateToProps = (state)=>{
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  buttonContainer: {
+    borderRadius: 0,
+  },
+});
+const mapStateToProps = (state) => {
   return {
-    items: state.items
-  }
-}
-const mapDispatchToProps= (dispatch)=>{
-  
-  return{
-      addToCart: (id)=>{dispatch(addToCart(id))}
-  }
-}
+    cartItems: state.cartReducer.cartItems,
+  };
+};
+const mapDispatchToProps = (dispatch) => {
+  return {
+    addToCart: (item) => {
+      return dispatch(addToCart(item));
+    },
+  };
+};
 
-export default connect(mapStateToProps,mapDispatchToProps)(Details)
+export default connect(mapStateToProps, mapDispatchToProps)(Details);
+
+// function mapStateToProps(state) {
+//   return {
+//       selectedTab: state.tabReducer.selectedTab
+//   }
+// }
+
+// function mapDispatchToProps(dispatch) {
+//   return {
+//       setSelectedTab: (selectedTab) => { return dispatch(setSelectedTab(selectedTab)) }
+//   }
+// }
+
+// export default connect(mapStateToProps, mapDispatchToProps)(MainLayout)

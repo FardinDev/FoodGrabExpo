@@ -4,14 +4,14 @@ import { NavigationContainer } from "@react-navigation/native";
 
 import CustomDrawer from "./navigation/CustomDrawer";
 import AuthRoot from "./screens/Auth/AuthRoot";
-import { Details, Help } from "./screens";
+import { Details, Help, CartTab } from "./screens";
 import { View, ActivityIndicator } from "react-native";
 import { createStore, applyMiddleware } from "redux";
 import { Provider } from "react-redux";
 import thunk from "redux-thunk";
 import rootReducer from "./stores/rootReducer";
 import { AuthContext } from "./components/context";
-
+import { useFonts } from 'expo-font';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Stack = createStackNavigator();
@@ -65,6 +65,17 @@ const App = () => {
         };
     }
   };
+
+
+  const [loaded] = useFonts({
+       
+    PoppinsRegular: require('./assets/fonts/Poppins-Regular.ttf'),
+    PoppinsBold: require('./assets/fonts/Poppins-Bold.ttf'),
+    PoppinsSemiBold: require('./assets/fonts/Poppins-SemiBold.ttf'),
+    PoppinsBlack: require('./assets/fonts/Poppins-Black.ttf'),
+    PoppinsLight: require('./assets/fonts/Poppins-Light.ttf'),
+    PoppinsThin: require('./assets/fonts/Poppins-Thin.ttf'),
+  });
 
   const [loginState, dispatch] = React.useReducer(
     loginReducer,
@@ -131,6 +142,14 @@ const App = () => {
       </View>
     );
   }
+  if (!loaded) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="small" />
+      </View>
+    );
+  }
+
 
   return (
     <Provider store={store}>
@@ -146,6 +165,7 @@ const App = () => {
               <Stack.Screen name="Home" component={CustomDrawer} />
               <Stack.Screen name="Details" component={Details} />
               <Stack.Screen name="Help" component={Help} />
+              <Stack.Screen name="Cart" component={CartTab} />
             </Stack.Navigator>
           ) : (
             <AuthRoot />

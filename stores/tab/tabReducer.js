@@ -5,6 +5,8 @@ const initialState = {
 }
 
 const tabReducer = (state = initialState, action) => {
+
+ 
     switch (action.type) {
         case tabActionTypes.SET_SELECTED_TAB:
             return {

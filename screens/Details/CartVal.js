@@ -1,10 +1,40 @@
-import React from 'react'
-import { Text } from 'react-native-animatable'
-import { useSelector } from 'react-redux'
+import React from 'react';
+import {
+    View,
+    Text
+} from 'react-native';
+import { connect } from 'react-redux'
+const CartVal = ({cartItems, style}) => {
 
-export const CartVal = () => {
-  const selSelectedTab = useSelector((state) => state.selSelectedTab)
+    
+    React.useEffect(() => {
 
-  
-  return (<Text>{selSelectedTab}</Text>)
+        }, [cartItems]);
+      
+    
+    return (
+        <View
+            style={{
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center'
+            }}
+        >
+            <Text style={style}>{cartItems?.length}</Text>
+        </View>
+    )
 }
+
+const mapStateToProps = (state)=>{
+    return {
+      cartItems: state.cartReducer.cartItems
+    }
+  }
+  const mapDispatchToProps= (dispatch)=>{
+    
+    return{
+        addToCart: (item) =>{return dispatch(addToCart(item))}
+    }
+  }
+  
+  export default connect(mapStateToProps,mapDispatchToProps)(CartVal)

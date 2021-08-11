@@ -72,6 +72,8 @@ const CustomDrawerContent = ({ navigation, selectedTab, setSelectedTab }) => {
 const [loggedinUserName, setLoggedinUserName] = React.useState('');
 
     useEffect(() => {
+
+        
         setTimeout(async () => {
           // setIsLoading(false);
         
