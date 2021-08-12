@@ -33,22 +33,22 @@ export const COLORS = {
 export const SIZES = {
     // global sizes
     base: 8,
-    font: 12,
-    radius: 12,
-    padding: 15,
+    font: 10,
+    radius: 10,
+    padding: 12,
 
     // font sizes
     largeTitle: 40,
-    h1: 30,
-    h2: 22,
-    h3: 16,
-    h4: 14,
-    h5: 12,
-    body1: 30,
-    body2: 22,
-    body3: 16,
-    body4: 14,
-    body5: 12,
+    h1: 28,
+    h2: 20,
+    h3: 14,
+    h4: 12,
+    h5: 8,
+    body1: 28,
+    body2: 20,
+    body3: 12,
+    body4: 12,
+    body5: 8,
 
     // app dimensions
     width,
@@ -56,16 +56,16 @@ export const SIZES = {
 };
 export const FONTS = {
     largeTitle: { fontFamily: "PoppinsBlack", fontSize: SIZES.largeTitle },
-    h1: { fontFamily: "PoppinsBold", fontSize: SIZES.h1, lineHeight: 36 },
-    h2: { fontFamily: "PoppinsBold", fontSize: SIZES.h2, lineHeight: 30 },
-    h3: { fontFamily: "PoppinsSemiBold", fontSize: SIZES.h3, lineHeight: 22 },
-    h4: { fontFamily: "PoppinsSemiBold", fontSize: SIZES.h4, lineHeight: 22 },
-    h5: { fontFamily: "PoppinsSemiBold", fontSize: SIZES.h5, lineHeight: 22 },
-    body1: { fontFamily: "PoppinsRegular", fontSize: SIZES.body1, lineHeight: 36 },
-    body2: { fontFamily: "PoppinsRegular", fontSize: SIZES.body2, lineHeight: 30 },
-    body3: { fontFamily: "PoppinsRegular", fontSize: SIZES.body3, lineHeight: 22 },
-    body4: { fontFamily: "PoppinsRegular", fontSize: SIZES.body4, lineHeight: 22 },
-    body5: { fontFamily: "PoppinsRegular", fontSize: SIZES.body5, lineHeight: 22 },
+    h1: { fontFamily: "PoppinsBold", fontSize: SIZES.h1, lineHeight: 32 },
+    h2: { fontFamily: "PoppinsBold", fontSize: SIZES.h2, lineHeight: 26 },
+    h3: { fontFamily: "PoppinsSemiBold", fontSize: SIZES.h3, lineHeight: 20 },
+    h4: { fontFamily: "PoppinsSemiBold", fontSize: SIZES.h4, lineHeight: 20 },
+    h5: { fontFamily: "PoppinsSemiBold", fontSize: SIZES.h5, lineHeight: 20 },
+    body1: { fontFamily: "PoppinsRegular", fontSize: SIZES.body1, lineHeight: 34 },
+    body2: { fontFamily: "PoppinsRegular", fontSize: SIZES.body2, lineHeight: 28 },
+    body3: { fontFamily: "PoppinsRegular", fontSize: SIZES.body3, lineHeight: 20 },
+    body4: { fontFamily: "PoppinsRegular", fontSize: SIZES.body4, lineHeight: 20 },
+    body5: { fontFamily: "PoppinsRegular", fontSize: SIZES.body5, lineHeight: 20 },
 };
 
 const appTheme = { COLORS, SIZES, FONTS };

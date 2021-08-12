@@ -2,10 +2,11 @@ import React from "react";
 import { TouchableOpacity, View, Text, Image } from "react-native";
 import Animated from "react-native-reanimated";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-
+import { connect } from "react-redux";
+import { addQuantity, subQuantity, removeItem } from "../stores/cart/cartActions";
 import { COLORS, FONTS, icons, SIZES } from "../constants";
-
-const CartCard = ({ item, onPress }) => {
+import * as Haptics from 'expo-haptics';
+const CartCard = ({ item, onPress, cartItems, total, addQuantity, subQuantity, removeItem }) => {
   return (
     <Animated.View>
       <View
@@ -83,7 +84,7 @@ const CartCard = ({ item, onPress }) => {
                     fontSize: 13,
                   }}
                 >
-                  {item?.price + " Tk"}
+                  {item?.price * item.quantity + " Tk"}
                 </Text>
               </View>
             </View>
@@ -112,7 +113,14 @@ const CartCard = ({ item, onPress }) => {
                       borderColor: COLORS.primary,
                       backgroundColor: COLORS.transparent,
                       marginHorizontal: 5,
+                      opacity: item.quantity < 2 ? 0.3 : 1
                     }}
+                    disabled={item.quantity < 2}
+                    onPress={() => 
+                    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).then(
+                        subQuantity(item.id)
+                      )
+                    }
                   >
                     <FontAwesome
                       name="minus"
@@ -132,6 +140,12 @@ const CartCard = ({ item, onPress }) => {
                       backgroundColor: COLORS.transparent,
                       marginHorizontal: 5,
                     }}
+                    onPress={() => 
+                      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).then(
+                        addQuantity(item.id)
+                      )
+                    
+                    }
                   >
                     <FontAwesome name="plus" color={COLORS.primary} size={20} />
                   </TouchableOpacity>
@@ -155,7 +169,12 @@ const CartCard = ({ item, onPress }) => {
                     borderColor: COLORS.primary,
                     backgroundColor: COLORS.transparent,
                   }}
-                  onPress={() => console.log("delete")}
+                  onPress={() => 
+                    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).then(
+                      removeItem(item)
+                    )
+                  
+                  }
                 >
                   <FontAwesome name="trash" color={COLORS.primary} size={20} />
                 </TouchableOpacity>
@@ -168,4 +187,30 @@ const CartCard = ({ item, onPress }) => {
   );
 };
 
-export default CartCard;
+const mapStateToProps = (state) => {
+  return {
+    cartItems: state.cartReducer.cartItems,
+    total: state.cartReducer.total,
+  };
+};
+const mapDispatchToProps = (dispatch) => {
+  return {
+    addToCart: (item) => {
+      return dispatch(addToCart(item));
+    },
+    addQuantity: (item) => {
+      return dispatch(addQuantity(item));
+    },
+    subQuantity: (item) => {
+      return dispatch(subQuantity(item));
+    },
+    subQuantity: (item) => {
+      return dispatch(subQuantity(item));
+    },
+    removeItem: (item) => {
+      return dispatch(removeItem(item));
+    },
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(CartCard);

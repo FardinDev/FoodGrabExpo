@@ -13,6 +13,7 @@ import {
   StyleSheet,
   SafeAreaView,
 } from "react-native";
+import * as Haptics from 'expo-haptics';
 
 import { connect, useSelector } from "react-redux";
 // import { addToCart, addQuantity, subtractQuantity, removeItem } from "../../stores/cart/cartActions";
@@ -416,7 +417,13 @@ const Details = ({ route, navigation, cartItems, addToCart }) => {
                 opacity: itemCount < 2 ? 0.5 : 1,
               }}
               disabled={itemCount < 2}
-              onPress={() => setItemCount(itemCount - 1)}
+              onPress={() => 
+                
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).then(
+                  setItemCount(itemCount - 1)
+                )
+              
+              }
             >
               <View
                 style={{
@@ -472,7 +479,12 @@ const Details = ({ route, navigation, cartItems, addToCart }) => {
                 width: 35,
                 opacity: 1,
               }}
-              onPress={() => setItemCount(itemCount + 1)}
+              onPress={() => 
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).then(
+                  setItemCount(itemCount + 1)
+                )
+              
+              }
             >
               <View
                 style={{

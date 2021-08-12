@@ -178,11 +178,11 @@ const CartTab = ({ cartItems, total }) => {
         </View>
         <View style={{ flex: 1, marginTop: 5, marginBottom: 100 }}>
             <TouchableOpacity
-              onPress={() => addItemsTOCart()}
+              onPress={() => console.log('checkout')}
               style={{
                 borderColor: COLORS.primary,
                 borderWidth: 1,
-backgroundColor: COLORS.primary,
+                backgroundColor: COLORS.primary,
                 width: "100%",
                 height: 50,
                 justifyContent: "center",
