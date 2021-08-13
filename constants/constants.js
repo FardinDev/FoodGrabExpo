@@ -127,6 +127,7 @@ const tags = [
         label: "Taccos"
     }
 ]
+const validPhoneType = new RegExp('^(?:/\\+?88)?01[2-9]\\d{8}$')
 
 export default {
     screens,
@@ -134,5 +135,6 @@ export default {
     bottom_tabs,
     delivery_time,
     ratings,
-    tags
+    tags,
+    validPhoneType
 }

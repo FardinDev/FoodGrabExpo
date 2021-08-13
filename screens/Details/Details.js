@@ -128,7 +128,7 @@ const Details = ({ route, navigation, cartItems, addToCart }) => {
           resizeMode="contain"
           style={{
             height: HEADER_HEIGHT,
-            width: "200%",
+            width: '200%',
             transform: [
               {
                 translateY: scrollY.interpolate({

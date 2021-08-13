@@ -26,6 +26,7 @@ const App = () => {
     isLoading: true,
     userName: null,
     userToken: null,
+    userPhone: null,
   };
 
   const loginReducer = (prevState, action) => {
@@ -34,6 +35,12 @@ const App = () => {
         return {
           ...prevState,
           userName: action.name,
+          isLoading: false,
+        };
+      case "RETRIEVE_USERPHONE":
+        return {
+          ...prevState,
+          userPhone: action.phone,
           isLoading: false,
         };
       case "RETRIEVE_TOKEN":
@@ -60,7 +67,7 @@ const App = () => {
         return {
           ...prevState,
           userName: action.id,
-          userToken: action.token,
+          userPhone: action.phone,
           isLoading: false,
         };
     }
@@ -88,11 +95,12 @@ const App = () => {
         // setUserToken('fgkj');
         // setIsLoading(false);
         const userToken = String(foundUser[0].userToken);
-        const userName = foundUser[0].username;
+        const userName = foundUser[0].userName;
+        const userImage = foundUser[0].userImage;
 
         try {
         //   await AsyncStorage.setItem("userToken", userToken);
-          await AsyncStorage.multiSet([['userToken', userToken], ['userName', userName]], () => {
+          await AsyncStorage.multiSet([['userToken', userToken], ['userName', userName], ['userImage', userImage]], () => {
             //to do something
             console.log('done');
         });
@@ -112,9 +120,23 @@ const App = () => {
         }
         dispatch({ type: "LOGOUT" });
       },
-      signUp: () => {
-        // setUserToken('fgkj');
-        // setIsLoading(false);
+      signUp: async (foundUser) => {
+
+
+        const userName = foundUser[0].userName;
+        const userPhone = foundUser[0].userPhone;
+
+        try {
+        //   await AsyncStorage.setItem("userToken", userToken);
+          await AsyncStorage.multiSet([ ['userName', userName], ['userPhone', userPhone]], () => {
+            //to do something
+            console.log('done');
+        });
+        } catch (e) {
+          console.log(e);
+        }
+        // console.log('user token: ', userToken);
+        dispatch({ type: "REGISTER", id: userName, phone: userPhone });
       }
     }),
     []

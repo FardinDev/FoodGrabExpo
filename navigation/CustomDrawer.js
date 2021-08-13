@@ -70,6 +70,7 @@ const CustomDrawerItem = ({ label, icon, isFocused, onPress }) => {
 const CustomDrawerContent = ({ navigation, selectedTab, setSelectedTab }) => {
 
 const [loggedinUserName, setLoggedinUserName] = React.useState('');
+const [loggedinUserImage, setLoggedinUserImage] = React.useState('');
 
     useEffect(() => {
 
@@ -79,8 +80,12 @@ const [loggedinUserName, setLoggedinUserName] = React.useState('');
         
           try {
             const UserName = await AsyncStorage.getItem("userName");
+            const UserImage = await AsyncStorage.getItem("userImage");
+
+            
             
             setLoggedinUserName(String(UserName));
+            setLoggedinUserImage(String(UserImage));
           } catch (e) {
             console.log(e);
           }
@@ -137,7 +142,7 @@ const [loggedinUserName, setLoggedinUserName] = React.useState('');
                     onPress={() => console.log("Profile")}
                 >
                     <Image
-                        source={dummyData.myProfile?.profile_image}
+                        source={{uri: loggedinUserImage} || icons.user}
                         style={{
                             width: 50,
                             height: 50,

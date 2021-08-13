@@ -5,7 +5,7 @@ export default class Api {
   constructor() {
     this.api_token = null;
     this.client = null;
-    this.api_url = "http://logitav2-api.sslwireless.com/api";
+    this.api_url = "http://192.168.0.117:8000/api/v1";
   }
 
   init = () => {
@@ -21,7 +21,7 @@ export default class Api {
 
     this.client = axios.create({
       baseURL: this.api_url,
-      timeout: 500000,
+      timeout: 1000,
       headers: headers,
     });
 
@@ -32,7 +32,15 @@ export default class Api {
     return this.init().get("/users", { params: params });
   };
 
+  register = (data) => {
+    return this.init().post("/register", data);
+  };
+
   login = (data) => {
-    return this.init().post("/v1/login", data);
+    return this.init().post("/login", data);
+  };
+
+  verify = (data) => {
+    return this.init().post("/verify", data);
   };
 }

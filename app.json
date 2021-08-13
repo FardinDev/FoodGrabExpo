@@ -4,11 +4,11 @@
     "slug": "foodgrab",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icons/profile.png",
+    "icon": "./assets/images/profile.png",
     "splash": {
-      "image": "./assets/icons/profile.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "image": "./assets/images/profile.png",
+      "resizeMode": "center",
+      "backgroundColor": "#FE4040"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -23,8 +23,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
+        "foregroundImage": "./assets/images/profile.png",
+        "backgroundColor": "#FE4040"
       },
       "package": "com.fardin.foodgrab",
       "versionCode": 1

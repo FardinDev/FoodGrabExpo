@@ -16,6 +16,7 @@ import {
 import * as Animatable from "react-native-animatable";
 import { LinearGradient } from "expo-linear-gradient";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import Octicons from "react-native-vector-icons/Octicons";
 import Feather from "react-native-vector-icons/Feather";
 
 import { useTheme } from "@react-navigation/native";
@@ -28,48 +29,63 @@ import Api from "../../../api/api";
 import { useFonts } from "expo-font";
 
 const SignInScreen = ({ navigation }) => {
-
   const [loaded] = useFonts({
-    PoppinsLight: require('../../../assets/fonts/Poppins-Light.ttf'),
+    PoppinsLight: require("../../../assets/fonts/Poppins-Light.ttf"),
   });
   const [isLoading, setIsloading] = React.useState(false);
   const [loginData, setLoginDaata] = React.useState({});
   const api = new Api();
-
+  const validPhoneType = new RegExp("^(?:/\\+?88)?01[2-9]\\d{8}$");
   const loginViaApi = async (mobile, password) => {
-    
+    if (!validPhoneType.test(mobile)) {
+      Alert.alert("Wrong Input!", "Phone number is not valid", [
+        { text: "Okay" },
+      ]);
+
+      return;
+    }
+
     if (mobile.length == 0 || password.length == 0) {
       Alert.alert(
         "Wrong Input!",
-        "Mobile no. or password field cannot be empty.",
+        "Phone no. or password field cannot be empty.",
         [{ text: "Okay" }]
-        );
-        return;
-      }
-      setIsloading(true);
+      );
+      return;
+    }
+    setIsloading(true);
     return await api
-      .login({ mobile: mobile, password: password })
+      .login({ phone: mobile, password: password })
       .then((resData) => {
-        setLoginDaata();
+        // setLoginDaata();
 
-        if (!resData.data.data) {
-          Alert.alert("Invalid User!", "Mobile no. or password is incorrect.", [
-            { text: "Okay" },
-          ]);
-          return;
+        if (resData.data.code !== 200) {
+          Alert.alert("Error!", resData.data.message, [{ text: "Okay" }]);
+
+          setIsloading(false);
+        } else {
+          let user = {
+            userName: resData.data.data.user.name,
+            userToken: resData.data.data.access_token,
+            userImage: resData.data.data.user.avatar,
+          };
+
+          setIsloading(false);
+          signIn([user]);
         }
-        let user = {
-          username: resData.data.data.user.name,
-          userToken: resData.data.data.token,
-        };
-
-        setIsloading(false);
-        signIn([user]);
-
-        return;
       })
+      .then(() => setIsloading(false))
       .catch((error) => {
-        console.error(error);
+        setIsloading(false);
+
+        console.log('====================================');
+        console.log(error);
+        console.log('====================================');
+        Alert.alert(
+          "Error!",
+          "Something Went Wrong. Please Try after some time",
+          [{ text: "Okay" }]
+        );
       });
   };
 
@@ -141,38 +157,38 @@ const SignInScreen = ({ navigation }) => {
     }
   };
 
-  const loginHandle = (userName, password) => {
-    setIsloading(true);
-    loginViaApi().then(() => {
-      console.log("====================================");
-      console.log(loginData);
-      console.log("====================================");
-      let user = { username: loginData.user.name, userToken: loginData.token };
-      setIsloading(false);
-      signIn(user);
-    });
+  // const loginHandle = (userName, password) => {
+  //   setIsloading(true);
+  //   loginViaApi().then(() => {
+  //     // console.log("====================================");
+  //     // console.log(loginData);
+  //     // console.log("====================================");
+  //     // let user = { username: loginData.user.name, userToken: loginData.token };
+  //     setIsloading(false);
+  //     // signIn(user);
+  //   });
 
-    // if (userName.length == 0 || password.length == 0) {
-    //   Alert.alert(
-    //     "Wrong Input!",
-    //     "Username or password field cannot be empty.",
-    //     [{ text: "Okay" }]
-    //   );
-    //   return;
-    // }
+  //   // if (userName.length == 0 || password.length == 0) {
+  //   //   Alert.alert(
+  //   //     "Wrong Input!",
+  //   //     "Username or password field cannot be empty.",
+  //   //     [{ text: "Okay" }]
+  //   //   );
+  //   //   return;
+  //   // }
 
-    // const foundUser = Users.filter((item) => {
-    //     return userName == item.username && password == item.password;
-    //   });
+  //   // const foundUser = Users.filter((item) => {
+  //   //     return userName == item.username && password == item.password;
+  //   //   });
 
-    // if (foundUser.length == 0) {
-    //   Alert.alert("Invalid User!", "Username or password is incorrect.", [
-    //     { text: "Okay" },
-    //   ]);
-    //   return;
-    // }
-    // signIn(foundUser);
-  };
+  //   // if (foundUser.length == 0) {
+  //   //   Alert.alert("Invalid User!", "Username or password is incorrect.", [
+  //   //     { text: "Okay" },
+  //   //   ]);
+  //   //   return;
+  //   // }
+  //   // signIn(foundUser);
+  // };
 
   if (!loaded) {
     return (
@@ -183,11 +199,11 @@ const SignInScreen = ({ navigation }) => {
   }
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={{ flex: 1 }}
-    >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+      >
         <View style={styles.container}>
           <StatusBar
             backgroundColor={COLORS.primary}
@@ -213,13 +229,13 @@ const SignInScreen = ({ navigation }) => {
                 },
               ]}
             >
-              Mobile No.
+              Phone no.
             </Text>
             <View style={styles.action}>
-              <FontAwesome name="user-o" color={colors.text} size={20} />
+              <Octicons name="device-mobile" color={colors.text} size={20} />
               <TextInput
-                placeholder="Mobile no."
-                keyboardType='numeric'
+                placeholder="Phone no."
+                keyboardType="numeric"
                 placeholderTextColor="#666666"
                 style={[
                   styles.textInput,
@@ -237,10 +253,10 @@ const SignInScreen = ({ navigation }) => {
                 </Animatable.View>
               ) : null}
             </View>
-            {data.isValidUser || (data.mobile.length === 0) ? null : (
+            {data.isValidUser || data.mobile.length === 0 ? null : (
               <Animatable.View animation="fadeInLeft" duration={500}>
                 <Text style={styles.errorMsg}>
-                  Mobile No must be 11 characters long.
+                  Phone no. must be 11 characters long.
                 </Text>
               </Animatable.View>
             )}
@@ -279,10 +295,10 @@ const SignInScreen = ({ navigation }) => {
                 )}
               </TouchableOpacity>
             </View>
-            {data.isValidPassword || (data.password.length === 0) ? null : (
+            {data.isValidPassword || data.password.length === 0 ? null : (
               <Animatable.View animation="fadeInLeft" duration={500}>
                 <Text style={styles.errorMsg}>
-                  Password must be 8 characters long. 
+                  Password must be 8 characters long.
                 </Text>
               </Animatable.View>
             )}
@@ -295,7 +311,9 @@ const SignInScreen = ({ navigation }) => {
             <View style={styles.button}>
               <TouchableOpacity
                 style={styles.signIn}
-                disabled={isLoading || !(data.isValidUser && data.isValidPassword)}
+                disabled={
+                  isLoading || !(data.isValidUser && data.isValidPassword)
+                }
                 onPress={() => {
                   loginViaApi(data.mobile, data.password);
                 }}
@@ -308,7 +326,8 @@ const SignInScreen = ({ navigation }) => {
                     justifyContent: "center",
                     alignItems: "center",
                     borderRadius: 10,
-                    opacity: data.isValidUser && data.isValidPassword ? 1 : 0.5}}
+                    opacity: data.isValidUser && data.isValidPassword ? 1 : 0.5,
+                  }}
                 >
                   {!isLoading ? (
                     <Text
@@ -352,8 +371,8 @@ const SignInScreen = ({ navigation }) => {
             </View>
           </Animatable.View>
         </View>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -396,7 +415,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginTop: 10,
     borderBottomWidth: 1,
-    borderBottomColor: "#f2f2f2",
+    borderBottomColor: COLORS.lightGray1,
     paddingBottom: 5,
     fontFamily: "PoppinsLight",
   },
@@ -408,12 +427,17 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
     fontFamily: "PoppinsLight",
   },
+
   textInput: {
     flex: 1,
+    textAlignVertical: "bottom",
     marginTop: Platform.OS === "ios" ? 0 : -12,
-    paddingLeft: 10,
+    paddingLeft: 12,
     color: "#05375a",
     fontFamily: "PoppinsLight",
+    // borderBottomWidth: 0.5,
+    // borderBottomColor: COLORS.gray,
+    // borderBottomStartRadius: 100
   },
   errorMsg: {
     color: "#FF0000",
