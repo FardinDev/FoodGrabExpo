@@ -43,4 +43,12 @@ export default class Api {
   verify = (data) => {
     return this.init().post("/verify", data);
   };
+
+  getOtp = (data) => {
+    return this.init().post("/get-otp", data);
+  };
+
+  resetPassword = (data) => {
+    return this.init().post("/reset-password", data);
+  };
 }

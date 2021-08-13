@@ -29,7 +29,7 @@ import { AuthContext } from "../../../components/context";
 import OTPInputView from '@twotalltotems/react-native-otp-input'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const OTPScreen = ({ navigation }) => {
+const OTPScreen = ({ route, navigation }) => {
   const [isLoading, setIsloading] = React.useState(false);
   const { colors } = useTheme();
   const api = new Api();
@@ -37,6 +37,8 @@ const OTPScreen = ({ navigation }) => {
   const validPhoneType = new RegExp("^(?:/\\+?88)?01[2-9]\\d{8}$");
 
   const [userPhone, setUserPhone] = React.useState('');
+
+  const [perviousPage, setperviousPage] = React.useState(null);
 
   React.useEffect(
     () =>
@@ -65,7 +67,8 @@ const OTPScreen = ({ navigation }) => {
   );
 
   useEffect(() => {
-
+    let { type } = route.params;
+    setperviousPage(type);
         
     setTimeout(async () => {
       // setIsLoading(false);
@@ -79,7 +82,7 @@ const OTPScreen = ({ navigation }) => {
         console.log(e);
       }
       console.log(phone);
-      dispatch({ type: "RETRIEVE_USERNAME", phone: phone });
+      dispatch({ type: "RETRIEVE_USERPHONE", phone: phone });
     }, 1000);
   }, []);
 
@@ -93,9 +96,7 @@ const OTPScreen = ({ navigation }) => {
       .verify({ phone: userPhone, otp: code })
       .then((resData) => {
         // setLoginDaata();
-        console.log("====================================");
-        console.log(resData.data);
-        console.log("====================================");
+        
         if (resData.data.code !== 200) {
           Alert.alert("Error!", resData.data.message, [{ text: "Okay" }]);
 
@@ -107,8 +108,16 @@ const OTPScreen = ({ navigation }) => {
             userImage: resData.data.data.user.avatar,
           };
 
-          setIsloading(false);
-          signIn([user]);
+          // setIsloading(false);
+
+          console.log('====================================');
+          console.log(perviousPage);
+          console.log('====================================');
+          if (perviousPage == 'register') {
+            signIn([user]);
+          }else if(perviousPage == 'forget'){
+            navigation.navigate('ResetPassword');
+          }
         }
       })
       .then(() => setIsloading(false))

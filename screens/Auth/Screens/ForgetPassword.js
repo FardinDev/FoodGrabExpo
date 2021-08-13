@@ -28,7 +28,7 @@ import { COLORS, SIZES } from "../../../constants";
 import Api from "../../../api/api";
 import { useFonts } from "expo-font";
 
-const SignInScreen = ({ navigation }) => {
+const ForgetPassword = ({ navigation }) => {
   const [loaded] = useFonts({
     PoppinsLight: require("../../../assets/fonts/Poppins-Light.ttf"),
   });
@@ -36,22 +36,8 @@ const SignInScreen = ({ navigation }) => {
   const [loginData, setLoginDaata] = React.useState({});
   const api = new Api();
   const validPhoneType = new RegExp("^(?:/\\+?88)?01[2-9]\\d{8}$");
+  const getOTP = async (mobile) => {
 
-
-
-  React.useEffect(
-    () =>
-      navigation.addListener('beforeRemove', (e) => {
-
-        // Prevent default behavior of leaving the screen
-        e.preventDefault();
-
-      }),
-    [navigation]
-  );
-
-
-  const loginViaApi = async (mobile, password) => {
     if (!validPhoneType.test(mobile)) {
       Alert.alert("Wrong Input!", "Phone number is not valid", [
         { text: "Okay" },
@@ -60,17 +46,14 @@ const SignInScreen = ({ navigation }) => {
       return;
     }
 
-    if (mobile.length == 0 || password.length == 0) {
-      Alert.alert(
-        "Wrong Input!",
-        "Phone no. or password field cannot be empty.",
-        [{ text: "Okay" }]
-      );
-      return;
-    }
+
+    console.log('====================================');
+    console.log(mobile);
+    console.log('====================================');
+   
     setIsloading(true);
     return await api
-      .login({ phone: mobile, password: password })
+      .getOtp({ phone: mobile })
       .then((resData) => {
         // setLoginDaata();
 
@@ -81,12 +64,12 @@ const SignInScreen = ({ navigation }) => {
         } else {
           let user = {
             userName: resData.data.data.user.name,
-            userToken: resData.data.data.access_token,
-            userImage: resData.data.data.user.avatar,
+            userPhone: resData.data.data.user.phone,
           };
 
           setIsloading(false);
-          signIn([user]);
+          signUp([user]);
+          navigation.navigate('OTPScreen', {type: 'forget'})
         }
       })
       .then(() => setIsloading(false))
@@ -107,111 +90,52 @@ const SignInScreen = ({ navigation }) => {
   const [data, setData] = React.useState({
     mobile: "",
     password: "",
-    check_textInputChange: false,
+    check_mobileInputChange: false,
     secureTextEntry: true,
-    isValidUser: false,
+    isValidMobile: false,
     isValidPassword: false,
   });
 
   const { colors } = useTheme();
 
-  const { signIn } = React.useContext(AuthContext);
+  const { signUp } = React.useContext(AuthContext);
 
-  const textInputChange = (val) => {
+  const mobileInputChange = (val) => {
     if (val.trim().length == 11) {
       setData({
         ...data,
         mobile: val,
-        check_textInputChange: true,
-        isValidUser: true,
+        check_mobileInputChange: true,
+        isValidMobile: true,
       });
     } else {
       setData({
         ...data,
         mobile: val,
-        check_textInputChange: false,
-        isValidUser: false,
+        check_mobileInputChange: false,
+        isValidMobile: false,
       });
     }
   };
 
-  const handlePasswordChange = (val) => {
-    if (val.trim().length >= 8) {
-      setData({
-        ...data,
-        password: val,
-        isValidPassword: true,
-      });
-    } else {
-      setData({
-        ...data,
-        password: val,
-        isValidPassword: false,
-      });
-    }
-  };
 
-  const updateSecureTextEntry = () => {
-    setData({
-      ...data,
-      secureTextEntry: !data.secureTextEntry,
-    });
-  };
 
-  const handleValidUser = (val) => {
+
+  const handleValidMobile = (val) => {
     if (val.trim().length == 11) {
       setData({
         ...data,
-        isValidUser: true,
+        isValidMobile: true,
       });
     } else {
       setData({
         ...data,
-        isValidUser: false,
+        isValidMobile: false,
       });
     }
   };
 
-  // const loginHandle = (userName, password) => {
-  //   setIsloading(true);
-  //   loginViaApi().then(() => {
-  //     // console.log("====================================");
-  //     // console.log(loginData);
-  //     // console.log("====================================");
-  //     // let user = { username: loginData.user.name, userToken: loginData.token };
-  //     setIsloading(false);
-  //     // signIn(user);
-  //   });
 
-  //   // if (userName.length == 0 || password.length == 0) {
-  //   //   Alert.alert(
-  //   //     "Wrong Input!",
-  //   //     "Username or password field cannot be empty.",
-  //   //     [{ text: "Okay" }]
-  //   //   );
-  //   //   return;
-  //   // }
-
-  //   // const foundUser = Users.filter((item) => {
-  //   //     return userName == item.username && password == item.password;
-  //   //   });
-
-  //   // if (foundUser.length == 0) {
-  //   //   Alert.alert("Invalid User!", "Username or password is incorrect.", [
-  //   //     { text: "Okay" },
-  //   //   ]);
-  //   //   return;
-  //   // }
-  //   // signIn(foundUser);
-  // };
-
-  if (!loaded) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="small" />
-      </View>
-    );
-  }
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -225,7 +149,7 @@ const SignInScreen = ({ navigation }) => {
             barStyle="light-content"
           />
           <View style={styles.header}>
-            <Text style={styles.text_header}>Welcome!</Text>
+            <Text style={styles.text_header}>Verify your phone number</Text>
           </View>
           <Animatable.View
             animation="fadeInUpBig"
@@ -259,16 +183,12 @@ const SignInScreen = ({ navigation }) => {
                   },
                 ]}
                 autoCapitalize="none"
-                onChangeText={(val) => textInputChange(val)}
-                onEndEditing={(e) => handleValidUser(e.nativeEvent.text)}
+                onChangeText={(val) => mobileInputChange(val)}
+                onEndEditing={(e) => handleValidMobile(e.nativeEvent.text)}
               />
-              {data.check_textInputChange ? (
-                <Animatable.View animation="bounceIn">
-                  <Feather name="check-circle" color="green" size={20} />
-                </Animatable.View>
-              ) : null}
+             
             </View>
-            {data.isValidUser || data.mobile.length === 0 ? null : (
+            {data.isValidMobile || data.mobile.length === 0 ? null : (
               <Animatable.View animation="fadeInLeft" duration={500}>
                 <Text style={styles.errorMsg}>
                   Phone no. must be 11 characters long.
@@ -276,63 +196,15 @@ const SignInScreen = ({ navigation }) => {
               </Animatable.View>
             )}
 
-            <Text
-              style={[
-                styles.text_footer,
-                {
-                  color: colors.text,
-                  marginTop: 35,
-                },
-              ]}
-            >
-              Password
-            </Text>
-            <View style={styles.action}>
-              <Feather name="lock" color={colors.text} size={20} />
-              <TextInput
-                placeholder="Your Password"
-                placeholderTextColor="#666666"
-                secureTextEntry={data.secureTextEntry ? true : false}
-                style={[
-                  styles.textInput,
-                  {
-                    color: colors.text,
-                  },
-                ]}
-                autoCapitalize="none"
-                onChangeText={(val) => handlePasswordChange(val)}
-              />
-              <TouchableOpacity onPress={updateSecureTextEntry}>
-                {data.secureTextEntry ? (
-                  <Feather name="eye-off" color="grey" size={20} />
-                ) : (
-                  <Feather name="eye" color="grey" size={20} />
-                )}
-              </TouchableOpacity>
-            </View>
-            {data.isValidPassword || data.password.length === 0 ? null : (
-              <Animatable.View animation="fadeInLeft" duration={500}>
-                <Text style={styles.errorMsg}>
-                  Password must be 8 characters long.
-                </Text>
-              </Animatable.View>
-            )}
-
-            <TouchableOpacity
-            onPress={() => navigation.navigate('ForgetPassword')}
-            >
-              <Text style={{ color: COLORS.primary, marginTop: 15 }}>
-                Forgot password?
-              </Text>
-            </TouchableOpacity>
+            
             <View style={styles.button}>
               <TouchableOpacity
                 style={styles.signIn}
                 disabled={
-                  isLoading || !(data.isValidUser && data.isValidPassword)
+                  isLoading || !(data.isValidMobile)
                 }
                 onPress={() => {
-                  loginViaApi(data.mobile, data.password);
+                  getOTP(data.mobile);
                 }}
               >
                 <LinearGradient
@@ -343,7 +215,7 @@ const SignInScreen = ({ navigation }) => {
                     justifyContent: "center",
                     alignItems: "center",
                     borderRadius: 10,
-                    opacity: data.isValidUser && data.isValidPassword ? 1 : 0.5,
+                    opacity: data.isValidMobile  ? 1 : 0.5,
                   }}
                 >
                   {!isLoading ? (
@@ -355,7 +227,7 @@ const SignInScreen = ({ navigation }) => {
                         },
                       ]}
                     >
-                      Sign In
+                      Get OTP
                     </Text>
                   ) : (
                     <ActivityIndicator color={COLORS.white} size={"small"} />
@@ -363,28 +235,7 @@ const SignInScreen = ({ navigation }) => {
                 </LinearGradient>
               </TouchableOpacity>
 
-              <TouchableOpacity
-                onPress={() => navigation.navigate("SignUpScreen")}
-                style={[
-                  styles.signIn,
-                  {
-                    borderColor: COLORS.primary,
-                    borderWidth: 1,
-                    marginTop: 15,
-                  },
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.textSign,
-                    {
-                      color: COLORS.primary,
-                    },
-                  ]}
-                >
-                  Sign Up
-                </Text>
-              </TouchableOpacity>
+            
             </View>
           </Animatable.View>
         </View>
@@ -393,7 +244,7 @@ const SignInScreen = ({ navigation }) => {
   );
 };
 
-export default SignInScreen;
+export default ForgetPassword;
 
 const styles = StyleSheet.create({
   container: {

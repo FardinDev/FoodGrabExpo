@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {
   View,
   Text,
@@ -26,34 +26,79 @@ import { useFonts } from "expo-font";
 import { useTheme } from "@react-navigation/native";
 import Api from "../../../api/api";
 import { AuthContext } from "../../../components/context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const SignInScreen = ({ navigation }) => {
+const ResetPassword = ({ navigation }) => {
   const [isLoading, setIsloading] = React.useState(false);
+  const [userPhone, setUserPhone] = React.useState('');
+
   const { colors } = useTheme();
   const api = new Api();
   const { signUp } = React.useContext(AuthContext);
   const validPhoneType = new RegExp("^(?:/\\+?88)?01[2-9]\\d{8}$");
-  const signUpViaApi = async (name, mobile, password) => {
-    if (!validPhoneType.test(mobile)) {
-      Alert.alert("Wrong Input!", "Phone number is not valid", [
+
+  React.useEffect(
+    () =>
+      navigation.addListener('beforeRemove', (e) => {
+
+        // Prevent default behavior of leaving the screen
+        e.preventDefault();
+
+        // Prompt the user before leaving the screen
+        Alert.alert(
+          'Discard changes?',
+          'You did not reset the password. You will not be able to login. Are you sure you want to leave the page?',
+          [
+            { text: "Don't leave", style: 'cancel', onPress: () => {} },
+            {
+              text: 'Yes leave',
+              style: 'destructive',
+              // If the user confirmed, then we dispatch the action we blocked earlier
+              // This will continue the action that had triggered the removal of the screen
+              onPress: () => navigation.dispatch(e.data.action),
+            },
+          ]
+        );
+      }),
+    [navigation]
+  );
+
+
+  useEffect(() => {
+  
+        
+    setTimeout(async () => {
+      // setIsLoading(false);
+    
+      try {
+        const phone = await AsyncStorage.getItem("userPhone");
+
+        setUserPhone(String(phone));
+        
+      } catch (e) {
+        console.log(e);
+      }
+      console.log(phone);
+      dispatch({ type: "RETRIEVE_USERPHONE", phone: phone });
+    }, 1000);
+  }, []);
+
+  const resetPassword = async (password, confirm_password) => {
+
+
+    if (confirm_password != password) {
+      Alert.alert("Wrong Input!", "PassWord did not matched", [
         { text: "Okay" },
       ]);
 
       return;
     }
 
-    if (name.length == 0 || mobile.length == 0 || password.length == 0) {
-      Alert.alert(
-        "Wrong Input!",
-        "Name, Phone no. or password field cannot be empty.",
-        [{ text: "Okay" }]
-      );
-      return;
-    }
+
     setIsloading(true);
 
     return await api
-      .register({ name: name, phone: mobile, password: password })
+      .resetPassword({ phone: userPhone, password: password, password_confirmation: confirm_password })
       .then((resData) => {
         // setLoginDaata();
         console.log("====================================");
@@ -63,15 +108,28 @@ const SignInScreen = ({ navigation }) => {
           Alert.alert("Error!", resData.data.message, [{ text: "Okay" }]);
 
           setIsloading(false);
-        } else {
-          let user = {
-            userName: resData.data.data.user.name,
-            userPhone: resData.data.data.user.phone,
-          };
 
-          setIsloading(false);
-          signUp([user]);
-          navigation.navigate('OTPScreen', {type: 'register'})
+        } else {
+
+
+          setData({
+            ...data,
+            password: "",
+            confirm_password: "",
+            securePasswordEntry: true,
+            secureConfirmPasswordEntry: true,
+            isValidPassword: false,
+            isValidConfirmPassword: false,
+          });
+          Alert.alert(
+            'Successfull!',
+            resData.data.message,
+            [
+              { text: "Go to login",  onPress: () => navigation.push('SignInScreen') },
+              
+            ]
+          );
+          
         }
       })
       .then(() => setIsloading(false))
@@ -85,119 +143,83 @@ const SignInScreen = ({ navigation }) => {
       });
   };
 
+
+
+  
+
   const [data, setData] = React.useState({
-    name: "",
-    mobile: "",
+
     password: "",
     confirm_password: "",
-    check_textInputChange: false,
-    secureTextEntry: true,
-    confirm_secureTextEntry: true,
-    isValidName: false,
+    securePasswordEntry: true,
+    secureConfirmPasswordEntry: true,
     isValidPassword: false,
-    isValidMobile: false,
+    isValidConfirmPassword: false,
+ 
   });
 
-  const mobileInputChange = (val) => {
-    if (val.trim().length == 11) {
-      setData({
-        ...data,
-        mobile: val,
-        check_textInputChange: true,
-        isValidMobile: true,
-      });
-    } else {
-      setData({
-        ...data,
-        mobile: val,
-        check_textInputChange: false,
-        isValidMobile: false,
-      });
-    }
-  };
 
-  const textInputChange = (val) => {
-    if (val.trim().length >= 4) {
-      setData({
-        ...data,
-        name: val,
-        check_textInputChange: true,
-        isValidName: true,
-      });
-    } else {
-      setData({
-        ...data,
-        name: val,
-        check_textInputChange: false,
-        isValidName: false,
-      });
-    }
-  };
+
 
   const handlePasswordChange = (val) => {
     if (val.trim().length >= 8) {
+      
       setData({
         ...data,
         password: val,
+        confirm_password: '',
         isValidPassword: true,
       });
     } else {
       setData({
         ...data,
         password: val,
+        confirm_password: '',
         isValidPassword: false,
       });
     }
   };
 
   const handleConfirmPasswordChange = (val) => {
-    setData({
-      ...data,
-      confirm_password: val,
-    });
+    if (val.trim().length >= 8 && val.trim() == data.password) {
+      setData({
+        ...data,
+        confirm_password: val,
+        isValidConfirmPassword: true,
+      });
+    } else {
+      setData({
+        ...data,
+        confirm_password: val,
+        isValidConfirmPassword: false,
+      });
+    }
   };
+
+
 
   const updateSecureTextEntry = () => {
     setData({
       ...data,
-      secureTextEntry: !data.secureTextEntry,
+      securePasswordEntry: !data.securePasswordEntry,
     });
   };
 
   const updateConfirmSecureTextEntry = () => {
     setData({
       ...data,
-      confirm_secureTextEntry: !data.confirm_secureTextEntry,
+      secureConfirmPasswordEntry: !data.secureConfirmPasswordEntry,
     });
   };
 
-  const handleValidName = (val) => {
-    if (val.trim().length >= 4) {
-      setData({
-        ...data,
-        isValidName: true,
-      });
-    } else {
-      setData({
-        ...data,
-        isValidName: false,
-      });
-    }
-  };
-
-  const handleValidMobile = (val) => {
-    if (val.trim().length == 11) {
-      setData({
-        ...data,
-        isValidMobile: true,
-      });
-    } else {
-      setData({
-        ...data,
-        isValidMobile: false,
-      });
-    }
-  };
+  if (userPhone == '') {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="small" />
+      </View>
+    );
+  
+}
 
   return (
     <KeyboardAvoidingView
@@ -211,28 +233,12 @@ const SignInScreen = ({ navigation }) => {
             barStyle="light-content"
           />
           <View style={styles.header}>
-            <Text style={styles.text_header}>Register Now!</Text>
+            <Text style={styles.text_header}>Reset Password</Text>
           </View>
           <Animatable.View animation="fadeInUpBig" style={styles.footer}>
             <ScrollView>
-              <Text style={styles.text_footer}>Name</Text>
-              <View style={styles.action}>
-                <FontAwesome name="user-o" color="#05375a" size={20} />
-                <TextInput
-                  placeholder="Enter Your Name"
-                  style={styles.textInput}
-                  autoCapitalize="words"
-                  onChangeText={(val) => textInputChange(val)}
-                  onEndEditing={(e) => handleValidName(e.nativeEvent.text)}
-                />
-              </View>
-              {data.isValidName || data.name.length === 0 ? null : (
-                <Animatable.View animation="fadeInLeft" duration={500}>
-                  <Text style={styles.errorMsg}>
-                    Name must be at least 4 characters long.
-                  </Text>
-                </Animatable.View>
-              )}
+              
+
 
               <Text
                 style={[
@@ -242,54 +248,20 @@ const SignInScreen = ({ navigation }) => {
                   },
                 ]}
               >
-                Phone No.
-              </Text>
-              <View style={styles.action}>
-                <Octicons name="device-mobile" color={colors.text} size={20} />
-                <TextInput
-                  placeholder="Phone no."
-                  keyboardType="numeric"
-                  placeholderTextColor="#666666"
-                  style={[
-                    styles.textInput,
-                    {
-                      color: colors.text,
-                    },
-                  ]}
-                  autoCapitalize="none"
-                  onChangeText={(val) => mobileInputChange(val)}
-                  onEndEditing={(e) => handleValidMobile(e.nativeEvent.text)}
-                />
-              </View>
-              {data.isValidMobile || data.mobile.length === 0 ? null : (
-                <Animatable.View animation="fadeInLeft" duration={500}>
-                  <Text style={styles.errorMsg}>
-                    Phone no. must be 11 characters long.
-                  </Text>
-                </Animatable.View>
-              )}
-
-              <Text
-                style={[
-                  styles.text_footer,
-                  {
-                    marginTop: 10,
-                  },
-                ]}
-              >
-                Password
+               New Password
               </Text>
               <View style={styles.action}>
                 <Feather name="lock" color="#05375a" size={20} />
                 <TextInput
-                  placeholder="Set Password"
-                  secureTextEntry={data.secureTextEntry ? true : false}
+                  placeholder="Set New Password"
+                  secureTextEntry={data.securePasswordEntry ? true : false}
                   style={styles.textInput}
                   autoCapitalize="none"
+                  value={data.password}
                   onChangeText={(val) => handlePasswordChange(val)}
                 />
                 <TouchableOpacity onPress={updateSecureTextEntry}>
-                  {data.secureTextEntry ? (
+                  {data.securePasswordEntry ? (
                     <Feather name="eye-off" color="grey" size={20} />
                   ) : (
                     <Feather name="eye" color="grey" size={20} />
@@ -305,37 +277,57 @@ const SignInScreen = ({ navigation }) => {
                 </Animatable.View>
               )}
 
-              <View style={styles.textPrivate}>
-                <Text style={styles.color_textPrivate}>
-                  By signing up you agree to our
-                </Text>
-                <Text
-                  style={[styles.color_textPrivate, { fontWeight: "bold" }]}
-                >
-                  {" "}
-                  Terms of service
-                </Text>
-                <Text style={styles.color_textPrivate}> and</Text>
-                <Text
-                  style={[styles.color_textPrivate, { fontWeight: "bold" }]}
-                >
-                  {" "}
-                  Privacy policy
-                </Text>
+              <Text
+                style={[
+                  styles.text_footer,
+                  {
+                    marginTop: 20,
+                  },
+                ]}
+              >
+               Confirm Password
+              </Text>
+              <View style={styles.action}>
+                <Feather name="lock" color="#05375a" size={20} />
+                <TextInput
+                  placeholder="Confirm New Password"
+                  secureTextEntry={data.secureConfirmPasswordEntry ? true : false}
+                  style={styles.textInput}
+                  autoCapitalize="none"
+                  value={data.confirm_password}
+                  onChangeText={(val) => handleConfirmPasswordChange(val)}
+                />
+                <TouchableOpacity onPress={updateConfirmSecureTextEntry}>
+                  {data.secureConfirmPasswordEntry ? (
+                    <Feather name="eye-off" color="grey" size={20} />
+                  ) : (
+                    <Feather name="eye" color="grey" size={20} />
+                  )}
+                </TouchableOpacity>
               </View>
+
+              {data.isValidConfirmPassword || data.confirm_password.length === 0 ? null : (
+                <Animatable.View animation="fadeInLeft" duration={500}>
+                  <Text style={styles.errorMsg}>
+                   Password did not matched!
+                  </Text>
+                </Animatable.View>
+              )}
+
+              
               <View style={styles.button}>
                 <TouchableOpacity
                   style={styles.signIn}
                   disabled={
                     isLoading ||
                     !(
-                      data.isValidName &&
+    
                       data.isValidPassword &&
-                      data.isValidMobile
+                      data.isValidConfirmPassword
                     )
                   }
                   onPress={() =>
-                    signUpViaApi(data.name, data.mobile, data.password)
+                    resetPassword(data.password, data.confirm_password)
                   }
                 >
                   <LinearGradient
@@ -347,9 +339,8 @@ const SignInScreen = ({ navigation }) => {
                       alignItems: "center",
                       borderRadius: 10,
                       opacity:
-                        data.isValidName &&
                         data.isValidPassword &&
-                        data.isValidMobile
+                        data.isValidConfirmPassword
                           ? 1
                           : 0.5,
                     }}
@@ -363,7 +354,7 @@ const SignInScreen = ({ navigation }) => {
                           },
                         ]}
                       >
-                        Sign Up
+                        Reset
                       </Text>
                     ) : (
                       <ActivityIndicator color={COLORS.white} size={"small"} />
@@ -371,28 +362,7 @@ const SignInScreen = ({ navigation }) => {
                   </LinearGradient>
                 </TouchableOpacity>
 
-                <TouchableOpacity
-                  onPress={() => navigation.goBack()}
-                  style={[
-                    styles.signIn,
-                    {
-                      borderColor: COLORS.primary,
-                      borderWidth: 1,
-                      marginTop: 15,
-                    },
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.textSign,
-                      {
-                        color: COLORS.primary,
-                      },
-                    ]}
-                  >
-                    Sign In
-                  </Text>
-                </TouchableOpacity>
+              
               </View>
             </ScrollView>
           </Animatable.View>
@@ -402,7 +372,7 @@ const SignInScreen = ({ navigation }) => {
   );
 };
 
-export default SignInScreen;
+export default ResetPassword;
 
 const styles = StyleSheet.create({
   container: {
