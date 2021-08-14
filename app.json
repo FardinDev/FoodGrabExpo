@@ -32,6 +32,16 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "description": ""
+    "description": "",
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/profile.png",
+          "color": "#ffffff",
+          "mode": "development"
+        }
+      ]
+    ]
   }
 }

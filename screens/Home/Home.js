@@ -1,4 +1,4 @@
-import React from 'react';
+import React , { useState, useEffect, useRef } from 'react';
 import {
     View,
     Text,
@@ -7,7 +7,8 @@ import {
     TextInput,
     FlatList,
     RefreshControl,
-    StyleSheet
+    StyleSheet,
+    Alert
 } from 'react-native';
 import {
     Details
@@ -21,7 +22,18 @@ import {
 import { FONTS, SIZES, COLORS, icons, dummyData, constants } from "../../constants";
 
 import Api from "../../api/api";
+import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
+import { Permissions } from 'expo';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: false,
+    }),
+  });
 
 const Section = ({ title, onPress, children }) => {
     return (
@@ -79,6 +91,7 @@ const Home = ({navigation}) => {
     const [recommends, setRecommends] = React.useState([])
     const [menuList, setMenuList] = React.useState([])
     const [showFilterModal, setShowFilterModal] = React.useState(false)
+    const [notification, setNotification] = useState(false);
     const [cartModalData, SetCartModalData] = React.useState({
         isVisible: false,
         product: null,
@@ -86,11 +99,103 @@ const Home = ({navigation}) => {
 
     const [restaurants, setRestaurants] = React.useState([])
 
+    const notificationListener = useRef();
+    const responseListener = useRef();
+   
+
+
     React.useEffect(() => {
-        handleChangeCategory(selectedCategoryId, selectedMenuType)
+        handleChangeCategory(selectedCategoryId, selectedMenuType);
+        registerForPushNotificationsAsync().then(token => setToken(token));
+
+        notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+
+            console.log('====================================');
+            console.log(notification);
+            console.log('====================================');
+            setNotification(notification);
+          });
+      
+          responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+            console.log(response);
+          });
+      
+          return () => {
+            Notifications.removeNotificationSubscription(notificationListener.current);
+            Notifications.removeNotificationSubscription(responseListener.current);
+          };
       
     }, [])
 
+
+
+
+    const setToken = async (token) => {
+   
+        const api_token = await AsyncStorage.getItem("userToken");
+
+        console.log('=================api_token===================');
+        console.log(api_token);
+        console.log('=================api_token===================');
+        api.api_token = api_token;
+        return await api
+          .setToken({ token: token})
+          .then((resData) => {
+            // setLoginDaata();
+            
+            if (resData.data.code !== 200) {
+              Alert.alert("Error!", resData.data.message, [{ text: "Okay" }]);
+    
+            
+            } else {
+     
+              console.log('====================================');
+              console.log(resData.data.code);
+              console.log('====================================');
+            
+            }
+          })
+          .then(() => {})
+          .catch((error) => {
+      
+            Alert.alert(
+              "Error!",
+              "Something Went Wrong. Please Try after some time",
+              [{ text: "Okay" }]
+            );
+          });
+      };
+
+      async function registerForPushNotificationsAsync() {
+        let token;
+        if (Constants.isDevice) {
+          const { status: existingStatus } = await Notifications.getPermissionsAsync();
+          let finalStatus = existingStatus;
+          if (existingStatus !== 'granted') {
+            const { status } = await Notifications.requestPermissionsAsync();
+            finalStatus = status;
+          }
+          if (finalStatus !== 'granted') {
+            alert('Failed to get push token for push notification!');
+            return;
+          }
+          token = (await Notifications.getExpoPushTokenAsync()).data;
+          console.log(token);
+        } else {
+          alert('Must use physical device for Push Notifications');
+        }
+      
+        if (Platform.OS === 'android') {
+          Notifications.setNotificationChannelAsync('default', {
+            name: 'default',
+            importance: Notifications.AndroidImportance.MAX,
+            vibrationPattern: [0, 250, 250, 250],
+            lightColor: '#FF231F7C',
+          });
+        }
+      
+        return token;
+      }
 
 
     const onRefresh = React.useCallback(() => {

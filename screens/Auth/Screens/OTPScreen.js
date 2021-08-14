@@ -75,7 +75,9 @@ const OTPScreen = ({ route, navigation }) => {
     
       try {
         const phone = await AsyncStorage.getItem("userPhone");
-
+console.log('===============OTP=====================');
+console.log(phone);
+console.log('===============OTP=====================');
         setUserPhone(String(phone));
         
       } catch (e) {

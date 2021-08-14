@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as axios from "axios";
 
 
@@ -6,22 +7,25 @@ export default class Api {
     this.api_token = null;
     this.client = null;
     this.api_url = "http://192.168.0.117:8000/api/v1";
+  
+
+    
   }
 
   init = () => {
-    this.api_token = null;
-
+     AsyncStorage.getItem("userPhone").then(token => this.api_token = token );
+    
     let headers = {
       Accept: "application/json",
     };
 
-    if (this.api_token) {
+    if (this.api_token && this.api_token !== '') {
       headers.Authorization = `Bearer ${this.api_token}`;
     }
 
     this.client = axios.create({
       baseURL: this.api_url,
-      timeout: 1000,
+      timeout: 15000,
       headers: headers,
     });
 
@@ -50,5 +54,8 @@ export default class Api {
 
   resetPassword = (data) => {
     return this.init().post("/reset-password", data);
+  };
+  setToken = (data) => {
+    return this.init().post("/user/store-notification-token", data);
   };
 }
