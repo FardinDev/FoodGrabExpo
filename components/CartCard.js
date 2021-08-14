@@ -35,7 +35,7 @@ const CartCard = ({ item, onPress, cartItems, total, addQuantity, subQuantity, r
           >
             <Image
               resizeMode="cover"
-              source={item?.photo}
+              source={{uri: item?.image}}
               style={{
                 height: 50,
                 width: 50,

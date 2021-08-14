@@ -26,6 +26,7 @@ import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import { Permissions } from 'expo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Haptics from 'expo-haptics';
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -80,7 +81,7 @@ const Home = ({navigation}) => {
         setSelectedMenuType(1);
         setSelectedCategoryId(1);
         handleChangeCategory(1, 1)
-        fetchUser();
+
         return new Promise(resolve => setTimeout(resolve, timeout));
       }
     
@@ -101,23 +102,30 @@ const Home = ({navigation}) => {
 
     const notificationListener = useRef();
     const responseListener = useRef();
-   
 
+useEffect(() => {
+
+    getRestaurants().then((restaurants) => 
+    {
+        setRestaurants(restaurants.data)
+        handleChangeCategory(selectedCategoryId, selectedMenuType);
+    }
+    
+    )
+}, [refreshing]);
 
     React.useEffect(() => {
-        handleChangeCategory(selectedCategoryId, selectedMenuType);
+        
+       
         registerForPushNotificationsAsync().then(token => setToken(token));
-
+       
         notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-
-            console.log('====================================');
-            console.log(notification);
-            console.log('====================================');
             setNotification(notification);
+            
           });
       
           responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-            console.log(response);
+           ;
           });
       
           return () => {
@@ -134,9 +142,7 @@ const Home = ({navigation}) => {
    
         const api_token = await AsyncStorage.getItem("userToken");
 
-        console.log('=================api_token===================');
-        console.log(api_token);
-        console.log('=================api_token===================');
+      
         api.api_token = api_token;
         return await api
           .setToken({ token: token})
@@ -147,13 +153,7 @@ const Home = ({navigation}) => {
               Alert.alert("Error!", resData.data.message, [{ text: "Okay" }]);
     
             
-            } else {
-     
-              console.log('====================================');
-              console.log(resData.data.code);
-              console.log('====================================');
-            
-            }
+            } 
           })
           .then(() => {})
           .catch((error) => {
@@ -163,6 +163,36 @@ const Home = ({navigation}) => {
               "Something Went Wrong. Please Try after some time",
               [{ text: "Okay" }]
             );
+          });
+      };
+
+
+    const getRestaurants = async () => {
+   
+        const api_token = await AsyncStorage.getItem("userToken");
+
+      
+        api.api_token = api_token;
+        return await api
+          .getRestaurants()
+          .then((resData) => {
+     
+            if (resData.data.code !== 200) {
+              Alert.alert("Error!", resData.data.message, [{ text: "Okay" }]);
+              return null;
+            } 
+
+            return resData.data;
+          })
+          
+          .catch((error) => {
+            
+            Alert.alert(
+              "Error!",
+              "Something Went Wrong. Please Try after some time",
+              [{ text: "Okay" }]
+            );
+            return null;
           });
       };
 
@@ -180,7 +210,7 @@ const Home = ({navigation}) => {
             return;
           }
           token = (await Notifications.getExpoPushTokenAsync()).data;
-          console.log(token);
+        //   console.log(token);
         } else {
           alert('Must use physical device for Push Notifications');
         }
@@ -219,16 +249,20 @@ const Home = ({navigation}) => {
         // Find the menu based on the menuTypeId
         let selectedMenu = dummyData.menu.find(a => a.id == menuTypeId)
 
+
+        let selectedRestaurants = restaurants;
+
         // Set the popular menu based on the categoryId
-        setPopular(selectedPopular?.list.filter(a => a.reataurant_categories.includes(categoryId)))
+        setPopular(selectedPopular?.list.filter(a => a.restaurant_categories.includes(categoryId)))
 
         // Set the recommended menu based on the categoryId
-        setRecommends(selectedRecommend?.list.filter(a => a.reataurant_categories.includes(categoryId)))
+        setRecommends(selectedRecommend?.list.filter(a => a.restaurant_categories.includes(categoryId)))
 
         // Set the menu based on the categoryId
-        setMenuList(selectedMenu?.list.filter(a => a.reataurant_categories.includes(categoryId)))
-
-        setRestaurants(dummyData.restaurantData);
+        setMenuList(selectedMenu?.list.filter(a => a.restaurant_categories.includes(categoryId)))
+        
+        // setRestaurants(dummyData.restaurantData);
+        // setRestaurants(selectedRestaurants?.filter(a => a.restaurant_categories.includes(categoryId)))
     }
 
     // Render
@@ -403,26 +437,38 @@ const Home = ({navigation}) => {
                 renderItem={({ item, index }) => (
                     <TouchableOpacity
                         style={{
-                            flexDirection: 'row',
-                            height: 55,
+                            flexDirection: 'column',
+                            height: 100,
+                            width: 100,
                             marginTop: SIZES.padding,
                             marginLeft: index == 0 ? SIZES.padding : SIZES.radius,
                             marginRight: index == dummyData.categories.length - 1 ? SIZES.padding : 0,
                             paddingHorizontal: 8,
                             borderRadius: SIZES.radius,
-                            backgroundColor: selectedCategoryId == item.id ? COLORS.primary : COLORS.lightGray2,
+                            backgroundColor: COLORS.lightGray2,
+                            borderColor: selectedCategoryId == item.id ? COLORS.primary : COLORS.transparent,
+                            borderWidth: 1,
+
+                            justifyContent: 'center',
+                            alignItems: 'center'
                         
                         }}
                         onPress={() => {
-                            setSelectedCategoryId(item.id)
-                            handleChangeCategory(item.id, selectedMenuType)
+                            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).then(() =>{
+
+                                setSelectedCategoryId(item.id)
+                                handleChangeCategory(item.id, selectedMenuType)
+                            }
+                              
+                               
+                              )
                         }}
                     >
                         <Image
                             source={item.icon}
                             style={{
                                 marginTop: 10,
-                                marginRight: 5,
+                               
                                 height: 30,
                                 width: 30
                             }}
@@ -431,8 +477,8 @@ const Home = ({navigation}) => {
                         <Text
                             style={{
                                 alignSelf: 'center',
-                                marginRight: SIZES.base,
-                                color: selectedCategoryId == item.id ? COLORS.white : COLORS.darkGray,
+                                marginTop: SIZES.base,
+                                color: COLORS.darkGray,
                                 ...FONTS.h3
                             }}
                         >
@@ -499,7 +545,7 @@ const Home = ({navigation}) => {
                     }}
                 >
                     <Image
-                        source={item.photo}
+                        source={ {uri: item.photo} || item.photo}
                         resizeMode="cover"
                         style={{
                             width: "100%",
@@ -557,7 +603,7 @@ const Home = ({navigation}) => {
                         }}
                     >
                         {
-                            item.reataurant_categories.map((categoryId) => {
+                            item.restaurant_categories.map((categoryId) => {
                                 return (
                                     <View
                                         style={{ flexDirection: 'row' }}
@@ -649,15 +695,16 @@ const Home = ({navigation}) => {
                         {/* Food Categories */}
                         {renderFoodCategories()}
 
-                        {/* Popular */}
-                        {renderPopularSection()}
-
-
                         {/* Menu Type */}
                         {renderMenuTypes()}
 
-                        {/*Restaurant List */}
-                        {renderRestaurantList()}
+                         {/*Restaurant List */}
+                         {renderRestaurantList()}
+
+                        {/* Popular */}
+                        {renderPopularSection()}
+
+                       
 
                         {/* Recommended */}
                         {renderRecommendedSection()}

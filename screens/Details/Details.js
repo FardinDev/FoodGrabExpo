@@ -12,8 +12,9 @@ import {
   Button,
   StyleSheet,
   SafeAreaView,
+  Alert,
 } from "react-native";
-import * as Haptics from 'expo-haptics';
+import * as Haptics from "expo-haptics";
 
 import { connect, useSelector } from "react-redux";
 // import { addToCart, addQuantity, subtractQuantity, removeItem } from "../../stores/cart/cartActions";
@@ -27,8 +28,10 @@ import { SwipeablePanel } from "rn-swipeable-panel";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { useFonts } from "expo-font";
 import CartVal from "./CartVal";
-import { addToCart } from "../../stores/cart/cartActions";
+import { addToCart, destroyCart } from "../../stores/cart/cartActions";
 import CartTab from "../Cart/CartTab";
+import Feather from "react-native-vector-icons/Feather";
+import { LinearGradient } from "expo-linear-gradient";
 
 const HEADER_HEIGHT = 250;
 
@@ -48,8 +51,8 @@ const RenderRatingCard = ({ restaurant }) => {
       <Text
         style={{
           color: COLORS.white,
-          ...FONTS.h3,
-          fontSize: 20,
+          ...FONTS.h2,
+
           fontWeight: "bold",
         }}
       >
@@ -58,8 +61,75 @@ const RenderRatingCard = ({ restaurant }) => {
     </View>
   );
 };
+const RenderAddressCard = ({ restaurant }) => {
+  return (
+    <View
+      style={{
+        flex: 1,
+        flexDirection: "column",
+        padding: SIZES.padding,
+        justifyContent: 'space-between'
+      }}
+    >
+      
+      <View
+        style={{
+          flex: 1,
+          flexDirection: "row",
+          borderRadius: SIZES.radius / 2,
+          alignItems: "center",
+          alignItems: "left",
+        }}
+      >
+        <Feather name="clock" color={COLORS.darkGray} size={18} />
 
-const Details = ({ route, navigation, cartItems, addToCart }) => {
+        <Text
+          style={{
+            color: COLORS.darkGray,
+            ...FONTS.h3,
+            marginLeft: 8,
+            textAlignVertical: "center",
+            fontWeight: "bold",
+          }}
+        >
+          {restaurant?.duration}
+        </Text>
+      </View>
+      <View
+        style={{
+          flex: 2,
+          flexDirection: "row",
+          borderRadius: SIZES.radius / 2,
+          alignItems: "center",
+        }}
+      >
+        <Feather style={{alignSelf: 'center'}} name="map-pin" color={COLORS.darkGray} size={18} />
+
+        <Text
+          style={{
+            color: COLORS.darkGray,
+            ...FONTS.h4,
+            marginHorizontal: 8,
+            
+            
+          }}
+        >
+          {String(restaurant?.address)}
+        </Text>
+      </View>
+      
+    </View>
+  );
+};
+
+const Details = ({
+  route,
+  navigation,
+  cartItems,
+  addToCart,
+  restaurant_id,
+  destroyCart,
+}) => {
   const [selectedRestaurant, setSelectedRestaurant] = React.useState(null);
   const [selectedCategories, setSelectedCategories] = React.useState(null);
   const [isPanelActive, setIsPanelActive] = React.useState(false);
@@ -76,6 +146,7 @@ const Details = ({ route, navigation, cartItems, addToCart }) => {
   const closePanel = () => {
     setIsPanelActive(false);
     setSelectedItem(null);
+    setItemCount(1);
   };
 
   const showCartPanel = () => {
@@ -86,14 +157,43 @@ const Details = ({ route, navigation, cartItems, addToCart }) => {
   };
 
   const addItemsTOCart = () => {
-    selectedItem.quantity = itemCount;
-    selectedItem.item_total = itemCount * selectedItem.price;
-    selectedItem.restaurant_id = selectedRestaurant.id;
+    if (restaurant_id !== 0 && restaurant_id != selectedRestaurant.id) {
+      Alert.alert(
+        "Are your sure?",
+        "You have items in your cart from another restaurant, adding this item will removed previous items",
+        [
+          // The "Yes" button
+          {
+            text: "Yes",
+            onPress: () => {
+              destroyCart();
+              selectedItem.quantity = itemCount;
+              selectedItem.item_total = itemCount * selectedItem.price;
+              selectedItem.restaurant_id = selectedRestaurant.id;
 
-    addToCart(selectedItem);
-    setIsPanelActive(false);
-    setSelectedItem(null);
-    setItemCount(1);
+              addToCart(selectedItem);
+              setIsPanelActive(false);
+              setSelectedItem(null);
+              setItemCount(1);
+            },
+          },
+          // The "No" button
+          // Does nothing but dismiss the dialog when tapped
+          {
+            text: "No",
+          },
+        ]
+      );
+    } else {
+      selectedItem.quantity = itemCount;
+      selectedItem.item_total = itemCount * selectedItem.price;
+      selectedItem.restaurant_id = selectedRestaurant.id;
+
+      addToCart(selectedItem);
+      setIsPanelActive(false);
+      setSelectedItem(null);
+      setItemCount(1);
+    }
   };
 
   React.useEffect(() => {
@@ -124,11 +224,11 @@ const Details = ({ route, navigation, cartItems, addToCart }) => {
         }}
       >
         <Animated.Image
-          source={selectedRestaurant?.photo}
+          source={{uri: selectedRestaurant?.photo}}
           resizeMode="contain"
           style={{
             height: HEADER_HEIGHT,
-            width: '200%',
+            width: "200%",
             transform: [
               {
                 translateY: scrollY.interpolate({
@@ -149,15 +249,16 @@ const Details = ({ route, navigation, cartItems, addToCart }) => {
         {/* rating */}
         <Animated.View
           style={{
+            zIndex: 1,
             position: "absolute",
-            bottom: 10,
+            bottom: 120,
             left: 30,
             right: 30,
             height: 50,
             transform: [
               {
                 translateY: scrollY.interpolate({
-                  inputRange: [0, 100, 230],
+                  inputRange: [0, 100, 200],
                   outputRange: [0, 0, 100],
                   extrapolate: "clamp",
                 }),
@@ -166,6 +267,56 @@ const Details = ({ route, navigation, cartItems, addToCart }) => {
           }}
         >
           <RenderRatingCard restaurant={selectedRestaurant} />
+        </Animated.View>
+        <Animated.View
+          style={{
+            zIndex: 0,
+            position: "absolute",
+            bottom: 100,
+            left: 0,
+            right: 0,
+            height: 200,
+            transform: [
+              {
+                translateY: scrollY.interpolate({
+                  inputRange: [0, 100, 200],
+                  outputRange: [0, 0, 100],
+                  extrapolate: "clamp",
+                }),
+              },
+            ],
+          }}
+        >
+          <LinearGradient  locations={[0, 1.0]}  colors= 
+                    {['rgba(0,0,0,0.0)', 'rgba(0,0,0,0.80)']} 
+                    style={{
+                      position:'absolute',
+                      width:'100%',
+                      height:'100%'
+                    }}>
+      </LinearGradient>
+        </Animated.View>
+        <Animated.View
+          style={{
+            position: "relative",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: 100,
+            width: "100%",
+            backgroundColor: COLORS.lightGray2,
+            transform: [
+              {
+                translateY: scrollY.interpolate({
+                  inputRange: [0, 100, 200],
+                  outputRange: [0, 0, 100],
+                  extrapolate: "clamp",
+                }),
+              },
+            ],
+          }}
+        >
+          <RenderAddressCard restaurant={selectedRestaurant} />
         </Animated.View>
       </View>
     );
@@ -269,7 +420,7 @@ const Details = ({ route, navigation, cartItems, addToCart }) => {
             borderRadius: 18,
             borderWidth: 1,
             borderColor: COLORS.primary,
-            backgroundColor: COLORS.transparentBlack1,
+            backgroundColor: COLORS.transparent,
           }}
           onPress={() => showCartPanel()}
         >
@@ -348,36 +499,40 @@ const Details = ({ route, navigation, cartItems, addToCart }) => {
           ],
           { useNativeDriver: true }
         )}
-        renderItem={({ item }) => (
-          <View
-            style={{
-              marginBottom: 20,
-              paddingHorizontal: SIZES.padding,
-              backgroundColor: COLORS.white,
-            }}
-          >
-            <Text
-              style={{
-                marginTop: 20,
-                color: COLORS.darkGray,
-                ...FONTS.h2,
-              }}
-            >
-              {item.name}
-            </Text>
-
-            {item.items.map((food) => {
-              return (
-                <TouchableWithoutFeedback
-                  key={food.id}
-                  onPress={() => showPanel(food)}
+        renderItem={({ item }) => {
+          if (item.item_count > 0) {
+            return (
+              <View
+                style={{
+                  marginBottom: 20,
+                  paddingHorizontal: SIZES.padding,
+                  backgroundColor: COLORS.white,
+                }}
+              >
+                <Text
+                  style={{
+                    marginTop: 20,
+                    color: COLORS.darkGray,
+                    ...FONTS.h2,
+                  }}
                 >
-                  <ItemCard item={food} />
-                </TouchableWithoutFeedback>
-              );
-            })}
-          </View>
-        )}
+                  {item.name}
+                </Text>
+
+                {item.items.map((food) => {
+                  return (
+                    <TouchableWithoutFeedback
+                      key={food.id}
+                      onPress={() => showPanel(food)}
+                    >
+                      <ItemCard item={food} />
+                    </TouchableWithoutFeedback>
+                  );
+                })}
+              </View>
+            );
+          }
+        }}
       />
 
       {/* header bar */}
@@ -417,12 +572,10 @@ const Details = ({ route, navigation, cartItems, addToCart }) => {
                 opacity: itemCount < 2 ? 0.5 : 1,
               }}
               disabled={itemCount < 2}
-              onPress={() => 
-                
-                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).then(
-                  setItemCount(itemCount - 1)
-                )
-              
+              onPress={() =>
+                Haptics.notificationAsync(
+                  Haptics.NotificationFeedbackType.Success
+                ).then(setItemCount(itemCount - 1))
               }
             >
               <View
@@ -479,11 +632,10 @@ const Details = ({ route, navigation, cartItems, addToCart }) => {
                 width: 35,
                 opacity: 1,
               }}
-              onPress={() => 
-                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).then(
-                  setItemCount(itemCount + 1)
-                )
-              
+              onPress={() =>
+                Haptics.notificationAsync(
+                  Haptics.NotificationFeedbackType.Success
+                ).then(setItemCount(itemCount + 1))
               }
             >
               <View
@@ -603,8 +755,7 @@ const Details = ({ route, navigation, cartItems, addToCart }) => {
         closeOnTouchOutside
         onlyLarge
         scrollViewProps={{
-
-          showsVerticalScrollIndicator:false
+          showsVerticalScrollIndicator: false,
         }}
         isActive={isCartPanelActive}
         onClose={closeCartPanel}
@@ -634,10 +785,7 @@ const Details = ({ route, navigation, cartItems, addToCart }) => {
               flex: 3,
               backgroundColor: "red",
             }}
-          >
-
-
-          </View>
+          ></View>
         </View>
       </SwipeablePanel>
 
@@ -667,12 +815,16 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => {
   return {
     cartItems: state.cartReducer.cartItems,
+    restaurant_id: state.cartReducer.restaurant_id,
   };
 };
 const mapDispatchToProps = (dispatch) => {
   return {
     addToCart: (item) => {
       return dispatch(addToCart(item));
+    },
+    destroyCart: () => {
+      return dispatch(destroyCart());
     },
   };
 };

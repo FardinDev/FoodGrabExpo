@@ -13,21 +13,23 @@ export default class Api {
   }
 
   init = () => {
-     AsyncStorage.getItem("userPhone").then(token => this.api_token = token );
+     AsyncStorage.getItem("userToken").then(token => this.api_token = token );
     
     let headers = {
       Accept: "application/json",
     };
 
-    if (this.api_token && this.api_token !== '') {
+    if (this.api_token) {
       headers.Authorization = `Bearer ${this.api_token}`;
     }
+
 
     this.client = axios.create({
       baseURL: this.api_url,
       timeout: 15000,
       headers: headers,
     });
+
 
     return this.client;
   };
@@ -55,7 +57,15 @@ export default class Api {
   resetPassword = (data) => {
     return this.init().post("/reset-password", data);
   };
+
   setToken = (data) => {
+    
     return this.init().post("/user/store-notification-token", data);
+  };
+
+
+  getRestaurants = () => {
+
+    return this.init().get("/restaurant/list", { params: {paginate: false} } );
   };
 }

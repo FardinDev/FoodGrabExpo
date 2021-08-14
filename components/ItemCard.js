@@ -13,7 +13,7 @@ const ItemCard = ({ item, onPress }) => {
         style={{
          paddingVertical: SIZES.padding,
           borderColor: 'transparent',
-          borderBottomColor: COLORS.lightGray2,
+          borderBottomColor: COLORS.lightGray1,
           borderWidth: 1
         }}
 
@@ -37,7 +37,7 @@ const ItemCard = ({ item, onPress }) => {
           >
             <Image
               resizeMode="cover"
-              source={item?.photo}
+              source={{uri: item?.image}}
               style={{
                 height: 90,
                 width: 90,
@@ -66,7 +66,9 @@ const ItemCard = ({ item, onPress }) => {
             >
               {item?.name}
             </Text>
-            <Text style={{
+            <Text
+            numberOfLines={2}
+            style={{
               fontFamily: 'PoppinsLight',
               color: COLORS.gray
             }}>{item?.description}</Text>
@@ -83,7 +85,7 @@ const ItemCard = ({ item, onPress }) => {
             <Text
               style={{
                 marginBottom: 1,
-                ...FONTS.body3,
+                ...FONTS.h3,
                 color: COLORS.darkGray,
                 fontWeight: 'bold'
               }}

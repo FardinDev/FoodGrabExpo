@@ -1,4 +1,4 @@
-import { ADD_TO_CART,REMOVE_ITEM,SUB_QUANTITY,ADD_QUANTITY,ADD_SHIPPING } from './actionTypes/actionTypes';
+import { ADD_TO_CART,REMOVE_ITEM,SUB_QUANTITY,ADD_QUANTITY,ADD_SHIPPING, DESTROY_CART } from './actionTypes/actionTypes';
 //add cart action
 // export const addToCart= (id)=>{
 
@@ -76,5 +76,17 @@ export function removeItem(item) {
     
     return dispatch => {
         dispatch(removeItemSuccess(item))
+    }
+}
+
+export const destroyCartSuccess = () => ({
+    type: DESTROY_CART,
+    payload:  {} 
+})
+
+export function destroyCart() {
+    
+    return dispatch => {
+        dispatch(destroyCartSuccess())
     }
 }

@@ -7,7 +7,7 @@
     "icon": "./assets/images/profile.png",
     "splash": {
       "image": "./assets/images/profile.png",
-      "resizeMode": "center",
+      "resizeMode": "cover",
       "backgroundColor": "#FE4040"
     },
     "updates": {

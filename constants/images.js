@@ -31,8 +31,10 @@ const teh_c_peng = require("../assets/images/teh-c-peng.jpg");
 const tomato_pasta = require("../assets/images/tomato-pasta.jpg");
 const background = require("../assets/images/background.svg");
 const help = require("../assets/images/help.gif");
+const addToCart = require("../assets/images/add-to-cart.gif");
 
 export default {
+  addToCart,
   help,
   profile,
   fardin,

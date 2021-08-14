@@ -21,12 +21,24 @@ const CartTab = ({ cartItems, total }) => {
   if (cartItems.length == 0) {
     return (
       <View
+      style={{
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: COLORS.white,
+        paddingHorizontal: SIZES.padding
+      }}
+    >
+      <Animated.Image
+        source={images.addToCart}
+        resizeMode="contain"
         style={{
-          flex: 1,
-          alignItems: "center",
-          justifyContent: "center",
+          paddingHorizontal: SIZES.padding,
+          position: "absolute",
+          top: 0,
+          height: 400,
         }}
-      >
+      />
         <Text
           style={{
             ...FONTS.body2,

@@ -1,9 +1,10 @@
-import { ADD_TO_CART,REMOVE_ITEM,SUB_QUANTITY,ADD_QUANTITY,ADD_SHIPPING } from './actionTypes/actionTypes';
+import { ADD_TO_CART,REMOVE_ITEM,SUB_QUANTITY,ADD_QUANTITY,ADD_SHIPPING, DESTROY_CART } from './actionTypes/actionTypes';
 
 const initState = {
     cartItems: [],
     addedItems:[],
-    total: 0
+    total: 0,
+    restaurant_id: 0
 
 }
 const cartReducer= (state = initState,action)=>{
@@ -26,7 +27,8 @@ const cartReducer= (state = initState,action)=>{
              return{
                 ...state,
                 cartItems: [...new_cartItems, existed_item],
-                 total: state.total + (addedItem.price * addedItem.quantity)
+                 total: state.total + (addedItem.price * addedItem.quantity),
+                 restaurant_id: addedItem.restaurant_id
                   }
         }
          else{
@@ -37,7 +39,8 @@ const cartReducer= (state = initState,action)=>{
             return{
                 ...state,
                 cartItems: [...state.cartItems, addedItem],
-                total : newTotal
+                total : newTotal,
+                restaurant_id: addedItem.restaurant_id
             }
             
         }
@@ -86,6 +89,15 @@ const cartReducer= (state = initState,action)=>{
             }
         }
         
+    }
+    if(action.type=== DESTROY_CART){  
+       
+        return {
+            cartItems: [],
+            addedItems:[],
+            total: 0,
+            restaurant_id: 0
+        }
     }
 
     if(action.type=== ADD_SHIPPING){
