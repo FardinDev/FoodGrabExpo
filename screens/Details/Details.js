@@ -13,6 +13,7 @@ import {
   StyleSheet,
   SafeAreaView,
   Alert,
+  ImageBackground
 } from "react-native";
 import * as Haptics from "expo-haptics";
 
@@ -32,6 +33,7 @@ import { addToCart, destroyCart } from "../../stores/cart/cartActions";
 import CartTab from "../Cart/CartTab";
 import Feather from "react-native-vector-icons/Feather";
 import { LinearGradient } from "expo-linear-gradient";
+import { Modalize } from "react-native-modalize";
 
 const HEADER_HEIGHT = 250;
 
@@ -68,10 +70,9 @@ const RenderAddressCard = ({ restaurant }) => {
         flex: 1,
         flexDirection: "column",
         padding: SIZES.padding,
-        justifyContent: 'space-between'
+        justifyContent: "space-between",
       }}
     >
-      
       <View
         style={{
           flex: 1,
@@ -103,21 +104,23 @@ const RenderAddressCard = ({ restaurant }) => {
           alignItems: "center",
         }}
       >
-        <Feather style={{alignSelf: 'center'}} name="map-pin" color={COLORS.darkGray} size={18} />
+        <Feather
+          style={{ alignSelf: "center" }}
+          name="map-pin"
+          color={COLORS.darkGray}
+          size={18}
+        />
 
         <Text
           style={{
             color: COLORS.darkGray,
             ...FONTS.h4,
             marginHorizontal: 8,
-            
-            
           }}
         >
           {String(restaurant?.address)}
         </Text>
       </View>
-      
     </View>
   );
 };
@@ -139,17 +142,23 @@ const Details = ({
 
   const [isReady, setIsReady] = React.useState(false);
 
+  const cartModalRef = useRef(false);
+  const itemModalRef = useRef(false);
+
   const showPanel = (item) => {
     setSelectedItem(item);
+    itemModalRef.current?.open();
     setIsPanelActive(true);
   };
   const closePanel = () => {
+    
     setIsPanelActive(false);
     setSelectedItem(null);
     setItemCount(1);
   };
 
   const showCartPanel = () => {
+    cartModalRef.current?.open();
     setIsCartPanelActive(true);
   };
   const closeCartPanel = () => {
@@ -172,9 +181,8 @@ const Details = ({
               selectedItem.restaurant_id = selectedRestaurant.id;
 
               addToCart(selectedItem);
-              setIsPanelActive(false);
-              setSelectedItem(null);
-              setItemCount(1);
+              itemModalRef.current?.close();
+              closePanel();
             },
           },
           // The "No" button
@@ -190,11 +198,51 @@ const Details = ({
       selectedItem.restaurant_id = selectedRestaurant.id;
 
       addToCart(selectedItem);
-      setIsPanelActive(false);
-      setSelectedItem(null);
-      setItemCount(1);
+      itemModalRef.current?.close();
+      closePanel();
     }
   };
+
+
+  const renderCartModalHeader = () => {
+    return (
+      
+    <View
+    style={{height: 50,
+    borderTopRightRadius: 15,
+    borderTopLeftRadius: 15,
+    overflow: 'hidden'
+    }}
+    >
+
+<ImageBackground source={images.food} resizeMode="cover"
+style={{
+  
+    flex: 1,
+    position: 'relative',
+    resizeMode: 'cover',
+    
+  
+}}
+
+>
+       <Text
+       style={{
+         ...FONTS.body1,
+         color: COLORS.primary,
+         textAlign: "center",
+         paddingVertical: 10
+       }}
+     >
+       Cart
+     </Text>
+    </ImageBackground>
+     
+     
+      </View>
+
+    )
+  }
 
   React.useEffect(() => {
     let { item } = route.params;
@@ -224,7 +272,7 @@ const Details = ({
         }}
       >
         <Animated.Image
-          source={{uri: selectedRestaurant?.photo}}
+          source={{ uri: selectedRestaurant?.photo }}
           resizeMode="contain"
           style={{
             height: HEADER_HEIGHT,
@@ -287,14 +335,15 @@ const Details = ({
             ],
           }}
         >
-          <LinearGradient  locations={[0, 1.0]}  colors= 
-                    {['rgba(0,0,0,0.0)', 'rgba(0,0,0,0.80)']} 
-                    style={{
-                      position:'absolute',
-                      width:'100%',
-                      height:'100%'
-                    }}>
-      </LinearGradient>
+          <LinearGradient
+            locations={[0, 1.0]}
+            colors={["rgba(0,0,0,0.0)", "rgba(0,0,0,0.80)"]}
+            style={{
+              position: "absolute",
+              width: "100%",
+              height: "100%",
+            }}
+          ></LinearGradient>
         </Animated.View>
         <Animated.View
           style={{
@@ -537,7 +586,7 @@ const Details = ({
 
       {/* header bar */}
 
-      <SwipeablePanel
+      {/* <SwipeablePanel
         fullWidth
         closeOnTouchOutside
         onlySmall
@@ -660,66 +709,6 @@ const Details = ({
               </View>
             </TouchableOpacity>
           </View>
-
-          {/* <View style={styles.container}>
-              <View style={styles.buttonContainer}>
-              <TextButton
-                  label="-"
-                  buttonContainerStyle={{
-                    height: 40,
-                    // borderRadius: 20,
-                    width: 40,
-                    backgroundColor: COLORS.primary,
-                  }}
-                  
-                />
-              </View>
-              <View style={styles.buttonContainer}>
-              <TextButton
-                  label="+"
-                  buttonContainerStyle={{
-                    height: 40,
-                    // borderRadius: 20,
-                    width: 40,
-                    backgroundColor: COLORS.primary,
-                  }}
-                  
-                />
-              </View>
-            </View>
-          <View style={{}}>
-            <Text
-              style={{
-                ...FONTS.body2,
-              }}
-            >
-              <View
-                style={{
-                  
-                  left: 0,
-                  right: 0,
-                  height: 110,
-                  paddingHorizontal: SIZES.padding,
-                  paddingVertical: SIZES.radius,
-                  backgroundColor: COLORS.white,
-                }}
-              >
-                <TextButton
-                  label="Add To Cart"
-                  buttonContainerStyle={{
-                    height: 100,
-                    borderRadius: SIZES.base,
-                    backgroundColor: COLORS.primary,
-                  }}
-                  onPress={() => addItems(selectedItem)}
-                />
-
-            
-
-              
-              </View> 
-            </Text>
-          </View>*/}
         </View>
         <View style={{ flex: 1 }}>
           <TouchableOpacity
@@ -748,9 +737,181 @@ const Details = ({
             </Text>
           </TouchableOpacity>
         </View>
-      </SwipeablePanel>
+      </SwipeablePanel> */}
 
-      <SwipeablePanel
+      <Modalize ref={itemModalRef} 
+      onClose={() => closePanel()}
+      adjustToContentHeight>
+        <View 
+        style={{
+          paddingHorizontal: SIZES.padding,
+          marginBottom: 40
+        }}
+        >
+        <ItemCard item={selectedItem} />
+        <View
+          style={{
+            flex: 1,
+            flexDirection: "row",
+            paddingHorizontal: SIZES.padding,
+            marginVertical: 5,
+            justifyContent: "space-between",
+          }}
+        >
+          <View
+            style={{
+              flex: 1,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <TouchableOpacity
+              style={{
+                opacity: itemCount < 2 ? 0.5 : 1,
+              }}
+              disabled={itemCount < 2}
+              onPress={() =>
+                Haptics.notificationAsync(
+                  Haptics.NotificationFeedbackType.Success
+                ).then(setItemCount(itemCount - 1))
+              }
+            >
+              <View
+                style={{
+                  width: 35,
+                  height: 35,
+
+                  justifyContent: "center",
+
+                  backgroundColor: COLORS.primary,
+                }}
+              >
+                <Text
+                  style={{
+                    textAlign: "center",
+                    ...FONTS.h2,
+                    color: COLORS.white,
+                  }}
+                >
+                  -
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+          <View
+            style={{
+              flex: 1,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Text
+              style={{
+                ...FONTS.largeTitle,
+                color: COLORS.darkGray,
+                textAlign: "center",
+              }}
+            >
+              {itemCount}
+            </Text>
+          </View>
+          <View
+            style={{
+              flex: 1,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <TouchableOpacity
+              style={{
+                height: 35,
+                alignItems: "center",
+                justifyContent: "center",
+                width: 35,
+                opacity: 1,
+              }}
+              onPress={() =>
+                Haptics.notificationAsync(
+                  Haptics.NotificationFeedbackType.Success
+                ).then(setItemCount(itemCount + 1))
+              }
+            >
+              <View
+                style={{
+                  width: 35,
+                  height: 35,
+
+                  justifyContent: "center",
+
+                  backgroundColor: COLORS.primary,
+                }}
+              >
+                <Text
+                  style={{
+                    textAlign: "center",
+                    ...FONTS.h2,
+                    color: COLORS.white,
+                  }}
+                >
+                  +
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View style={{ flex: 1 }}>
+          <TouchableOpacity
+            onPress={() => addItemsTOCart()}
+            style={{
+              borderColor: COLORS.primary,
+              borderWidth: 1,
+
+              width: "100%",
+              height: 50,
+              justifyContent: "center",
+              alignItems: "center",
+              borderRadius: 10,
+              fontFamily: "PoppinsLight",
+            }}
+          >
+            <Text
+              style={{
+                color: COLORS.primary,
+                fontSize: 18,
+                fontWeight: "bold",
+                fontFamily: "PoppinsLight",
+              }}
+            >
+              Add To Cart
+            </Text>
+          </TouchableOpacity>
+        </View>
+        </View>
+      </Modalize>
+      <Modalize ref={cartModalRef} adjustToContentHeight  HeaderComponent={renderCartModalHeader()} >
+        <View
+          style={{
+            flex: 1,
+            flexDirection: "column",
+            justifyContent: "center",
+          }}
+        >
+          <View
+            style={{
+              flex: 3,
+            }}
+          >
+            <CartTab />
+          </View>
+          <View
+            style={{
+              flex: 3,
+              backgroundColor: "red",
+            }}
+          ></View>
+        </View>
+      </Modalize>
+      {/* <SwipeablePanel
         fullWidth
         closeOnTouchOutside
         onlyLarge
@@ -787,7 +948,7 @@ const Details = ({
             }}
           ></View>
         </View>
-      </SwipeablePanel>
+      </SwipeablePanel> */}
 
       {renderHeaderBar()}
       {cartModalData.isVisible && (

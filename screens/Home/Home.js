@@ -28,6 +28,7 @@ import { Permissions } from 'expo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 
+import { Modalize } from 'react-native-modalize';
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
       shouldShowAlert: true,
@@ -70,6 +71,12 @@ const Section = ({ title, onPress, children }) => {
 const Home = ({navigation}) => {
     const api = new Api();
 
+const modalizeRef = useRef(false);
+
+  const onOpen = () => {
+    modalizeRef.current?.open();
+  };
+
   const fetchUser = () => {
     api
       .getUserList()
@@ -93,6 +100,7 @@ const Home = ({navigation}) => {
     const [menuList, setMenuList] = React.useState([])
     const [showFilterModal, setShowFilterModal] = React.useState(false)
     const [notification, setNotification] = useState(false);
+    const [isLocationPanelActive, setIsLocationPanelActive] = React.useState(false);
     const [cartModalData, SetCartModalData] = React.useState({
         isVisible: false,
         product: null,
@@ -102,6 +110,10 @@ const Home = ({navigation}) => {
 
     const notificationListener = useRef();
     const responseListener = useRef();
+
+    const closeLocationPanel = () => {
+        setIsLocationPanelActive(false);
+      };
 
 useEffect(() => {
 
@@ -495,14 +507,19 @@ useEffect(() => {
         return (
             <View
                 style={{
+                    flex:1,
+                    flexDirection: 'row',
                     marginTop: SIZES.padding,
-                    marginHorizontal: SIZES.padding
+                    marginHorizontal: SIZES.padding,
+                    justifyContent: 'space-between',
                 }}
             >
                 <Text
                     style={{
+                        flex:1,
                         color: COLORS.primary,
-                        ...FONTS.body3
+                        ...FONTS.body3,
+                        textAlignVertical: 'center'
                     }}
                 >
                     DELIVERY TO
@@ -510,10 +527,13 @@ useEffect(() => {
 
                 <TouchableOpacity
                     style={{
+                        flex: 3,
                         flexDirection: 'row',
-                        marginTop: SIZES.base,
-                        alignItems: 'center'
+                        alignItems: 'flex-end',
+                        justifyContent: 'flex-end'
                     }}
+
+                    onPress={() => onOpen()}
                 >
                     <Text style={{ ...FONTS.h3 }}>
                         {dummyData?.myProfile?.address}
@@ -527,6 +547,8 @@ useEffect(() => {
                         }}
                     />
                 </TouchableOpacity>
+
+
             </View>
         )
     }
@@ -708,6 +730,9 @@ useEffect(() => {
 
                         {/* Recommended */}
                         {renderRecommendedSection()}
+
+
+   
                     </View>
                 }
                 
@@ -737,6 +762,14 @@ useEffect(() => {
                     <View style={{ height: 200 }} />
                 }
             />
+
+            <Modalize ref={modalizeRef}>
+
+            <View style={{
+                    height: 300,
+                    backgroundColor: 'red'
+                }}></View>
+            </Modalize>
         </View>
     )
 }

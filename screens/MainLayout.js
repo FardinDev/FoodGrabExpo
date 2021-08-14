@@ -177,7 +177,7 @@ const MainLayout = ({ drawerAnimationStyle, navigation, selectedTab, setSelected
 
     React.useEffect(() => {
         setSelectedTab(constants.screens.home)
-    }, [])
+    }, [navigation])
 
     React.useEffect(() => {
         if (selectedTab == constants.screens.home) {

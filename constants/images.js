@@ -32,8 +32,10 @@ const tomato_pasta = require("../assets/images/tomato-pasta.jpg");
 const background = require("../assets/images/background.svg");
 const help = require("../assets/images/help.gif");
 const addToCart = require("../assets/images/add-to-cart.gif");
+const food = require("../assets/images/food.jpg");
 
 export default {
+  food,
   addToCart,
   help,
   profile,

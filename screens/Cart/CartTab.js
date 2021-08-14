@@ -26,7 +26,8 @@ const CartTab = ({ cartItems, total }) => {
         alignItems: "center",
         justifyContent: "center",
         backgroundColor: COLORS.white,
-        paddingHorizontal: SIZES.padding
+        paddingHorizontal: SIZES.padding,
+        marginBottom: 400
       }}
     >
       <Animated.Image
@@ -54,14 +55,14 @@ const CartTab = ({ cartItems, total }) => {
   const renderCartHeader = () => {
     return (
       <View>
-        <Text
+        {/* <Text
           style={{
             ...FONTS.body1,
             textAlign: "center",
           }}
         >
           Cart
-        </Text>
+        </Text> */}
       </View>
     );
   };
@@ -188,7 +189,7 @@ const CartTab = ({ cartItems, total }) => {
 
           
         </View>
-        <View style={{ flex: 1, marginTop: 5, marginBottom: 100 }}>
+        <View style={{ flex: 1, marginTop: 5, marginBottom: 20 }}>
             <TouchableOpacity
               onPress={() => console.log('checkout')}
               style={{
