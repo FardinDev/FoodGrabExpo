@@ -82,6 +82,7 @@ const App = () => {
     PoppinsBlack: require('./assets/fonts/Poppins-Black.ttf'),
     PoppinsLight: require('./assets/fonts/Poppins-Light.ttf'),
     PoppinsThin: require('./assets/fonts/Poppins-Thin.ttf'),
+    PoppinsExtraLight: require('./assets/fonts/Poppins-ExtraLight.ttf'),
   });
 
   const [loginState, dispatch] = React.useReducer(
@@ -114,7 +115,8 @@ const App = () => {
         // setUserToken(null);
         // setIsLoading(false);
         try {
-          await AsyncStorage.removeItem("userToken");
+          let keys = ['userToken', 'userLocation']
+          await AsyncStorage.multiRemove(keys);
         } catch (e) {
           console.log(e);
         }

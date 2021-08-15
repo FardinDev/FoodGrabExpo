@@ -24,7 +24,7 @@ const CartTab = ({ cartItems, total }) => {
       style={{
         flex: 1,
         alignItems: "center",
-        justifyContent: "center",
+        justifyContent: 'flex-end',
         backgroundColor: COLORS.white,
         paddingHorizontal: SIZES.padding,
         marginBottom: 400

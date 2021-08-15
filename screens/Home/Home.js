@@ -8,7 +8,8 @@ import {
     FlatList,
     RefreshControl,
     StyleSheet,
-    Alert
+    Alert,
+    RadioButton
 } from 'react-native';
 import {
     Details
@@ -29,6 +30,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 
 import { Modalize } from 'react-native-modalize';
+import LocationList from '../../components/LocationList';
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
       shouldShowAlert: true,
@@ -56,9 +58,7 @@ const Section = ({ title, onPress, children }) => {
                 <TouchableOpacity
                     onPress={onPress}
                 >
-                    <Text style={{ color: COLORS.primary, ...FONTS.body3 }}>
-                        Show All
-                    </Text>
+                    
                 </TouchableOpacity>
             </View>
 
@@ -71,11 +71,27 @@ const Section = ({ title, onPress, children }) => {
 const Home = ({navigation}) => {
     const api = new Api();
 
-const modalizeRef = useRef(false);
+const locationModalRef = useRef(false);
 
   const onOpen = () => {
-    modalizeRef.current?.open();
+    locationModalRef.current?.open();
   };
+
+  const onCloseAction = (location) => {
+    setUserLocation(location).then((location) => {
+        setUserCurrentLocation(location);
+        locationModalRef.current?.close();
+    })
+  
+  }
+  const checkLocationOnClose = () => {
+      if (!userCurrentLocation) {
+        
+        locationModalRef.current?.open();
+    }
+ 
+  
+  }
 
   const fetchUser = () => {
     api
@@ -98,9 +114,11 @@ const modalizeRef = useRef(false);
     const [popular, setPopular] = React.useState([])
     const [recommends, setRecommends] = React.useState([])
     const [menuList, setMenuList] = React.useState([])
+    const [allLocations, setAllLocation] = React.useState([])
     const [showFilterModal, setShowFilterModal] = React.useState(false)
     const [notification, setNotification] = useState(false);
     const [isLocationPanelActive, setIsLocationPanelActive] = React.useState(false);
+    const [userCurrentLocation, setUserCurrentLocation] = React.useState('');
     const [cartModalData, SetCartModalData] = React.useState({
         isVisible: false,
         product: null,
@@ -114,8 +132,34 @@ const modalizeRef = useRef(false);
     const closeLocationPanel = () => {
         setIsLocationPanelActive(false);
       };
+      
+      const getUserLocation = async () => {
+          
+          return await AsyncStorage.getItem("userLocation");
+  }
+      
+      const setUserLocation = async (location) => {
+          
+           await AsyncStorage.setItem("userLocation", location);
 
-useEffect(() => {
+           return location;
+  }
+
+useEffect( () => {
+
+    getUserLocation().then((location) => {
+     
+        if (!location) {
+            getRecomended().then((recommends) => {
+                setRecommends(recommends.data)
+                return
+            } ).then(() => locationModalRef.current?.open())
+            
+        }else{
+            setUserCurrentLocation(location)
+        }
+    })
+    
 
     getRestaurants().then((restaurants) => 
     {
@@ -124,11 +168,23 @@ useEffect(() => {
     }
     
     )
-}, [refreshing]);
+
+
+    getRecomended().then((recommends) => {
+        setRecommends(recommends.data)
+    } )
+
+    getLocations().then((locations) => {
+        setAllLocation(locations.data)
+        
+    } )
+
+}, [refreshing, userCurrentLocation]);
 
     React.useEffect(() => {
         
-       
+        
+
         registerForPushNotificationsAsync().then(token => setToken(token));
        
         notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
@@ -179,6 +235,34 @@ useEffect(() => {
       };
 
 
+    const getRecomended = async () => {
+   
+        const api_token = await AsyncStorage.getItem("userToken");
+
+      
+        api.api_token = api_token;
+        return await api
+          .getRecomended()
+          .then((resData) => {
+     
+            if (resData.data.code !== 200) {
+              Alert.alert("Error!", resData.data.message, [{ text: "Okay" }]);
+              return null;
+            } 
+
+            return resData.data;
+          })
+          
+          .catch((error) => {
+            
+            Alert.alert(
+              "Error!",
+              "Something Went Wrong. Please Try after some time",
+              [{ text: "Okay" }]
+            );
+            return null;
+          });
+      };
     const getRestaurants = async () => {
    
         const api_token = await AsyncStorage.getItem("userToken");
@@ -187,6 +271,35 @@ useEffect(() => {
         api.api_token = api_token;
         return await api
           .getRestaurants()
+          .then((resData) => {
+     
+            if (resData.data.code !== 200) {
+              Alert.alert("Error!", resData.data.message, [{ text: "Okay" }]);
+              return null;
+            } 
+
+            return resData.data;
+          })
+          
+          .catch((error) => {
+            
+            Alert.alert(
+              "Error!",
+              "Something Went Wrong. Please Try after some time",
+              [{ text: "Okay" }]
+            );
+            return null;
+          });
+      };
+
+    const getLocations = async () => {
+   
+        const api_token = await AsyncStorage.getItem("userToken");
+
+      
+        api.api_token = api_token;
+        return await api
+          .getLocations()
           .then((resData) => {
      
             if (resData.data.code !== 200) {
@@ -268,8 +381,12 @@ useEffect(() => {
         setPopular(selectedPopular?.list.filter(a => a.restaurant_categories.includes(categoryId)))
 
         // Set the recommended menu based on the categoryId
-        setRecommends(selectedRecommend?.list.filter(a => a.restaurant_categories.includes(categoryId)))
+ 
 
+        // setRecommends(selectedRestaurants[randomNumber]?.categories[randomNumber]?.items)
+
+
+   
         // Set the menu based on the categoryId
         setMenuList(selectedMenu?.list.filter(a => a.restaurant_categories.includes(categoryId)))
         
@@ -376,8 +493,8 @@ useEffect(() => {
     function renderRecommendedSection() {
         return (
             <Section
-                title="Recommended"
-                onPress={() => console.log("Show all recommended")}
+                title="Recommended Items"
+               
             >
                 <FlatList
                     data={recommends}
@@ -395,7 +512,7 @@ useEffect(() => {
                                 alignItems: 'center'
                             }}
                             imageStyle={{
-                                marginTop: 35,
+                                marginTop: 0,
                                 height: 150,
                                 width: 150
                             }}
@@ -536,7 +653,7 @@ useEffect(() => {
                     onPress={() => onOpen()}
                 >
                     <Text style={{ ...FONTS.h3 }}>
-                        {dummyData?.myProfile?.address}
+                        {userCurrentLocation}
                     </Text>
                     <Image
                         source={icons.down_arrow}
@@ -723,13 +840,13 @@ useEffect(() => {
                          {/*Restaurant List */}
                          {renderRestaurantList()}
 
-                        {/* Popular */}
-                        {renderPopularSection()}
-
-                       
-
+                    
                         {/* Recommended */}
                         {renderRecommendedSection()}
+
+
+                        {/* Popular */}
+                        {renderPopularSection()}
 
 
    
@@ -763,18 +880,37 @@ useEffect(() => {
                 }
             />
 
-            <Modalize ref={modalizeRef}>
-
-            <View style={{
-                    height: 300,
-                    backgroundColor: 'red'
-                }}></View>
+            <Modalize ref={locationModalRef}
+            onClose={checkLocationOnClose}
+            HeaderComponent={renderHeader()}
+            >
+          
+                  <LocationList locations={allLocations} userLocation={userCurrentLocation} onCloseAction={onCloseAction}/>      
             </Modalize>
         </View>
     )
 }
 
 
+const renderHeader = () => {
+
+    return (
+  
+      <View 
+      style={{
+        padding: SIZES.padding,
+        height: 50,
+        alignItems: 'center'
+      }}
+      >
+        <Text style={{...FONTS.h2, color: COLORS.darkGray}}>
+            Select Delivery Location
+        </Text>
+      </View>
+  
+    )
+  
+  }
 const styles = StyleSheet.create({
     container: {
         flex: 1,

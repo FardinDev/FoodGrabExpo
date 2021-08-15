@@ -262,11 +262,7 @@ const SignInScreen = ({ navigation }) => {
                 onChangeText={(val) => textInputChange(val)}
                 onEndEditing={(e) => handleValidUser(e.nativeEvent.text)}
               />
-              {data.check_textInputChange ? (
-                <Animatable.View animation="bounceIn">
-                  <Feather name="check-circle" color="green" size={20} />
-                </Animatable.View>
-              ) : null}
+              
             </View>
             {data.isValidUser || data.mobile.length === 0 ? null : (
               <Animatable.View animation="fadeInLeft" duration={500}>
