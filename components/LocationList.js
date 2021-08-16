@@ -11,11 +11,54 @@ import {
 import RadioButton from "react-native-radio-button";
 import { COLORS, FONTS, icons, images, SIZES } from "../constants";
 import * as Haptics from 'expo-haptics';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Api from "../api/api";
 
 const LocationList = ({ locations, userLocation, onCloseAction }) => {
   const [locationList, setLocationList] = React.useState(locations);
   const [selectedIndex, setSelectedindex] = React.useState(userLocation);
+const api = new Api();
 
+  const getLocations = async () => {
+   
+    const api_token = await AsyncStorage.getItem("userToken");
+
+  
+    api.api_token = api_token;
+    return await api
+      .getLocations()
+      .then((resData) => {
+ 
+        if (resData.data.code !== 200) {
+          Alert.alert("Error!", resData.data.message, [{ text: "Okay" }]);
+          return null;
+        } 
+
+        return resData.data.data;
+      })
+      
+      .catch((error) => {
+        
+        Alert.alert(
+          "Error!",
+          "Something Went Wrong. Please Try after some time",
+          [{ text: "Okay" }]
+        );
+        return null;
+      });
+  };
+
+
+  React.useEffect(() => {
+
+    getLocations().then((locations) => {
+      setLocationList(locations)
+    })
+
+
+  })
+
+  
   const onPress = async (index) => {
     setSelectedindex(index);
     return index;

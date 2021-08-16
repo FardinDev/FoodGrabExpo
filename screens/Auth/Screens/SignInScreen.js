@@ -98,7 +98,6 @@ const SignInScreen = ({ navigation }) => {
       .catch((error) => {
         setIsloading(false);
 
-      
         Alert.alert(
           "Error!",
           "Something Went Wrong. Please Try after some time",

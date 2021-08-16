@@ -117,6 +117,7 @@ const locationModalRef = useRef(false);
     const [allLocations, setAllLocation] = React.useState([])
     const [showFilterModal, setShowFilterModal] = React.useState(false)
     const [notification, setNotification] = useState(false);
+    const [alwaysOpenNumber, setAlwaysOpenNumber] = useState(0);
     const [isLocationPanelActive, setIsLocationPanelActive] = React.useState(false);
     const [userCurrentLocation, setUserCurrentLocation] = React.useState('');
     const [cartModalData, SetCartModalData] = React.useState({
@@ -153,10 +154,19 @@ useEffect( () => {
             getRecomended().then((recommends) => {
                 setRecommends(recommends.data)
                 return
-            } ).then(() => locationModalRef.current?.open())
+            } ).then(() => 
+            
+            {
+                setTimeout(() => {
+                    locationModalRef.current?.open()
+                    setAlwaysOpenNumber(1000);
+                }, 2000);
+            }
+            )
             
         }else{
             setUserCurrentLocation(location)
+            setAlwaysOpenNumber(0);
         }
     })
     
@@ -883,9 +893,11 @@ useEffect( () => {
             <Modalize ref={locationModalRef}
             onClose={checkLocationOnClose}
             HeaderComponent={renderHeader()}
+            alwaysOpen={alwaysOpenNumber}
+           
             >
           
-                  <LocationList locations={allLocations} userLocation={userCurrentLocation} onCloseAction={onCloseAction}/>      
+                  <LocationList userLocation={userCurrentLocation} onCloseAction={onCloseAction}/>      
             </Modalize>
         </View>
     )

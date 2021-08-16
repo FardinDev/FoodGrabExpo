@@ -166,7 +166,7 @@ const Details = ({
   };
 
   const addItemsTOCart = () => {
-    if (restaurant_id !== 0 && restaurant_id != selectedRestaurant.id) {
+    if (restaurant_id !== 0 && restaurant_id != selectedRestaurant.id && cartItems.length) {
       Alert.alert(
         "Are your sure?",
         "You have items in your cart from another restaurant, adding this item will removed previous items",
@@ -229,7 +229,7 @@ style={{
        <Text
        style={{
          ...FONTS.body1,
-         color: COLORS.primary,
+         color: COLORS.darkGray,
          textAlign: "center",
          paddingVertical: 10
        }}
@@ -252,7 +252,7 @@ style={{
     InteractionManager.runAfterInteractions(() => setIsReady(true));
   }, []);
 
-  React.useEffect(() => {}, [cartItems]);
+
 
   const scrollY = useRef(new Animated.Value(0)).current;
 
@@ -949,7 +949,7 @@ style={{
         </View>
         </View>
       </Modalize>
-      <Modalize ref={cartModalRef} adjustToContentHeight  HeaderComponent={renderCartModalHeader()} >
+      <Modalize ref={cartModalRef} disableScrollIfPossible={true} HeaderComponent={renderCartModalHeader()} >
         <View
           style={{
             flex: 1,
