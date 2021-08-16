@@ -229,7 +229,7 @@ const CartTab = ({ cartItems, total, restaurantId }) => {
                     textAlign: "center",
                   }}
                 >
-                  30 TK
+                  {cartValues?.delivery_charge || 0} Tk
                 </Text>
               </View>
             </View>
@@ -313,7 +313,7 @@ null
                       color: COLORS.gray,
                     }}
                   >
-                    {total + 30 - 10} tk
+                    {total + cartValues?.delivery_charge} tk
                   </Text>
 
                   <Text
@@ -323,7 +323,7 @@ null
                       color: COLORS.green,
                     }}
                   >
-                    {cartValues.total + 30} tk
+                    {cartValues.total + cartValues?.delivery_charge} tk
                   </Text>
                 </View>
               ) : (
@@ -342,7 +342,7 @@ null
                       color: COLORS.green,
                     }}
                   >
-                    {total + 30 - 10} tk
+                    {total + cartValues?.delivery_charge } tk
                   </Text>
                 </View>
               )}
