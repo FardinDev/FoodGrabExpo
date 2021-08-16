@@ -365,7 +365,68 @@ style={{
             ],
           }}
         >
-          <RenderAddressCard restaurant={selectedRestaurant} />
+           {
+            Platform.OS == 'ios' ?
+            <RenderAddressCard restaurant={selectedRestaurant} />
+            : 
+            <View
+            style={{
+              flex: 1,
+              flexDirection: "column",
+              padding: SIZES.padding,
+              justifyContent: "space-between",
+            }}
+          >
+            <View
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                
+              }}
+            >
+              <Feather style={{ alignSelf: "center" }} name="clock" color={COLORS.darkGray} size={18} />
+      
+              <Text
+                style={{
+                  color: COLORS.darkGray,
+                  ...FONTS.h3,
+                  marginLeft: 8,
+                  textAlignVertical: "center",
+                  fontWeight: "bold",
+                }}
+              >
+                {selectedRestaurant?.duration}
+              </Text>
+            </View>
+            <View
+              style={{
+                flex: 2,
+                flexDirection: "row",
+                // alignItems: "center",
+              }}
+            >
+              <Feather
+                style={{ alignSelf: "center" }}
+                name="map-pin"
+                color={COLORS.darkGray}
+                size={18}
+              />
+      
+              <Text
+                style={{
+                  color: COLORS.darkGray,
+                  ...FONTS.h4,
+                  marginHorizontal: 8,
+                  textAlignVertical: 'center'
+                }}
+              >
+                {selectedRestaurant?.address}
+              </Text>
+            </View>
+          </View>
+
+
+          }
         </Animated.View>
       </View>
     );

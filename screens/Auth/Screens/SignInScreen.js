@@ -85,17 +85,20 @@ const SignInScreen = ({ navigation }) => {
             userImage: resData.data.data.user.avatar,
           };
 
-          setIsloading(false);
-          signIn([user]);
+          return user;
+
+          
+          
         }
       })
-      .then(() => setIsloading(false))
+      .then((user) => {
+        setIsloading(false);
+        signIn([user])
+      })
       .catch((error) => {
         setIsloading(false);
 
-        console.log('====================================');
-        console.log(error);
-        console.log('====================================');
+      
         Alert.alert(
           "Error!",
           "Something Went Wrong. Please Try after some time",
