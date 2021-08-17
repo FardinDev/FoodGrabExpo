@@ -84,14 +84,7 @@ const locationModalRef = useRef(false);
     })
   
   }
-  const checkLocationOnClose = () => {
-      if (!userCurrentLocation) {
-        
-        locationModalRef.current?.open();
-    }
- 
-  
-  }
+
 
   const fetchUser = () => {
     api
@@ -891,13 +884,12 @@ useEffect( () => {
             />
 
             <Modalize ref={locationModalRef}
-            onClose={checkLocationOnClose}
             HeaderComponent={renderHeader()}
             alwaysOpen={alwaysOpenNumber}
            
             >
           
-                  <LocationList userLocation={userCurrentLocation} onCloseAction={onCloseAction}/>      
+                  <LocationList onCloseAction={onCloseAction}/>      
             </Modalize>
         </View>
     )

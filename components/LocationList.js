@@ -7,6 +7,8 @@ import {
   TextInput,
   Image,
   TouchableWithoutFeedback,
+  ActivityIndicator,
+  Alert,
 } from "react-native";
 import RadioButton from "react-native-radio-button";
 import { COLORS, FONTS, icons, images, SIZES } from "../constants";
@@ -14,13 +16,16 @@ import * as Haptics from 'expo-haptics';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Api from "../api/api";
 
-const LocationList = ({ locations, userLocation, onCloseAction }) => {
-  const [locationList, setLocationList] = React.useState(locations);
-  const [selectedIndex, setSelectedindex] = React.useState(userLocation);
+const LocationList = ({ onCloseAction }) => {
+  const [locationData, setLocationData] = React.useState([]);
+  const [masterLocationData, setMasterLocationData] = React.useState([]);
+  const [selectedIndex, setSelectedindex] = React.useState(null);
 const api = new Api();
 
   const getLocations = async () => {
    
+    const userCurrentColation = await AsyncStorage.getItem("userLocation");
+    setSelectedindex(userCurrentColation);
     const api_token = await AsyncStorage.getItem("userToken");
 
   
@@ -51,12 +56,16 @@ const api = new Api();
 
   React.useEffect(() => {
 
+    let isMounted = true;               
     getLocations().then((locations) => {
-      setLocationList(locations)
+      if (isMounted){ setLocationData(locations); setMasterLocationData(locations)}
     })
 
+    return () => { isMounted = false };
+   
 
-  })
+
+  }, [])
 
   
   const onPress = async (index) => {
@@ -65,12 +74,19 @@ const api = new Api();
   };
 
   const filterList = (e) => {
-    let newlocations = locations.filter((listItem) =>
+    let newlocations = masterLocationData.filter((listItem) =>
       listItem.name.toLowerCase().includes(e.toLowerCase())
     );
 
-    setLocationList(newlocations);
+    setLocationData(newlocations);
   };
+
+
+  if (locationData.length < 1) {
+    <View style={{ flex: 1, alignItems: 'center'}}> 
+        <ActivityIndicator size={'small'} />
+    </View>
+  }
   return (
     <KeyboardAvoidingView>
       <View
@@ -110,7 +126,7 @@ const api = new Api();
         style={{
           backgroundColor: COLORS.lightGray1,
         }}
-        data={locationList}
+        data={locationData}
         keyExtractor={(item) => `${item.id}`}
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={16}

@@ -21,7 +21,7 @@ import { connect, useSelector } from "react-redux";
 // import { addToCart, addQuantity, subtractQuantity, removeItem } from "../../stores/cart/cartActions";
 import { IconButton, TextButton } from "../../components";
 import { AddToCartModal } from "../";
-import { COLORS, SIZES, icons, images, FONTS } from "../../constants";
+import { COLORS, SIZES, icons, images, FONTS, constants } from "../../constants";
 import { BlurView } from "expo-blur";
 import ItemCard from "../../components/ItemCard";
 
@@ -34,6 +34,7 @@ import CartTab from "../Cart/CartTab";
 import Feather from "react-native-vector-icons/Feather";
 import { LinearGradient } from "expo-linear-gradient";
 import { Modalize } from "react-native-modalize";
+import { setSelectedTab } from "../../stores/tab/tabActions";
 
 const HEADER_HEIGHT = 250;
 
@@ -132,6 +133,7 @@ const Details = ({
   addToCart,
   restaurant_id,
   destroyCart,
+  setSelectedTab
 }) => {
   const [selectedRestaurant, setSelectedRestaurant] = React.useState(null);
   const [selectedCategories, setSelectedCategories] = React.useState(null);
@@ -532,7 +534,10 @@ style={{
             borderColor: COLORS.primary,
             backgroundColor: COLORS.transparent,
           }}
-          onPress={() => showCartPanel()}
+          onPress={() => {
+            setSelectedTab(constants.screens.cart)
+            navigation.navigate('MainLayout')
+          }}
         >
           {!cartItems.length ? null : (
             <View
@@ -1038,6 +1043,7 @@ const mapStateToProps = (state) => {
   return {
     cartItems: state.cartReducer.cartItems,
     restaurant_id: state.cartReducer.restaurant_id,
+    selectedTab: state.tabReducer.selectedTab
   };
 };
 const mapDispatchToProps = (dispatch) => {
@@ -1048,6 +1054,7 @@ const mapDispatchToProps = (dispatch) => {
     destroyCart: () => {
       return dispatch(destroyCart());
     },
+    setSelectedTab: (selectedTab) => { return dispatch(setSelectedTab(selectedTab)) }
   };
 };
 

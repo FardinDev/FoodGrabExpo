@@ -19,7 +19,7 @@ const Stack = createStackNavigator();
 
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
-const App = () => {
+const App = ({navigation}) => {
 
  
   const initialLoginState = {
