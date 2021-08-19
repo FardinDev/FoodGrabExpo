@@ -6,8 +6,8 @@ export default class Api {
   constructor() {
     this.api_token = null;
     this.client = null;
-    this.api_url = "http://192.168.0.117:8000/api/v1";
-    // this.api_url = "https://foodgrab.net/demo/api/v1";
+    // this.api_url = "http://192.168.0.117:8000/api/v1";
+    this.api_url = "https://foodgrab.net/demo/api/v1";
   
 
     
@@ -68,6 +68,12 @@ export default class Api {
   getRestaurants = () => {
 
     return this.init().get("/restaurant/list", { params: {paginate: false} } );
+  };
+
+
+  getRestaurant = (id) => {
+
+    return this.init().get("/restaurant/list", { params: {paginate: false, id: id} } );
   };
 
   getRecomended = () => {

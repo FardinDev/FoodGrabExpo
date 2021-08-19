@@ -35,11 +35,14 @@ import {
     dummyData,
     images
 } from "../constants";
+import CartVal from './Details/CartVal';
 
 
 
 
-const TabButton = ({ label, icon, isFocused, outerContainerStyle, innerContainerStyle, onPress }) => {
+const TabButton = ({ label, icon, isFocused, outerContainerStyle, innerContainerStyle, onPress, cartItems }) => {
+
+  
     return (
         <TouchableWithoutFeedback
             onPress={onPress}
@@ -67,6 +70,30 @@ const TabButton = ({ label, icon, isFocused, outerContainerStyle, innerContainer
                         innerContainerStyle
                     ]}
                 >
+
+{ !cartItems.length ? null : (
+            <View
+              style={{
+                zIndex: 100,
+                position: "absolute",
+                top:  5,
+                left: isFocused ? 55 : 5,
+                height: 20,
+                width: 20,
+                borderRadius: 20,
+                backgroundColor: isFocused ? COLORS.white : COLORS.primary,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <CartVal
+                style={{
+                  ...FONTS.h3,
+                  color: isFocused ? COLORS.primary : COLORS.white,
+                }}
+              />
+            </View>
+          )}
                     <Image
                         source={icon}
                         style={{
@@ -94,7 +121,7 @@ const TabButton = ({ label, icon, isFocused, outerContainerStyle, innerContainer
     )
 }
 
-const MainLayout = ({ drawerAnimationStyle, navigation, selectedTab, setSelectedTab }) => {
+const MainLayout = ({ drawerAnimationStyle, navigation, selectedTab, setSelectedTab, cartItems }) => {
     
     const flatListRef = React.useRef()
 
@@ -331,7 +358,7 @@ const MainLayout = ({ drawerAnimationStyle, navigation, selectedTab, setSelected
                             >
                                 {item.label == constants.screens.home && <Home navigation={navigation}/>}
                                 {item.label == constants.screens.search && <Search />}
-                                {item.label == constants.screens.cart && <CartTab />}
+                                {item.label == constants.screens.cart && <CartTab navigation={navigation}/>}
                                 
                             </View>
                         )
@@ -383,6 +410,7 @@ const MainLayout = ({ drawerAnimationStyle, navigation, selectedTab, setSelected
                         isFocused={selectedTab == constants.screens.home}
                         outerContainerStyle={homeFlexStyle}
                         innerContainerStyle={homeColorStyle}
+                        cartItems={[]}
                         onPress={() => setSelectedTab(constants.screens.home)}
                     />
 
@@ -392,6 +420,8 @@ const MainLayout = ({ drawerAnimationStyle, navigation, selectedTab, setSelected
                         isFocused={selectedTab == constants.screens.search}
                         outerContainerStyle={searchFlexStyle}
                         innerContainerStyle={searchColorStyle}
+                        cartItems={[]}
+
                         onPress={() => setSelectedTab(constants.screens.search)}
                     />
 
@@ -401,6 +431,7 @@ const MainLayout = ({ drawerAnimationStyle, navigation, selectedTab, setSelected
                         isFocused={selectedTab == constants.screens.cart}
                         outerContainerStyle={cartFlexStyle}
                         innerContainerStyle={cartColorStyle}
+                        cartItems={cartItems}
                         onPress={() => setSelectedTab(constants.screens.cart)}
                     />
 
@@ -429,7 +460,8 @@ const MainLayout = ({ drawerAnimationStyle, navigation, selectedTab, setSelected
 
 function mapStateToProps(state) {
     return {
-        selectedTab: state.tabReducer.selectedTab
+        selectedTab: state.tabReducer.selectedTab,
+        cartItems: state.cartReducer.cartItems
     }
 }
 

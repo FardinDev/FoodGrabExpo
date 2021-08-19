@@ -551,7 +551,7 @@ useEffect( () => {
                                 marginRight: index == popular.length - 1 ? SIZES.padding : 0
                             }}
                             item={item}
-                            onPress={() => navigation.navigate('Details', {item: item})}
+                            onPress={() => navigation.navigate('Details', {item_id: item.id})}
                         />
                     )}
                 />
@@ -678,7 +678,7 @@ useEffect( () => {
         const renderItem = ({ item }) => (
             <TouchableOpacity
                 style={{ marginBottom: 0, padding: SIZES.padding}}
-                onPress={() => navigation.navigate('Details', {item: item})}
+                onPress={() => navigation.navigate('Details', {item_id: item.id})}
             >
                 {/* Image */}
                 <View
@@ -884,6 +884,7 @@ useEffect( () => {
             />
 
             <Modalize ref={locationModalRef}
+            
             HeaderComponent={renderHeader()}
             alwaysOpen={alwaysOpenNumber}
            

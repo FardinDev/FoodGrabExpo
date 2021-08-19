@@ -10,9 +10,9 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
-import { Modalize } from "react-native-modalize";
 
+import { Modalize } from "react-native-modalize";
+import {  StackActions } from '@react-navigation/native';
 import { connect } from "react-redux";
 import Api from "../../api/api";
 import { IconButton } from "../../components";
@@ -21,6 +21,7 @@ import ItemCard from "../../components/ItemCard";
 import LocationList from "../../components/LocationList";
 import { COLORS, FONTS, icons, images, SIZES } from "../../constants";
 const CartTab = ({ cartItems, total, restaurantId, navigation }) => {
+  
   const [isLoading, setIsloading] = React.useState(false);
   const [cartValues, setCartValues] = React.useState({});
   const [userCurrentLocation, setUserCurrentLocation] = React.useState("");
@@ -41,6 +42,26 @@ const CartTab = ({ cartItems, total, restaurantId, navigation }) => {
  
  }
 
+
+ const renderHeader = () => {
+
+  return (
+
+    <View 
+    style={{
+      padding: SIZES.padding,
+      height: 50,
+      alignItems: 'center'
+    }}
+    >
+      <Text style={{...FONTS.h2, color: COLORS.darkGray}}>
+          Select Delivery Location
+      </Text>
+    </View>
+
+  )
+
+}
   const getValues = async (total) => {
     // let location = await AsyncStorage.getItem('userLocation');
     const userLocation = await AsyncStorage.getItem("userLocation");
@@ -398,7 +419,7 @@ const CartTab = ({ cartItems, total, restaurantId, navigation }) => {
         <View style={{ flex: 1, marginTop: 5, marginBottom: 10 }}>
           <TouchableOpacity
             disabled={isLoading}
-            onPress={() => navigation.goBack() }
+            onPress={() => navigation.navigate("Details", {item_id: restaurantId}) }
             style={{
               borderColor: COLORS.primary,
               borderWidth: 1,
@@ -453,7 +474,7 @@ const CartTab = ({ cartItems, total, restaurantId, navigation }) => {
 
       <Modalize
         ref={locationModalRef}
-        
+        HeaderComponent={renderHeader()}
        
       >
         <LocationList

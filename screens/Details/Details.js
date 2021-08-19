@@ -13,7 +13,7 @@ import {
   StyleSheet,
   SafeAreaView,
   Alert,
-  ImageBackground
+  ImageBackground,
 } from "react-native";
 import * as Haptics from "expo-haptics";
 
@@ -21,7 +21,14 @@ import { connect, useSelector } from "react-redux";
 // import { addToCart, addQuantity, subtractQuantity, removeItem } from "../../stores/cart/cartActions";
 import { IconButton, TextButton } from "../../components";
 import { AddToCartModal } from "../";
-import { COLORS, SIZES, icons, images, FONTS, constants } from "../../constants";
+import {
+  COLORS,
+  SIZES,
+  icons,
+  images,
+  FONTS,
+  constants,
+} from "../../constants";
 import { BlurView } from "expo-blur";
 import ItemCard from "../../components/ItemCard";
 
@@ -35,6 +42,9 @@ import Feather from "react-native-vector-icons/Feather";
 import { LinearGradient } from "expo-linear-gradient";
 import { Modalize } from "react-native-modalize";
 import { setSelectedTab } from "../../stores/tab/tabActions";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Api from "../../api/api";
+import CartCard from "../../components/CartCard";
 
 const HEADER_HEIGHT = 250;
 
@@ -133,7 +143,7 @@ const Details = ({
   addToCart,
   restaurant_id,
   destroyCart,
-  setSelectedTab
+  setSelectedTab,
 }) => {
   const [selectedRestaurant, setSelectedRestaurant] = React.useState(null);
   const [selectedCategories, setSelectedCategories] = React.useState(null);
@@ -146,6 +156,7 @@ const Details = ({
 
   const cartModalRef = useRef(false);
   const itemModalRef = useRef(false);
+  const api = new Api();
 
   const showPanel = (item) => {
     setSelectedItem(item);
@@ -153,7 +164,6 @@ const Details = ({
     setIsPanelActive(true);
   };
   const closePanel = () => {
-    
     setIsPanelActive(false);
     setSelectedItem(null);
     setItemCount(1);
@@ -168,7 +178,11 @@ const Details = ({
   };
 
   const addItemsTOCart = () => {
-    if (restaurant_id !== 0 && restaurant_id != selectedRestaurant.id && cartItems.length) {
+    if (
+      restaurant_id !== 0 &&
+      restaurant_id != selectedRestaurant.id &&
+      cartItems.length
+    ) {
       Alert.alert(
         "Are your sure?",
         "You have items in your cart from another restaurant, adding this item will removed previous items",
@@ -205,56 +219,118 @@ const Details = ({
     }
   };
 
-
   const renderCartModalHeader = () => {
     return (
-      
-    <View
-    style={{height: 50,
-    borderTopRightRadius: 15,
-    borderTopLeftRadius: 15,
-    overflow: 'hidden'
-    }}
-    >
-
-<ImageBackground source={images.food} resizeMode="cover"
-style={{
-  
-    flex: 1,
-    position: 'relative',
-    resizeMode: 'cover',
-    
-  
-}}
-
->
-       <Text
-       style={{
-         ...FONTS.body1,
-         color: COLORS.darkGray,
-         textAlign: "center",
-         paddingVertical: 10
-       }}
-     >
-       Cart
-     </Text>
-    </ImageBackground>
-     
-     
+      <View
+        style={{
+          height: 50,
+          borderTopRightRadius: 15,
+          borderTopLeftRadius: 15,
+          overflow: "hidden",
+        }}
+      >
+        <Text
+          style={{
+            ...FONTS.body1,
+            color: COLORS.darkGray,
+            textAlign: "center",
+            paddingVertical: 10,
+          }}
+        >
+          Cart
+        </Text>
       </View>
+    );
+  };
+  const renderCartModalFooter = () => {
+    if (cartItems.length) {
+      return (
+        <View style={{ flex: 1, marginTop: SIZES.padding, marginBottom: 80 }}>
+          <TouchableOpacity
+            onPress={() => {
+              setSelectedTab(constants.screens.cart);
+              navigation.navigate("MainLayout");
+            }}
+            style={{
+              borderColor: COLORS.primary,
+              borderWidth: 1,
+              backgroundColor: COLORS.white,
+              width: "100%",
+              height: 50,
+              justifyContent: "center",
+              alignItems: "center",
+              borderRadius: 10,
+              fontFamily: "PoppinsLight",
+              opacity: 1,
+              marginBottom: 50,
+            }}
+          >
+            <Text
+              style={{
+                color: COLORS.primary,
+                fontSize: 18,
+                fontWeight: "bold",
+                fontFamily: "PoppinsLight",
+              }}
+            >
+              View Full Cart
+            </Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
 
-    )
-  }
+    return (
+      <View style={{ flex: 1, marginTop: SIZES.padding, marginBottom: 150 }}>
+        <Text
+          style={{
+            ...FONTS.h3,
+            width: "100%",
+            height: 50,
+            textAlign: "center",
+            color: COLORS.darkGray,
+          }}
+        >
+          Your Cart is empty! Please add items
+        </Text>
+      </View>
+    );
+  };
+
+  const getRestaurant = async (id) => {
+    const api_token = await AsyncStorage.getItem("userToken");
+
+    api.api_token = api_token;
+    return await api
+      .getRestaurant(id)
+      .then((resData) => {
+        if (resData.data.code !== 200) {
+          Alert.alert("Error!", resData.data.message, [{ text: "Okay" }]);
+          return null;
+        }
+
+        return resData.data;
+      })
+
+      .catch((error) => {
+        Alert.alert(
+          "Error!",
+          "Something Went Wrong. Please Try after some time",
+          [{ text: "Okay" }]
+        );
+        return null;
+      });
+  };
 
   React.useEffect(() => {
-    let { item } = route.params;
-    setSelectedRestaurant(item);
-    setSelectedCategories(item.categories);
+    let { item_id } = route.params;
 
-    InteractionManager.runAfterInteractions(() => setIsReady(true));
+    getRestaurant(item_id).then((restaurant) => {
+      setSelectedRestaurant(restaurant.data);
+      setSelectedCategories(restaurant.data.categories);
+      InteractionManager.runAfterInteractions(() => setIsReady(true));
+    });
   }, []);
-
-
 
   const scrollY = useRef(new Animated.Value(0)).current;
 
@@ -262,6 +338,8 @@ style={{
     isVisible: false,
     product: null,
   });
+
+  const renderCartItem = ({ item }) => <CartCard item={item} />;
 
   function renderRestaurantHeader() {
     return (
@@ -367,68 +445,69 @@ style={{
             ],
           }}
         >
-           {
-            Platform.OS == 'ios' ?
+          {Platform.OS == "ios" ? (
             <RenderAddressCard restaurant={selectedRestaurant} />
-            : 
-            <View
-            style={{
-              flex: 1,
-              flexDirection: "column",
-              padding: SIZES.padding,
-              justifyContent: "space-between",
-            }}
-          >
+          ) : (
             <View
               style={{
                 flex: 1,
-                flexDirection: "row",
-                
+                flexDirection: "column",
+                padding: SIZES.padding,
+                justifyContent: "space-between",
               }}
             >
-              <Feather style={{ alignSelf: "center" }} name="clock" color={COLORS.darkGray} size={18} />
-      
-              <Text
+              <View
                 style={{
-                  color: COLORS.darkGray,
-                  ...FONTS.h3,
-                  marginLeft: 8,
-                  textAlignVertical: "center",
-                  fontWeight: "bold",
+                  flex: 1,
+                  flexDirection: "row",
                 }}
               >
-                {selectedRestaurant?.duration}
-              </Text>
-            </View>
-            <View
-              style={{
-                flex: 2,
-                flexDirection: "row",
-                // alignItems: "center",
-              }}
-            >
-              <Feather
-                style={{ alignSelf: "center" }}
-                name="map-pin"
-                color={COLORS.darkGray}
-                size={18}
-              />
-      
-              <Text
+                <Feather
+                  style={{ alignSelf: "center" }}
+                  name="clock"
+                  color={COLORS.darkGray}
+                  size={18}
+                />
+
+                <Text
+                  style={{
+                    color: COLORS.darkGray,
+                    ...FONTS.h3,
+                    marginLeft: 8,
+                    textAlignVertical: "center",
+                    fontWeight: "bold",
+                  }}
+                >
+                  {selectedRestaurant?.duration}
+                </Text>
+              </View>
+              <View
                 style={{
-                  color: COLORS.darkGray,
-                  ...FONTS.h4,
-                  marginHorizontal: 8,
-                  textAlignVertical: 'center'
+                  flex: 2,
+                  flexDirection: "row",
+                  // alignItems: "center",
                 }}
               >
-                {selectedRestaurant?.address}
-              </Text>
+                <Feather
+                  style={{ alignSelf: "center" }}
+                  name="map-pin"
+                  color={COLORS.darkGray}
+                  size={18}
+                />
+
+                <Text
+                  style={{
+                    color: COLORS.darkGray,
+                    ...FONTS.h4,
+                    marginHorizontal: 8,
+                    textAlignVertical: "center",
+                  }}
+                >
+                  {selectedRestaurant?.address}
+                </Text>
+              </View>
             </View>
-          </View>
-
-
-          }
+          )}
         </Animated.View>
       </View>
     );
@@ -535,8 +614,7 @@ style={{
             backgroundColor: COLORS.transparent,
           }}
           onPress={() => {
-            setSelectedTab(constants.screens.cart)
-            navigation.navigate('MainLayout')
+            showCartPanel();
           }}
         >
           {!cartItems.length ? null : (
@@ -652,331 +730,173 @@ style={{
 
       {/* header bar */}
 
-      {/* <SwipeablePanel
-        fullWidth
-        closeOnTouchOutside
-        onlySmall
-        isActive={isPanelActive}
-        onClose={closePanel}
-        onPressCloseButton={closePanel}
-        style={{
-          flex: 1,
-          marginTop: 50,
-          paddingHorizontal: SIZES.padding,
-        }}
+      <Modalize
+        ref={itemModalRef}
+        onClose={() => closePanel()}
+        adjustToContentHeight
       >
-        <ItemCard item={selectedItem} />
         <View
           style={{
-            flex: 1,
-            flexDirection: "row",
             paddingHorizontal: SIZES.padding,
-            marginVertical: 5,
-            justifyContent: "space-between",
+            marginBottom: 40,
           }}
         >
+          <ItemCard item={selectedItem} />
           <View
             style={{
               flex: 1,
-              alignItems: "center",
-              justifyContent: "center",
+              flexDirection: "row",
+              paddingHorizontal: SIZES.padding,
+              marginVertical: 5,
+              justifyContent: "space-between",
             }}
           >
-            <TouchableOpacity
+            <View
               style={{
-                opacity: itemCount < 2 ? 0.5 : 1,
-              }}
-              disabled={itemCount < 2}
-              onPress={() =>
-                Haptics.notificationAsync(
-                  Haptics.NotificationFeedbackType.Success
-                ).then(setItemCount(itemCount - 1))
-              }
-            >
-              <View
-                style={{
-                  width: 35,
-                  height: 35,
-
-                  justifyContent: "center",
-
-                  backgroundColor: COLORS.primary,
-                }}
-              >
-                <Text
-                  style={{
-                    textAlign: "center",
-                    ...FONTS.h2,
-                    color: COLORS.white,
-                  }}
-                >
-                  -
-                </Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-          <View
-            style={{
-              flex: 1,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Text
-              style={{
-                ...FONTS.largeTitle,
-                color: COLORS.darkGray,
-                textAlign: "center",
-              }}
-            >
-              {itemCount}
-            </Text>
-          </View>
-          <View
-            style={{
-              flex: 1,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <TouchableOpacity
-              style={{
-                height: 35,
+                flex: 1,
                 alignItems: "center",
                 justifyContent: "center",
-                width: 35,
-                opacity: 1,
               }}
-              onPress={() =>
-                Haptics.notificationAsync(
-                  Haptics.NotificationFeedbackType.Success
-                ).then(setItemCount(itemCount + 1))
-              }
             >
-              <View
+              <TouchableOpacity
                 style={{
-                  width: 35,
-                  height: 35,
-
-                  justifyContent: "center",
-
-                  backgroundColor: COLORS.primary,
+                  opacity: itemCount < 2 ? 0.5 : 1,
                 }}
+                disabled={itemCount < 2}
+                onPress={() =>
+                  Haptics.notificationAsync(
+                    Haptics.NotificationFeedbackType.Success
+                  ).then(setItemCount(itemCount - 1))
+                }
               >
-                <Text
+                <View
                   style={{
-                    textAlign: "center",
-                    ...FONTS.h2,
-                    color: COLORS.white,
+                    width: 35,
+                    height: 35,
+
+                    justifyContent: "center",
+
+                    backgroundColor: COLORS.primary,
                   }}
                 >
-                  +
-                </Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-        </View>
-        <View style={{ flex: 1 }}>
-          <TouchableOpacity
-            onPress={() => addItemsTOCart()}
-            style={{
-              borderColor: COLORS.primary,
-              borderWidth: 1,
-
-              width: "100%",
-              height: 50,
-              justifyContent: "center",
-              alignItems: "center",
-              borderRadius: 10,
-              fontFamily: "PoppinsLight",
-            }}
-          >
-            <Text
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      ...FONTS.h2,
+                      color: COLORS.white,
+                    }}
+                  >
+                    -
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+            <View
               style={{
-                color: COLORS.primary,
-                fontSize: 18,
-                fontWeight: "bold",
+                flex: 1,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text
+                style={{
+                  ...FONTS.largeTitle,
+                  color: COLORS.darkGray,
+                  textAlign: "center",
+                }}
+              >
+                {itemCount}
+              </Text>
+            </View>
+            <View
+              style={{
+                flex: 1,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <TouchableOpacity
+                style={{
+                  height: 35,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: 35,
+                  opacity: 1,
+                }}
+                onPress={() =>
+                  Haptics.notificationAsync(
+                    Haptics.NotificationFeedbackType.Success
+                  ).then(setItemCount(itemCount + 1))
+                }
+              >
+                <View
+                  style={{
+                    width: 35,
+                    height: 35,
+
+                    justifyContent: "center",
+
+                    backgroundColor: COLORS.primary,
+                  }}
+                >
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      ...FONTS.h2,
+                      color: COLORS.white,
+                    }}
+                  >
+                    +
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={{ flex: 1 }}>
+            <TouchableOpacity
+              onPress={() => addItemsTOCart()}
+              style={{
+                borderColor: COLORS.primary,
+                borderWidth: 1,
+
+                width: "100%",
+                height: 50,
+                justifyContent: "center",
+                alignItems: "center",
+                borderRadius: 10,
                 fontFamily: "PoppinsLight",
               }}
             >
-              Add To Cart
-            </Text>
-          </TouchableOpacity>
+              <Text
+                style={{
+                  color: COLORS.primary,
+                  fontSize: 18,
+                  fontWeight: "bold",
+                  fontFamily: "PoppinsLight",
+                }}
+              >
+                Add To Cart
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </SwipeablePanel> */}
-
-      <Modalize ref={itemModalRef} 
-      onClose={() => closePanel()}
-      adjustToContentHeight>
-        <View 
-        style={{
+      </Modalize>
+      <Modalize
+        ref={cartModalRef}
+        modalStyle={{
           paddingHorizontal: SIZES.padding,
-          marginBottom: 40
         }}
-        >
-        <ItemCard item={selectedItem} />
-        <View
-          style={{
-            flex: 1,
-            flexDirection: "row",
-            paddingHorizontal: SIZES.padding,
-            marginVertical: 5,
-            justifyContent: "space-between",
-          }}
-        >
-          <View
-            style={{
-              flex: 1,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <TouchableOpacity
-              style={{
-                opacity: itemCount < 2 ? 0.5 : 1,
-              }}
-              disabled={itemCount < 2}
-              onPress={() =>
-                Haptics.notificationAsync(
-                  Haptics.NotificationFeedbackType.Success
-                ).then(setItemCount(itemCount - 1))
-              }
-            >
-              <View
-                style={{
-                  width: 35,
-                  height: 35,
+        adjustToContentHeight={true}
+        HeaderComponent={renderCartModalHeader()}
+        FooterComponent={renderCartModalFooter()}
+        flatListProps={{
+          data: cartItems,
+          renderItem: renderCartItem,
+          keyExtractor: (item) => item.id + item.name,
+          showsVerticalScrollIndicator: false,
+        }}
+      />
 
-                  justifyContent: "center",
-
-                  backgroundColor: COLORS.primary,
-                }}
-              >
-                <Text
-                  style={{
-                    textAlign: "center",
-                    ...FONTS.h2,
-                    color: COLORS.white,
-                  }}
-                >
-                  -
-                </Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-          <View
-            style={{
-              flex: 1,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Text
-              style={{
-                ...FONTS.largeTitle,
-                color: COLORS.darkGray,
-                textAlign: "center",
-              }}
-            >
-              {itemCount}
-            </Text>
-          </View>
-          <View
-            style={{
-              flex: 1,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <TouchableOpacity
-              style={{
-                height: 35,
-                alignItems: "center",
-                justifyContent: "center",
-                width: 35,
-                opacity: 1,
-              }}
-              onPress={() =>
-                Haptics.notificationAsync(
-                  Haptics.NotificationFeedbackType.Success
-                ).then(setItemCount(itemCount + 1))
-              }
-            >
-              <View
-                style={{
-                  width: 35,
-                  height: 35,
-
-                  justifyContent: "center",
-
-                  backgroundColor: COLORS.primary,
-                }}
-              >
-                <Text
-                  style={{
-                    textAlign: "center",
-                    ...FONTS.h2,
-                    color: COLORS.white,
-                  }}
-                >
-                  +
-                </Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-        </View>
-        <View style={{ flex: 1 }}>
-          <TouchableOpacity
-            onPress={() => addItemsTOCart()}
-            style={{
-              borderColor: COLORS.primary,
-              borderWidth: 1,
-
-              width: "100%",
-              height: 50,
-              justifyContent: "center",
-              alignItems: "center",
-              borderRadius: 10,
-              fontFamily: "PoppinsLight",
-            }}
-          >
-            <Text
-              style={{
-                color: COLORS.primary,
-                fontSize: 18,
-                fontWeight: "bold",
-                fontFamily: "PoppinsLight",
-              }}
-            >
-              Add To Cart
-            </Text>
-          </TouchableOpacity>
-        </View>
-        </View>
-      </Modalize>
-      <Modalize ref={cartModalRef} disableScrollIfPossible={true} HeaderComponent={renderCartModalHeader()} >
-        <View
-          style={{
-            flex: 1,
-            flexDirection: "column",
-            justifyContent: "center",
-          }}
-        >
-          <View
-            style={{
-              flex: 3,
-            }}
-          >
-            <CartTab />
-          </View>
-          <View
-            style={{
-              flex: 3,
-              backgroundColor: "red",
-            }}
-          ></View>
-        </View>
-      </Modalize>
       {/* <SwipeablePanel
         fullWidth
         closeOnTouchOutside
@@ -1043,7 +963,7 @@ const mapStateToProps = (state) => {
   return {
     cartItems: state.cartReducer.cartItems,
     restaurant_id: state.cartReducer.restaurant_id,
-    selectedTab: state.tabReducer.selectedTab
+    selectedTab: state.tabReducer.selectedTab,
   };
 };
 const mapDispatchToProps = (dispatch) => {
@@ -1054,7 +974,9 @@ const mapDispatchToProps = (dispatch) => {
     destroyCart: () => {
       return dispatch(destroyCart());
     },
-    setSelectedTab: (selectedTab) => { return dispatch(setSelectedTab(selectedTab)) }
+    setSelectedTab: (selectedTab) => {
+      return dispatch(setSelectedTab(selectedTab));
+    },
   };
 };
 
