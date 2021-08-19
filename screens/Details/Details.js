@@ -247,7 +247,7 @@ const Details = ({
   const renderCartModalFooter = () => {
     if (cartItems.length) {
       return (
-        <View style={{ flex: 1, marginTop: SIZES.padding, marginBottom: 80 }}>
+        <View style={{ flex: 1, marginTop: SIZES.padding, marginBottom: Platform.OS == 'ios' ? 80 : 60}}>
           <TouchableOpacity
             onPress={() => {
               setSelectedTab(constants.screens.cart);
@@ -679,7 +679,7 @@ let val = 0
 
   return !isReady ? (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <ActivityIndicator size="small" />
+      <ActivityIndicator size="small" color={COLORS.gray}/>
     </View>
   ) : (
     <View
@@ -757,7 +757,7 @@ let val = 0
         <View
           style={{
             paddingHorizontal: SIZES.padding,
-            marginBottom: 40,
+            marginBottom: Platform.OS == 'ios' ? 30 : 0,
           }}
         >
           <ItemCard item={selectedItem} cartQuantity={0}/>

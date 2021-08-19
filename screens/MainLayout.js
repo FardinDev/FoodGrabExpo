@@ -369,7 +369,7 @@ const MainLayout = ({ drawerAnimationStyle, navigation, selectedTab, setSelected
             {/* Footer */}
             <View
                 style={{
-                    height: Platform.OS === 'ios' ? 90 : 80,
+                    height: Platform.OS === 'ios' ? 90 : 70,
                     justifyContent: 'flex-end'
                 }}
             >
@@ -386,7 +386,7 @@ const MainLayout = ({ drawerAnimationStyle, navigation, selectedTab, setSelected
                         top: -20,
                         left: 0,
                         right: 0,
-                        height: 80,
+                        height: 70,
                         borderTopLeftRadius: 15,
                         borderTopRightRadius: 15
                     }}

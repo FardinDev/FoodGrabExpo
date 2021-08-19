@@ -13,6 +13,7 @@ import rootReducer from "./stores/rootReducer";
 import { AuthContext } from "./components/context";
 import { useFonts } from 'expo-font';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Checkout from './screens/Checkout/Checkout';
 
 const Stack = createStackNavigator();
 
@@ -190,6 +191,9 @@ const App = ({navigation}) => {
               <Stack.Screen name="Details" component={Details} />
               <Stack.Screen name="Help" component={Help} />
               <Stack.Screen name="Cart" component={CartTab} />
+              <Stack.Screen name="Checkout" screenOptions={{
+                headerShown: true
+              }} component={Checkout} />
             </Stack.Navigator>
           ) : (
             <AuthRoot />

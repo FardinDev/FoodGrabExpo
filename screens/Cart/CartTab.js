@@ -9,6 +9,7 @@ import {
   Image,
   ActivityIndicator,
   Alert,
+  Platform,
 } from "react-native";
 
 import { Modalize } from "react-native-modalize";
@@ -175,8 +176,12 @@ const CartTab = ({ cartItems, total, restaurantId, navigation }) => {
         />
         <Text
           style={{
+           
             ...FONTS.body2,
             textAlign: "center",
+            textAlignVertical: 'bottom',
+            position: 'absolute',
+            bottom: Platform.OS == 'ios' ? -40 : -120
           }}
         >
           Your cart is empty! Please Add Items
@@ -211,7 +216,7 @@ const CartTab = ({ cartItems, total, restaurantId, navigation }) => {
       >
         {isLoading ? (
           <View style={{ flex: 1, justifyContent: "center", height: 140 }}>
-            <ActivityIndicator size={"small"} />
+            <ActivityIndicator size={"small"} color={COLORS.gray} />
           </View>
         ) : (
           <View style={{ flex: 1 }}>
@@ -382,7 +387,7 @@ const CartTab = ({ cartItems, total, restaurantId, navigation }) => {
                   ...FONTS.body3,
                   textAlign: "center",
                   fontWeight: "bold",
-                  color: COLORS.primary,
+                  color: COLORS.green,
                 }}
               >
                 {cartValues.message}
@@ -394,7 +399,7 @@ const CartTab = ({ cartItems, total, restaurantId, navigation }) => {
         <View style={{ flex: 1, marginTop: 5, marginBottom: 10 }}>
           <TouchableOpacity
             disabled={isLoading}
-            onPress={() => console.log("checkout")}
+            onPress={() => navigation.navigate('Checkout')}
             style={{
               borderColor: COLORS.primary,
               borderWidth: 1,

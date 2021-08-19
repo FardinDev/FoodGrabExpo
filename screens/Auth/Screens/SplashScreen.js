@@ -25,7 +25,7 @@ const SplashScreen = ({ navigation }) => {
   if (!loaded) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="small" />
+        <ActivityIndicator size="small" color={COLORS.gray}/>
       </View>
     );
   }

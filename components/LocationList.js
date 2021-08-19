@@ -20,6 +20,7 @@ const LocationList = ({ onCloseAction }) => {
   const [locationData, setLocationData] = React.useState([]);
   const [masterLocationData, setMasterLocationData] = React.useState([]);
   const [selectedIndex, setSelectedindex] = React.useState(null);
+  const [isReady, setIsReady] = React.useState(false);
 const api = new Api();
 
   const getLocations = async () => {
@@ -59,6 +60,7 @@ const api = new Api();
     let isMounted = true;               
     getLocations().then((locations) => {
       if (isMounted){ setLocationData(locations); setMasterLocationData(locations)}
+      setIsReady(true)
     })
 
     return () => { isMounted = false };
@@ -82,11 +84,11 @@ const api = new Api();
   };
 
 
-  if (locationData.length < 1) {
+  if (!isReady) {
     return(
 
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', height: 500}}> 
-        <ActivityIndicator size={'small'} />
+        <ActivityIndicator size={'small'} color={COLORS.gray}/>
     </View>
     )
   }
