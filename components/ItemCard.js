@@ -5,7 +5,7 @@ import Animated from "react-native-reanimated";
 
 import { COLORS, FONTS, icons, SIZES } from "../constants";
 
-const ItemCard = ({ item, onPress }) => {
+const ItemCard = ({ item, onPress, cartQuantity  }) => {
  
   return (
     <Animated.View>
@@ -35,6 +35,35 @@ const ItemCard = ({ item, onPress }) => {
               backgroundColor: COLORS.lightGray1,
             }}
           >
+            {
+              cartQuantity != 0 ?
+            <View
+              style={{
+                zIndex: 10,
+                position: "absolute",
+                top: -5,
+                right: -5,
+                height: 20,
+                width: 20,
+                borderRadius: 20,
+                backgroundColor: COLORS.primary,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text
+                style={{
+                  ...FONTS.h3,
+                  color: COLORS.white,
+                  textAlign: 'center'
+                }}
+              >{cartQuantity}</Text>
+            </View>
+            : 
+            null
+            }
+
+
             <Image
               resizeMode="cover"
               source={{uri: item?.image}}

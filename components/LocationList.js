@@ -83,9 +83,12 @@ const api = new Api();
 
 
   if (locationData.length < 1) {
-    <View style={{ flex: 1, alignItems: 'center'}}> 
+    return(
+
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', height: 500}}> 
         <ActivityIndicator size={'small'} />
     </View>
+    )
   }
   return (
     <KeyboardAvoidingView>
@@ -99,6 +102,7 @@ const api = new Api();
           paddingHorizontal: SIZES.radius,
           borderRadius: SIZES.radius,
           backgroundColor: COLORS.lightGray2,
+          
         }}
       >
         {/* Icon */}
@@ -107,7 +111,7 @@ const api = new Api();
           style={{
             height: 20,
             width: 20,
-            tintColor: COLORS.black,
+            tintColor: COLORS.darkGray2,
           }}
         />
 
@@ -125,6 +129,7 @@ const api = new Api();
       <Animated.FlatList
         style={{
           backgroundColor: COLORS.lightGray1,
+          marginBottom: 300
         }}
         data={locationData}
         keyExtractor={(item) => `${item.id}`}

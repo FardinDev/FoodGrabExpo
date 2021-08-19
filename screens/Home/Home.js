@@ -426,7 +426,7 @@ useEffect( () => {
                     style={{
                         height: 20,
                         width: 20,
-                        tintColor: COLORS.black
+                        tintColor: COLORS.darkGray2
                     }}
                 />
 
@@ -449,7 +449,7 @@ useEffect( () => {
                         style={{
                             height: 20,
                             width: 20,
-                            tintColor: COLORS.black
+                            tintColor: COLORS.darkGray2
                         }}
                     />
                 </TouchableOpacity>

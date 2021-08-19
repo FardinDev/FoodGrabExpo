@@ -15,6 +15,8 @@ import {
   Alert,
   ImageBackground,
 } from "react-native";
+import * as Animatable from "react-native-animatable";
+
 import * as Haptics from "expo-haptics";
 
 import { connect, useSelector } from "react-redux";
@@ -513,6 +515,20 @@ const Details = ({
     );
   }
 
+  const getCartQuantity = (id) => {
+let val = 0
+    if (cartItems.length) {
+
+     cartItems.forEach(item => {
+        if (item.id === id) {
+          val = item.quantity
+        }
+      });
+    
+    }
+ return val;
+  }
+
   function renderHeaderBar() {
     return (
       <View
@@ -618,7 +634,10 @@ const Details = ({
           }}
         >
           {!cartItems.length ? null : (
-            <View
+            <Animatable.View
+            animation="pulse" 
+            delay={100}
+            iterationCount="infinite"
               style={{
                 position: "absolute",
                 top: -5,
@@ -637,7 +656,7 @@ const Details = ({
                   color: COLORS.white,
                 }}
               />
-            </View>
+            </Animatable.View>
           )}
           <Image
             source={icons.cart}
@@ -718,7 +737,7 @@ const Details = ({
                       key={food.id}
                       onPress={() => showPanel(food)}
                     >
-                      <ItemCard item={food} />
+                      <ItemCard item={food} cartQuantity={getCartQuantity(food.id)}/>
                     </TouchableWithoutFeedback>
                   );
                 })}
@@ -741,7 +760,7 @@ const Details = ({
             marginBottom: 40,
           }}
         >
-          <ItemCard item={selectedItem} />
+          <ItemCard item={selectedItem} cartQuantity={0}/>
           <View
             style={{
               flex: 1,

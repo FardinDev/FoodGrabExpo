@@ -206,6 +206,7 @@ const CartTab = ({ cartItems, total, restaurantId, navigation }) => {
           flexDirection: "column",
           paddingHorizontal: SIZES.padding,
           marginVertical: SIZES.padding,
+          marginBottom: 200,
         }}
       >
         {isLoading ? (
@@ -234,32 +235,11 @@ const CartTab = ({ cartItems, total, restaurantId, navigation }) => {
                     textAlign: "center",
                   }}
                 >
-                  {total} TK
+                  {total} Tk
                 </Text>
               </View>
             </View>
-            <View style={{ flexDirection: "row", marginVertical: 5 }}>
-              <View style={{ flex: 4 }}>
-                <Text
-                  style={{
-                    ...FONTS.body3,
-                    textAlign: "left",
-                  }}
-                >
-                  Delivery Charge
-                </Text>
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text
-                  style={{
-                    ...FONTS.body3,
-                    textAlign: "center",
-                  }}
-                >
-                  {cartValues?.delivery_charge || 0} Tk
-                </Text>
-              </View>
-            </View>
+
             {cartValues?.discount ? (
               <View style={{ flexDirection: "row", marginVertical: 5 }}>
                 <View style={{ flex: 4 }}>
@@ -292,6 +272,29 @@ const CartTab = ({ cartItems, total, restaurantId, navigation }) => {
                 </View>
               </View>
             ) : null}
+            <View style={{ flexDirection: "row", marginVertical: 5 }}>
+              <View style={{ flex: 4 }}>
+                <Text
+                  style={{
+                    ...FONTS.body3,
+                    textAlign: "left",
+                  }}
+                >
+                  Delivery Charge
+                </Text>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text
+                  style={{
+                    ...FONTS.body3,
+                    textAlign: "center",
+                  }}
+                >
+                  {cartValues?.delivery_charge || 0} Tk
+                </Text>
+              </View>
+            </View>
+            
             <View
               style={{
                 flexDirection: "row",
@@ -319,6 +322,7 @@ const CartTab = ({ cartItems, total, restaurantId, navigation }) => {
                   Total
                 </Text>
               </View>
+              
               {cartValues?.discount ? (
                 <View
                   style={{
@@ -338,7 +342,7 @@ const CartTab = ({ cartItems, total, restaurantId, navigation }) => {
                       color: COLORS.gray,
                     }}
                   >
-                    {total + cartValues?.delivery_charge} tk
+                    {total + cartValues?.delivery_charge} Tk
                   </Text>
 
                   <Text
@@ -348,7 +352,7 @@ const CartTab = ({ cartItems, total, restaurantId, navigation }) => {
                       color: COLORS.green,
                     }}
                   >
-                    {cartValues.total + cartValues?.delivery_charge} tk
+                    {cartValues.total} Tk
                   </Text>
                 </View>
               ) : (
@@ -367,7 +371,7 @@ const CartTab = ({ cartItems, total, restaurantId, navigation }) => {
                       color: COLORS.green,
                     }}
                   >
-                    {total + cartValues?.delivery_charge} tk
+                    {total + cartValues?.delivery_charge} Tk
                   </Text>
                 </View>
               )}

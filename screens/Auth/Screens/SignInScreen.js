@@ -267,7 +267,7 @@ const SignInScreen = ({ navigation }) => {
               
             </View>
             {data.isValidUser || data.mobile.length === 0 ? null : (
-              <Animatable.View animation="fadeInLeft" duration={500}>
+              <Animatable.View animation="fadeInLeft" duration={300}>
                 <Text style={styles.errorMsg}>
                   Phone no. must be 11 characters long.
                 </Text>
@@ -309,7 +309,7 @@ const SignInScreen = ({ navigation }) => {
               </TouchableOpacity>
             </View>
             {data.isValidPassword || data.password.length === 0 ? null : (
-              <Animatable.View animation="fadeInLeft" duration={500}>
+              <Animatable.View animation="fadeInLeft" duration={300}>
                 <Text style={styles.errorMsg}>
                   Password must be 8 characters long.
                 </Text>

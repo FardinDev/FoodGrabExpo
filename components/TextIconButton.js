@@ -32,7 +32,7 @@ const TextIconButton = ({ containerStyle, label, labelStyle, icon, iconStyle, on
                     marginLeft: 5,
                     width: 20,
                     height: 20,
-                    tintColor: COLORS.black,
+                    tintColor: COLORS.darkGray2,
                     ...iconStyle
                 }}
             />
