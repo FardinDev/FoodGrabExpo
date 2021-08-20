@@ -214,6 +214,14 @@ const [loggedinUserImage, setLoggedinUserImage] = React.useState('');
                         }}
                     />
 
+                        <CustomDrawerItem
+                        label="My Orders"
+                        icon={icons.orders}
+                        onPress={() => {
+                            navigation.push("Orders")
+                        }}
+                    />  
+
                     <CustomDrawerItem
                         label="Track Your Order"
                         icon={icons.location}
@@ -239,7 +247,7 @@ const [loggedinUserImage, setLoggedinUserImage] = React.useState('');
                         label="Help Center"
                         icon={icons.help}
                         onPress={() => {
-                            navigation.push("Help", {navigation})
+                            navigation.push("Help")
                         }}
                     />
                 </View>

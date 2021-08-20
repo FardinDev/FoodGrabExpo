@@ -43,10 +43,10 @@ const sushi = require("../assets/icons/sushi.png");
 const user = require("../assets/icons/user.png");
 const logout = require("../assets/icons/logout.png");
 const next = require("../assets/icons/next.png");
-
+const orders = require("../assets/icons/orders.png");
 
 export default {
-   
+    orders,
     coupon,
     cross,
     cart,

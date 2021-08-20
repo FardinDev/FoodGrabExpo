@@ -14,6 +14,8 @@ import { AuthContext } from "./components/context";
 import { useFonts } from 'expo-font';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Checkout from './screens/Checkout/Checkout';
+import Orders from './screens/Order/Orders';
+import OrderDetails from './screens/Order/OrderDetails';
 
 const Stack = createStackNavigator();
 
@@ -190,6 +192,8 @@ const App = ({navigation}) => {
               <Stack.Screen name="Home" component={CustomDrawer} />
               <Stack.Screen name="Details" component={Details} />
               <Stack.Screen name="Help" component={Help} />
+              <Stack.Screen name="Orders" component={Orders} />
+              <Stack.Screen name="OrderDetails" component={OrderDetails} />
               <Stack.Screen name="Cart" component={CartTab} />
               <Stack.Screen name="Checkout" screenOptions={{
                 headerShown: true

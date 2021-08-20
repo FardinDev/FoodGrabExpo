@@ -91,4 +91,13 @@ export default class Api {
     return this.init().post("/restaurant/get-values", data);
   };
 
+  placeOrder = (data) => {
+    
+    return this.init().post("/order/create", data);
+  };
+
+  orderList = () => {
+    return this.init().get("/order/list");
+  };
+
 }

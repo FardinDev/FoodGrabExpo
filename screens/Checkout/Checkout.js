@@ -24,15 +24,32 @@ import { IconButton } from "../../components";
 import CartCard from "../../components/CartCard";
 import ItemCard from "../../components/ItemCard";
 import LocationList from "../../components/LocationList";
-import { COLORS, FONTS, icons, images, SIZES } from "../../constants";
+import {
+  COLORS,
+  constants,
+  FONTS,
+  icons,
+  images,
+  SIZES,
+} from "../../constants";
+import { setSelectedTab } from "../../stores/tab/tabActions";
+import { destroyCart } from "../../stores/cart/cartActions";
 
-const Checkout = ({ cartItems, total, restaurantId, navigation }) => {
+const Checkout = ({
+  cartItems,
+  total,
+  restaurantId,
+  navigation,
+  setSelectedTab,
+  destroyCart,
+}) => {
   const [isLoading, setIsloading] = React.useState(false);
   const [cartValues, setCartValues] = React.useState({});
   const [userCurrentLocation, setUserCurrentLocation] = React.useState("");
   const [userName, setUserName] = React.useState("");
   const [address, setAddress] = React.useState("");
   const [addressError, setAddressError] = React.useState(false);
+  const [submitting, setSubmitting] = React.useState(false);
   const api = new Api();
   const locationModalRef = useRef(false);
 
@@ -41,6 +58,12 @@ const Checkout = ({ cartItems, total, restaurantId, navigation }) => {
   };
 
   React.useEffect(() => {
+
+    if (!cartItems.length) {
+
+      setSelectedTab(constants.screens.home);
+      navigation.navigate('MainLayout')
+    }
     if (total > 0) {
       setIsloading(true);
       getValues(total).then((data) => {
@@ -57,13 +80,10 @@ const Checkout = ({ cartItems, total, restaurantId, navigation }) => {
   };
 
   const onChangeAddress = (text) => {
-
-    
-    if(/^[\.a-zA-Z0-9,!? ]*$/.test(text)){
-
+    if (/^[\.a-zA-Z0-9,!? ]*$/.test(text)) {
       setAddress(text);
     }
-   
+
     if (address.length < 10) {
       setAddressError(true);
     } else {
@@ -71,11 +91,55 @@ const Checkout = ({ cartItems, total, restaurantId, navigation }) => {
     }
   };
 
-  const placeOrder = () => {
+  const orderSubmit = async () => {
     if (address.length < 10) {
-      alert("Please Enter Your Address");
+      alert("Please Enter Your Full Address");
       setAddressError(true);
+    } else {
+      setSubmitting(true);
+      const userAddress = await AsyncStorage.setItem("userAddress", address);
+      let data = {
+        restaurant_id: restaurantId,
+        location: userCurrentLocation,
+        address: address,
+        cart: cartItems,
+      };
+
+      placeOrder(data)
+        .then((res) => {
+          setSubmitting(false);
+          destroyCart();
+          setSelectedTab(constants.screens.home);
+          navigation.navigate("OrderDetails", {order: res.data});
+        })
+        .catch((err) => console.log(err));
     }
+  };
+
+  const placeOrder = async (data) => {
+    const api_token = await AsyncStorage.getItem("userToken");
+
+    api.api_token = api_token;
+
+    return await api
+      .placeOrder(data)
+      .then((resData) => {
+        if (resData.data.code !== 200) {
+          Alert.alert("Error!", resData.data.message, [{ text: "Okay" }]);
+          return null;
+        }
+
+        return resData.data;
+      })
+
+      .catch((error) => {
+        Alert.alert(
+          "Error!",
+          "Something Went Wrong. Please Try after some time",
+          [{ text: "Okay" }]
+        );
+        return null;
+      });
   };
 
   const renderHeader = () => {
@@ -95,10 +159,12 @@ const Checkout = ({ cartItems, total, restaurantId, navigation }) => {
   };
   const getValues = async (total) => {
     // let location = await AsyncStorage.getItem('userLocation');
+    const userAddress = await AsyncStorage.getItem("userAddress");
     const userLocation = await AsyncStorage.getItem("userLocation");
     const userName = await AsyncStorage.getItem("userName");
     setUserCurrentLocation(userLocation);
     setUserName(userName);
+    setAddress(userAddress || "");
     const api_token = await AsyncStorage.getItem("userToken");
 
     let data = {
@@ -134,11 +200,10 @@ const Checkout = ({ cartItems, total, restaurantId, navigation }) => {
       <View
         style={{
           flexDirection: "column",
-    
+
           paddingHorizontal: SIZES.padding,
           backgroundColor: COLORS.white,
-          ...style.shadow
-          
+          ...style.shadow,
         }}
       >
         <View
@@ -161,9 +226,7 @@ const Checkout = ({ cartItems, total, restaurantId, navigation }) => {
             CUSTOMER
           </Text>
 
-          
-            <Text style={{ ...FONTS.h3 }}>{userName}</Text>
-            
+          <Text style={{ ...FONTS.h3 }}>{userName}</Text>
         </View>
         <View
           style={{
@@ -213,7 +276,6 @@ const Checkout = ({ cartItems, total, restaurantId, navigation }) => {
             flexDirection: "column",
             marginTop: SIZES.padding,
             justifyContent: "space-between",
-          
           }}
         >
           <TextInput
@@ -235,12 +297,12 @@ const Checkout = ({ cartItems, total, restaurantId, navigation }) => {
             }}
             style={{
               width: "100%",
-              
+
               backgroundColor: COLORS.white,
               color: COLORS.primary,
             }}
           />
-          
+
           <HelperText
             type="error"
             style={{
@@ -273,13 +335,11 @@ const Checkout = ({ cartItems, total, restaurantId, navigation }) => {
             Payment Method
           </Text>
 
-          
-            <Text style={{ ...FONTS.h3 }}>Cash on Delivey (COD)</Text>
-            
+          <Text style={{ ...FONTS.h3 }}>Cash on Delivey (COD)</Text>
         </View>
       </View>
     );
-  }
+  };
 
   const renderCheckoutHeader = () => {
     return (
@@ -291,12 +351,9 @@ const Checkout = ({ cartItems, total, restaurantId, navigation }) => {
           justifyContent: "space-between",
           paddingHorizontal: SIZES.padding,
           paddingBottom: 10,
-          ...style.shadow
-         
+          ...style.shadow,
         }}
       >
-  
-
         <Animated.View
           style={{
             position: "absolute",
@@ -307,7 +364,6 @@ const Checkout = ({ cartItems, total, restaurantId, navigation }) => {
             backgroundColor: COLORS.white2,
           }}
         />
-
 
         <View
           style={{
@@ -354,93 +410,64 @@ const Checkout = ({ cartItems, total, restaurantId, navigation }) => {
             }}
           />
         </TouchableOpacity>
-   
       </View>
     );
-  }
+  };
 
   const renderFlatListHeader = () => {
     return (
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : null}
-        style={{
-          marginBottom: Platform.OS === "ios" ? 20 : 20,
-        }}
-      >
-        {renderDeliveryTo()}
-      <View
-      style={{
-        height: 30,
-        backgroundColor: COLORS.lightGray1,
-        justifyContent: 'center'
-      }}
-      >
-<Text 
-style={{
-  textAlign: 'center',
-  ...FONTS.h3,
-  color: COLORS.darkGray
-}}
->Order Details</Text>
-      </View>
-      </KeyboardAvoidingView>
-    </TouchableWithoutFeedback>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : null}
+          style={{
+            marginBottom: Platform.OS === "ios" ? 20 : 20,
+          }}
+        >
+          {renderDeliveryTo()}
+          <View
+            style={{
+              height: 30,
+              backgroundColor: COLORS.lightGray1,
+              justifyContent: "center",
+            }}
+          >
+            <Text
+              style={{
+                textAlign: "center",
+                ...FONTS.h3,
+                color: COLORS.darkGray,
+              }}
+            >
+              Order Details
+            </Text>
+          </View>
+        </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
     );
   };
 
   const renderFlatListFooter = () => {
     return (
       <View
-      style={{
-        borderTopColor: COLORS.lightGray1,
-        borderTopWidth: 1,
-        backgroundColor: COLORS.white,
-        flex: 1,
-        flexDirection: "column",
-        padding: SIZES.padding,
-        marginVertical: SIZES.padding,
-        marginBottom: 200,
-        justifyContent: "flex-end",
-        ...style.shadow
-       
-    
-        
-       
-      }}
-    >
-      {isLoading ? (
-        <View style={{ flex: 1, justifyContent: "center" }}>
-          <ActivityIndicator size={"small"} color={COLORS.gray} />
-        </View>
-      ) : (
-        <View style={{ flex: 1 }}>
-          <View style={{ flexDirection: "row", marginVertical: 2 }}>
-            <View style={{ flex: 4 }}>
-              <Text
-                style={{
-                  ...FONTS.body3,
-                  textAlign: "left",
-                  color: COLORS.darkGray,
-                }}
-              >
-                Subtotal
-              </Text>
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text
-                style={{
-                  ...FONTS.body3,
-                  textAlign: "center",
-                  color: COLORS.darkGray,
-                }}
-              >
-                {total} Tk
-              </Text>
-            </View>
+        style={{
+          borderTopColor: COLORS.lightGray1,
+          borderTopWidth: 1,
+          backgroundColor: COLORS.white,
+          flex: 1,
+          flexDirection: "column",
+          padding: SIZES.padding,
+          marginVertical: SIZES.padding,
+          marginBottom: 200,
+          justifyContent: "flex-end",
+          ...style.shadow,
+        }}
+      >
+        {isLoading ? (
+          <View style={{ flex: 1, justifyContent: "center" }}>
+            <ActivityIndicator size={"small"} color={COLORS.gray} />
           </View>
-
-          {cartValues?.discount ? (
+        ) : (
+          <View style={{ flex: 1 }}>
             <View style={{ flexDirection: "row", marginVertical: 2 }}>
               <View style={{ flex: 4 }}>
                 <Text
@@ -450,55 +477,81 @@ style={{
                     color: COLORS.darkGray,
                   }}
                 >
-                  Discount
+                  Subtotal
                 </Text>
               </View>
-              <View
-                style={{
-                  flex: 1,
-                  borderColor: COLORS.primary,
-                  borderWidth: 1,
-                  borderRadius: 5,
-                }}
-              >
+              <View style={{ flex: 1 }}>
                 <Text
                   style={{
                     ...FONTS.body3,
                     textAlign: "center",
-                    color: COLORS.primary,
+                    color: COLORS.darkGray,
                   }}
                 >
-                  {cartValues?.discount_label || 0}
+                  {total} Tk
                 </Text>
               </View>
             </View>
-          ) : null}
 
-          <View style={{ flexDirection: "row", marginVertical: 2 }}>
-            <View style={{ flex: 4 }}>
-              <Text
-                style={{
-                  ...FONTS.body3,
-                  textAlign: "left",
-                  color: COLORS.darkGray,
-                }}
-              >
-                Delivery Charge
-              </Text>
+            {cartValues?.discount ? (
+              <View style={{ flexDirection: "row", marginVertical: 2 }}>
+                <View style={{ flex: 4 }}>
+                  <Text
+                    style={{
+                      ...FONTS.body3,
+                      textAlign: "left",
+                      color: COLORS.darkGray,
+                    }}
+                  >
+                    Discount
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flex: 1,
+                    borderColor: COLORS.primary,
+                    borderWidth: 1,
+                    borderRadius: 5,
+                  }}
+                >
+                  <Text
+                    style={{
+                      ...FONTS.body3,
+                      textAlign: "center",
+                      color: COLORS.primary,
+                    }}
+                  >
+                    {cartValues?.discount_label || 0}
+                  </Text>
+                </View>
+              </View>
+            ) : null}
+
+            <View style={{ flexDirection: "row", marginVertical: 2 }}>
+              <View style={{ flex: 4 }}>
+                <Text
+                  style={{
+                    ...FONTS.body3,
+                    textAlign: "left",
+                    color: COLORS.darkGray,
+                  }}
+                >
+                  Delivery Charge
+                </Text>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text
+                  style={{
+                    ...FONTS.body3,
+                    textAlign: "center",
+                    color: COLORS.darkGray,
+                  }}
+                >
+                  {cartValues?.delivery_charge || 0} Tk
+                </Text>
+              </View>
             </View>
-            <View style={{ flex: 1 }}>
-              <Text
-                style={{
-                  ...FONTS.body3,
-                  textAlign: "center",
-                  color: COLORS.darkGray,
-                }}
-              >
-                {cartValues?.delivery_charge || 0} Tk
-              </Text>
-            </View>
-          </View>
-          <View
+            <View
               style={{
                 flexDirection: "row",
                 marginVertical: 5,
@@ -506,28 +559,28 @@ style={{
                 borderBottomWidth: 1,
               }}
             ></View>
-       
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "center",
-              marginVertical: 5,
-            }}
-          >
-            <View style={{ flex: 3, justifyContent: "center" }}>
-              <Text
-                style={{
-                  ...FONTS.body2,
-                  textAlign: "left",
-                  color: COLORS.darkGray,
-                  textAlignVertical: "center",
-                }}
-              >
-                Total
-              </Text>
-            </View>
 
-            {cartValues?.discount ? (
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "center",
+                marginVertical: 5,
+              }}
+            >
+              <View style={{ flex: 3, justifyContent: "center" }}>
+                <Text
+                  style={{
+                    ...FONTS.body2,
+                    textAlign: "left",
+                    color: COLORS.darkGray,
+                    textAlignVertical: "center",
+                  }}
+                >
+                  Total
+                </Text>
+              </View>
+
+              {cartValues?.discount ? (
                 <View
                   style={{
                     flex: 2,
@@ -579,16 +632,10 @@ style={{
                   </Text>
                 </View>
               )}
-
-
+            </View>
           </View>
-
-
-        </View>
-      )}
-
-      
-    </View>
+        )}
+      </View>
     );
   };
 
@@ -605,7 +652,7 @@ style={{
           // marginVertical: SIZES.padding,
           justifyContent: "flex-end",
           position: "absolute",
-          bottom: Platform.OS === 'ios' ? 20 : 0,
+          bottom: Platform.OS === "ios" ? 20 : 0,
           left: 0,
           right: 0,
           paddingTop: 2,
@@ -617,9 +664,6 @@ style={{
           </View>
         ) : (
           <View style={{ flex: 1 }}>
-            
-
-         
             <View
               style={{
                 flexDirection: "row",
@@ -643,7 +687,6 @@ style={{
               <View
                 style={{
                   flex: 2,
-                  
                 }}
               >
                 <Text
@@ -662,8 +705,8 @@ style={{
 
         <View style={{ flex: 1, marginTop: 2 }}>
           <TouchableOpacity
-            disabled={isLoading}
-            onPress={() => placeOrder()}
+            disabled={isLoading || submitting}
+            onPress={() => orderSubmit()}
             style={{
               borderColor: COLORS.green,
               borderWidth: 1,
@@ -674,19 +717,23 @@ style={{
               alignItems: "center",
               borderRadius: 10,
               fontFamily: "PoppinsLight",
-              opacity: isLoading ? 0.5 : 1,
+              opacity: isLoading || submitting ? 0.5 : 1,
             }}
           >
-            <Text
-              style={{
-                color: COLORS.white,
-                fontSize: 18,
-                fontWeight: "bold",
-                fontFamily: "PoppinsLight",
-              }}
-            >
-              Place Order
-            </Text>
+            {submitting ? (
+              <ActivityIndicator size={"small"} color={COLORS.white} />
+            ) : (
+              <Text
+                style={{
+                  color: COLORS.white,
+                  fontSize: 18,
+                  fontWeight: "bold",
+                  fontFamily: "PoppinsLight",
+                }}
+              >
+                Place Order
+              </Text>
+            )}
           </TouchableOpacity>
         </View>
       </View>
@@ -696,48 +743,47 @@ style={{
   const renderCheckoutItem = (item) => {
     return (
       <View
+        style={{
+          paddingHorizontal: SIZES.padding,
+          paddingVertical: SIZES.padding / 3,
+        }}
+      >
+        <View
+          style={{
+            flex: 1,
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
+          <Text
             style={{
-            
-              paddingHorizontal: SIZES.padding,
-              paddingVertical: SIZES.padding / 3,
+              // flex: 1,
+              ...FONTS.h4,
+              // fontSize: "13",
+              color: COLORS.darkGray,
             }}
           >
-            <View
-              style={{ flex: 1, flexDirection: "row", justifyContent: "space-between" }}
-            
-            >
-              <Text
-                style={{
-                  // flex: 1,
-                  ...FONTS.h4,
-                  // fontSize: "13",
-                  color: COLORS.darkGray,
-                }}
-              >
-                {" # " + item.name + " x " + item.quantity}
-              </Text>
-              <Text
-              
-                style={{
-                  // flex: 2,
-                  ...FONTS.h4,
-                  // fontSize: "13",
-                  color: COLORS.darkGray,
-                }}
-              >
-                {item.price +
-                  " x " +
-                  item.quantity +
-                  " = " +
-                  item.price * item.quantity}{" "}
-                Tk
-              </Text>
-            </View>
-          </View>
-        
+            {" # " + item.name + " x " + item.quantity}
+          </Text>
+          <Text
+            style={{
+              // flex: 2,
+              ...FONTS.h4,
+              // fontSize: "13",
+              color: COLORS.darkGray,
+            }}
+          >
+            {item.price +
+              " x " +
+              item.quantity +
+              " = " +
+              item.price * item.quantity}{" "}
+            Tk
+          </Text>
+        </View>
+      </View>
     );
   };
-
 
   if (cartItems.length == 0) {
     return (
@@ -783,7 +829,6 @@ style={{
       {renderCheckoutHeader()}
 
       <FlatList
-    
         bounces={false}
         data={cartItems}
         keyExtractor={(item) => `${item.id}`}
@@ -795,7 +840,6 @@ style={{
         renderItem={({ item }) => renderCheckoutItem(item)}
       />
 
- 
       {renderCheckoutFooter()}
 
       <Modalize ref={locationModalRef} HeaderComponent={renderHeader()}>
@@ -827,14 +871,15 @@ const style = StyleSheet.create({
     shadowRadius: 2.22,
 
     elevation: 3,
-  }
-})
+  },
+});
 
 const mapStateToProps = (state) => {
   return {
     cartItems: state.cartReducer.cartItems,
     total: state.cartReducer.total,
     restaurantId: state.cartReducer.restaurant_id,
+    selectedTab: state.tabReducer.selectedTab,
   };
 };
 const mapDispatchToProps = (dispatch) => {
@@ -842,8 +887,13 @@ const mapDispatchToProps = (dispatch) => {
     addToCart: (item) => {
       return dispatch(addToCart(item));
     },
+    destroyCart: () => {
+      return dispatch(destroyCart());
+    },
+    setSelectedTab: (selectedTab) => {
+      return dispatch(setSelectedTab(selectedTab));
+    },
   };
 };
-
 
 export default connect(mapStateToProps, mapDispatchToProps)(Checkout);
