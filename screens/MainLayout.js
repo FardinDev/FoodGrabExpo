@@ -290,7 +290,7 @@ const MainLayout = ({ drawerAnimationStyle, navigation, selectedTab, setSelected
                 containerStyle={{
                     height: 50,
                     paddingHorizontal: SIZES.padding,
-                    marginTop: Platform.OS === 'ios' ? 40 : 35,
+                    marginTop: Platform.OS === 'ios' ? 40 : 10,
                     alignItems: 'center',
                 }}
                 title={selectedTab.toUpperCase()}
@@ -398,7 +398,7 @@ const MainLayout = ({ drawerAnimationStyle, navigation, selectedTab, setSelected
                         flex: 1,
                         flexDirection: 'row',
                         paddingHorizontal: SIZES.radius,
-                        paddingBottom: 10,
+                        paddingBottom:  Platform.OS === 'ios' ? 10 : 0,
                         borderTopLeftRadius: 20,
                         borderTopRightRadius: 20,
                         backgroundColor: COLORS.white

@@ -13,6 +13,7 @@ import {
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
+  StyleSheet,
 } from "react-native";
 import { TextInput, HelperText } from "react-native-paper";
 import { Modalize } from "react-native-modalize";
@@ -29,6 +30,7 @@ const Checkout = ({ cartItems, total, restaurantId, navigation }) => {
   const [isLoading, setIsloading] = React.useState(false);
   const [cartValues, setCartValues] = React.useState({});
   const [userCurrentLocation, setUserCurrentLocation] = React.useState("");
+  const [userName, setUserName] = React.useState("");
   const [address, setAddress] = React.useState("");
   const [addressError, setAddressError] = React.useState(false);
   const api = new Api();
@@ -55,7 +57,13 @@ const Checkout = ({ cartItems, total, restaurantId, navigation }) => {
   };
 
   const onChangeAddress = (text) => {
-    setAddress(text);
+
+    
+    if(/^[\.a-zA-Z0-9,!? ]*$/.test(text)){
+
+      setAddress(text);
+    }
+   
     if (address.length < 10) {
       setAddressError(true);
     } else {
@@ -88,7 +96,9 @@ const Checkout = ({ cartItems, total, restaurantId, navigation }) => {
   const getValues = async (total) => {
     // let location = await AsyncStorage.getItem('userLocation');
     const userLocation = await AsyncStorage.getItem("userLocation");
+    const userName = await AsyncStorage.getItem("userName");
     setUserCurrentLocation(userLocation);
+    setUserName(userName);
     const api_token = await AsyncStorage.getItem("userToken");
 
     let data = {
@@ -124,26 +134,42 @@ const Checkout = ({ cartItems, total, restaurantId, navigation }) => {
       <View
         style={{
           flexDirection: "column",
-          height: 150,
+    
           paddingHorizontal: SIZES.padding,
-
           backgroundColor: COLORS.white,
-          shadowColor: COLORS.darkGray,
-          shadowOffset: {
-            width: 0,
-            height: 5,
-          },
-          shadowOpacity: 0.2,
-          shadowRadius: 10,
-
-          elevation: 8,
+          ...style.shadow
+          
         }}
       >
         <View
           style={{
             flex: 1,
             flexDirection: "row",
-            marginTop: 5,
+            marginTop: SIZES.padding,
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <Text
+            style={{
+              flex: 1,
+              color: COLORS.primary,
+              ...FONTS.body3,
+              textAlignVertical: "center",
+            }}
+          >
+            CUSTOMER
+          </Text>
+
+          
+            <Text style={{ ...FONTS.h3 }}>{userName}</Text>
+            
+        </View>
+        <View
+          style={{
+            flex: 1,
+            flexDirection: "row",
+            marginTop: SIZES.padding,
             alignItems: "center",
             justifyContent: "space-between",
           }}
@@ -185,8 +211,9 @@ const Checkout = ({ cartItems, total, restaurantId, navigation }) => {
           style={{
             flex: 2,
             flexDirection: "column",
-
+            marginTop: SIZES.padding,
             justifyContent: "space-between",
+          
           }}
         >
           <TextInput
@@ -208,11 +235,12 @@ const Checkout = ({ cartItems, total, restaurantId, navigation }) => {
             }}
             style={{
               width: "100%",
-              height: 60,
+              
               backgroundColor: COLORS.white,
               color: COLORS.primary,
             }}
           />
+          
           <HelperText
             type="error"
             style={{
@@ -223,6 +251,32 @@ const Checkout = ({ cartItems, total, restaurantId, navigation }) => {
             Please Enter Your Full Address
           </HelperText>
         </View>
+
+        <View
+          style={{
+            flex: 1,
+            flexDirection: "row",
+            // marginTop: SIZES.padding,
+            marginBottom: SIZES.padding,
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <Text
+            style={{
+              flex: 1,
+              color: COLORS.primary,
+              ...FONTS.body3,
+              textAlignVertical: "center",
+            }}
+          >
+            Payment Method
+          </Text>
+
+          
+            <Text style={{ ...FONTS.h3 }}>Cash on Delivey (COD)</Text>
+            
+        </View>
       </View>
     );
   }
@@ -231,21 +285,14 @@ const Checkout = ({ cartItems, total, restaurantId, navigation }) => {
     return (
       <View
         style={{
-          height: Platform.OS === "ios" ? 90 : 80,
+          height: Platform.OS === "ios" ? 90 : 60,
           flexDirection: "row",
           alignItems: "flex-end",
           justifyContent: "space-between",
           paddingHorizontal: SIZES.padding,
           paddingBottom: 10,
-          shadowColor: "#000",
-          shadowOffset: {
-            width: 0,
-            height: 1,
-          },
-          shadowOpacity: 0.22,
-          shadowRadius: 2.22,
-
-          elevation: 3,
+          ...style.shadow
+         
         }}
       >
   
@@ -271,7 +318,7 @@ const Checkout = ({ cartItems, total, restaurantId, navigation }) => {
             bottom: 0,
             alignItems: "center",
             justifyContent: Platform.OS === "ios" ? "flex-end" : "center",
-            paddingBottom: Platform.OS === "ios" ? 20 : 0,
+            paddingBottom: Platform.OS === "ios" ? 20 : 15,
             paddingTop: Platform.OS === "ios" ? 0 : 20,
           }}
         >
@@ -292,8 +339,9 @@ const Checkout = ({ cartItems, total, restaurantId, navigation }) => {
             height: 35,
             width: 35,
             borderRadius: 18,
-
-            backgroundColor: COLORS.primary,
+            borderColor: COLORS.primary,
+            borderWidth: 1,
+            backgroundColor: COLORS.transparent,
           }}
           onPress={() => navigation.goBack()}
         >
@@ -302,7 +350,7 @@ const Checkout = ({ cartItems, total, restaurantId, navigation }) => {
             style={{
               width: 15,
               height: 15,
-              tintColor: COLORS.white,
+              tintColor: COLORS.primary,
             }}
           />
         </TouchableOpacity>
@@ -311,37 +359,236 @@ const Checkout = ({ cartItems, total, restaurantId, navigation }) => {
     );
   }
 
-  const renderCartHeader = () => {
+  const renderFlatListHeader = () => {
     return (
-      <View style={{ backgroundColor: COLORS.white }}>
-        <Text
-          style={{
-            ...FONTS.body2,
-            textAlign: "center",
-            color: COLORS.darkGray,
-            backgroundColor: COLORS.lightGray1,
-          }}
-        >
-          Order Items
-        </Text>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : null}
+        style={{
+          marginBottom: Platform.OS === "ios" ? 20 : 20,
+        }}
+      >
+        {renderDeliveryTo()}
+      <View
+      style={{
+        height: 30,
+        backgroundColor: COLORS.lightGray1,
+        justifyContent: 'center'
+      }}
+      >
+<Text 
+style={{
+  textAlign: 'center',
+  ...FONTS.h3,
+  color: COLORS.darkGray
+}}
+>Order Details</Text>
       </View>
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
     );
   };
 
-  const renderCartFooter = () => {
+  const renderFlatListFooter = () => {
     return (
-      <View style={{ backgroundColor: COLORS.white }}>
-        {/* <Text
-          style={{
-            ...FONTS.body2,
-            textAlign: "center",
-            color: COLORS.darkGray,
-            backgroundColor: COLORS.lightGray1
-          }}
-        >
+      <View
+      style={{
+        borderTopColor: COLORS.lightGray1,
+        borderTopWidth: 1,
+        backgroundColor: COLORS.white,
+        flex: 1,
+        flexDirection: "column",
+        padding: SIZES.padding,
+        marginVertical: SIZES.padding,
+        marginBottom: 200,
+        justifyContent: "flex-end",
+        ...style.shadow
+       
+    
         
-        </Text> */}
-      </View>
+       
+      }}
+    >
+      {isLoading ? (
+        <View style={{ flex: 1, justifyContent: "center" }}>
+          <ActivityIndicator size={"small"} color={COLORS.gray} />
+        </View>
+      ) : (
+        <View style={{ flex: 1 }}>
+          <View style={{ flexDirection: "row", marginVertical: 2 }}>
+            <View style={{ flex: 4 }}>
+              <Text
+                style={{
+                  ...FONTS.body3,
+                  textAlign: "left",
+                  color: COLORS.darkGray,
+                }}
+              >
+                Subtotal
+              </Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text
+                style={{
+                  ...FONTS.body3,
+                  textAlign: "center",
+                  color: COLORS.darkGray,
+                }}
+              >
+                {total} Tk
+              </Text>
+            </View>
+          </View>
+
+          {cartValues?.discount ? (
+            <View style={{ flexDirection: "row", marginVertical: 2 }}>
+              <View style={{ flex: 4 }}>
+                <Text
+                  style={{
+                    ...FONTS.body3,
+                    textAlign: "left",
+                    color: COLORS.darkGray,
+                  }}
+                >
+                  Discount
+                </Text>
+              </View>
+              <View
+                style={{
+                  flex: 1,
+                  borderColor: COLORS.primary,
+                  borderWidth: 1,
+                  borderRadius: 5,
+                }}
+              >
+                <Text
+                  style={{
+                    ...FONTS.body3,
+                    textAlign: "center",
+                    color: COLORS.primary,
+                  }}
+                >
+                  {cartValues?.discount_label || 0}
+                </Text>
+              </View>
+            </View>
+          ) : null}
+
+          <View style={{ flexDirection: "row", marginVertical: 2 }}>
+            <View style={{ flex: 4 }}>
+              <Text
+                style={{
+                  ...FONTS.body3,
+                  textAlign: "left",
+                  color: COLORS.darkGray,
+                }}
+              >
+                Delivery Charge
+              </Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text
+                style={{
+                  ...FONTS.body3,
+                  textAlign: "center",
+                  color: COLORS.darkGray,
+                }}
+              >
+                {cartValues?.delivery_charge || 0} Tk
+              </Text>
+            </View>
+          </View>
+          <View
+              style={{
+                flexDirection: "row",
+                marginVertical: 5,
+                borderBottomColor: COLORS.lightGray1,
+                borderBottomWidth: 1,
+              }}
+            ></View>
+       
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              marginVertical: 5,
+            }}
+          >
+            <View style={{ flex: 3, justifyContent: "center" }}>
+              <Text
+                style={{
+                  ...FONTS.body2,
+                  textAlign: "left",
+                  color: COLORS.darkGray,
+                  textAlignVertical: "center",
+                }}
+              >
+                Total
+              </Text>
+            </View>
+
+            {cartValues?.discount ? (
+                <View
+                  style={{
+                    flex: 2,
+                    borderColor: COLORS.green,
+                    borderWidth: 1,
+                    borderRadius: 5,
+                  }}
+                >
+                  <Text
+                    style={{
+                      textDecorationLine: "line-through",
+                      textDecorationStyle: "solid",
+                      ...FONTS.body23,
+                      textAlign: "center",
+                      textAlignVertical: "bottom",
+                      color: COLORS.gray,
+                    }}
+                  >
+                    {total + cartValues?.delivery_charge} Tk
+                  </Text>
+
+                  <Text
+                    style={{
+                      ...FONTS.body2,
+                      textAlign: "center",
+                      color: COLORS.green,
+                    }}
+                  >
+                    {cartValues.total} Tk
+                  </Text>
+                </View>
+              ) : (
+                <View
+                  style={{
+                    flex: 2,
+                    borderColor: COLORS.green,
+                    borderWidth: 1,
+                    borderRadius: 5,
+                  }}
+                >
+                  <Text
+                    style={{
+                      ...FONTS.body2,
+                      textAlign: "center",
+                      color: COLORS.green,
+                    }}
+                  >
+                    {total + cartValues?.delivery_charge} Tk
+                  </Text>
+                </View>
+              )}
+
+
+          </View>
+
+
+        </View>
+      )}
+
+      
+    </View>
     );
   };
 
@@ -355,7 +602,7 @@ const Checkout = ({ cartItems, total, restaurantId, navigation }) => {
           flex: 1,
           flexDirection: "column",
           paddingHorizontal: SIZES.padding,
-          marginVertical: SIZES.padding,
+          // marginVertical: SIZES.padding,
           justifyContent: "flex-end",
           position: "absolute",
           bottom: Platform.OS === 'ios' ? 20 : 0,
@@ -370,102 +617,14 @@ const Checkout = ({ cartItems, total, restaurantId, navigation }) => {
           </View>
         ) : (
           <View style={{ flex: 1 }}>
-            <View style={{ flexDirection: "row", marginVertical: 2 }}>
-              <View style={{ flex: 4 }}>
-                <Text
-                  style={{
-                    ...FONTS.body3,
-                    textAlign: "left",
-                    color: COLORS.darkGray,
-                  }}
-                >
-                  Subtotal
-                </Text>
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text
-                  style={{
-                    ...FONTS.body3,
-                    textAlign: "center",
-                    color: COLORS.darkGray,
-                  }}
-                >
-                  {total} Tk
-                </Text>
-              </View>
-            </View>
+            
 
-            {cartValues?.discount ? (
-              <View style={{ flexDirection: "row", marginVertical: 2 }}>
-                <View style={{ flex: 4 }}>
-                  <Text
-                    style={{
-                      ...FONTS.body3,
-                      textAlign: "left",
-                      color: COLORS.darkGray,
-                    }}
-                  >
-                    Discount
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    flex: 1,
-                    borderColor: COLORS.primary,
-                    borderWidth: 1,
-                    borderRadius: 5,
-                  }}
-                >
-                  <Text
-                    style={{
-                      ...FONTS.body3,
-                      textAlign: "center",
-                      color: COLORS.primary,
-                    }}
-                  >
-                    {cartValues?.discount_label || 0}
-                  </Text>
-                </View>
-              </View>
-            ) : null}
-            <View style={{ flexDirection: "row", marginVertical: 2 }}>
-              <View style={{ flex: 4 }}>
-                <Text
-                  style={{
-                    ...FONTS.body3,
-                    textAlign: "left",
-                    color: COLORS.darkGray,
-                  }}
-                >
-                  Delivery Charge
-                </Text>
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text
-                  style={{
-                    ...FONTS.body3,
-                    textAlign: "center",
-                    color: COLORS.darkGray,
-                  }}
-                >
-                  {cartValues?.delivery_charge || 0} Tk
-                </Text>
-              </View>
-            </View>
-
-            <View
-              style={{
-                flexDirection: "row",
-                marginVertical: 2,
-                borderBottomColor: COLORS.lightGray1,
-                borderBottomWidth: 1,
-              }}
-            ></View>
+         
             <View
               style={{
                 flexDirection: "row",
                 justifyContent: "center",
-                marginVertical: 2,
+                marginVertical: 5,
               }}
             >
               <View style={{ flex: 3, justifyContent: "center" }}>
@@ -477,26 +636,24 @@ const Checkout = ({ cartItems, total, restaurantId, navigation }) => {
                     textAlignVertical: "center",
                   }}
                 >
-                  Total
+                  Total Amount
                 </Text>
               </View>
 
               <View
                 style={{
                   flex: 2,
-                  borderColor: COLORS.green,
-                  borderWidth: 1,
-                  borderRadius: 5,
+                  
                 }}
               >
                 <Text
                   style={{
                     ...FONTS.body2,
-                    textAlign: "center",
-                    color: COLORS.green,
+                    textAlign: "right",
+                    color: COLORS.darkGray,
                   }}
                 >
-                  {total + cartValues?.delivery_charge} Tk
+                  {cartValues?.total} Tk
                 </Text>
               </View>
             </View>
@@ -540,6 +697,7 @@ const Checkout = ({ cartItems, total, restaurantId, navigation }) => {
     return (
       <View
             style={{
+            
               paddingHorizontal: SIZES.padding,
               paddingVertical: SIZES.padding / 3,
             }}
@@ -551,7 +709,7 @@ const Checkout = ({ cartItems, total, restaurantId, navigation }) => {
               <Text
                 style={{
                   // flex: 1,
-                  ...FONTS.h3,
+                  ...FONTS.h4,
                   // fontSize: "13",
                   color: COLORS.darkGray,
                 }}
@@ -562,7 +720,7 @@ const Checkout = ({ cartItems, total, restaurantId, navigation }) => {
               
                 style={{
                   // flex: 2,
-                  ...FONTS.h3,
+                  ...FONTS.h4,
                   // fontSize: "13",
                   color: COLORS.darkGray,
                 }}
@@ -625,28 +783,19 @@ const Checkout = ({ cartItems, total, restaurantId, navigation }) => {
       {renderCheckoutHeader()}
 
       <FlatList
-        bounces={true}
+    
+        bounces={false}
         data={cartItems}
         keyExtractor={(item) => `${item.id}`}
         showsVerticalScrollIndicator={true}
-        ListHeaderComponent={renderCartHeader()}
-        ListFooterComponent={renderCartFooter()}
+        ListHeaderComponent={renderFlatListHeader()}
+        ListFooterComponent={renderFlatListFooter()}
         stickyHeaderIndices={[0]}
-        scrollEventThrottle={20}
+        scrollEventThrottle={5}
         renderItem={({ item }) => renderCheckoutItem(item)}
       />
 
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : null}
-          style={{
-            marginBottom: Platform.OS === "ios" ? 200 : 180,
-          }}
-        >
-          {renderDeliveryTo()}
-        </KeyboardAvoidingView>
-      </TouchableWithoutFeedback>
-
+ 
       {renderCheckoutFooter()}
 
       <Modalize ref={locationModalRef} HeaderComponent={renderHeader()}>
@@ -655,6 +804,31 @@ const Checkout = ({ cartItems, total, restaurantId, navigation }) => {
     </View>
   );
 };
+
+const style = StyleSheet.create({
+  shadow: {
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+
+    elevation: 3,
+  },
+  shadow_bottom: {
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: -2,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+
+    elevation: 3,
+  }
+})
 
 const mapStateToProps = (state) => {
   return {
@@ -670,5 +844,6 @@ const mapDispatchToProps = (dispatch) => {
     },
   };
 };
+
 
 export default connect(mapStateToProps, mapDispatchToProps)(Checkout);

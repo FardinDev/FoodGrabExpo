@@ -247,7 +247,7 @@ const Details = ({
   const renderCartModalFooter = () => {
     if (cartItems.length) {
       return (
-        <View style={{ flex: 1, marginTop: SIZES.padding, marginBottom: Platform.OS == 'ios' ? 80 : 60}}>
+        <View style={{ flex: 1, position: 'absolute', bottom: Platform.OS === 'ios' ? 25 : 0, right: 0, left: 0, margin: SIZES.padding}}>
           <TouchableOpacity
             onPress={() => {
               setSelectedTab(constants.screens.cart);
@@ -264,7 +264,7 @@ const Details = ({
               borderRadius: 10,
               fontFamily: "PoppinsLight",
               opacity: 1,
-              marginBottom: 50,
+             
             }}
           >
             <Text
@@ -537,7 +537,7 @@ let val = 0
           top: 0,
           left: 0,
           right: 0,
-          height: Platform.OS === "ios" ? 90 : 80,
+          height: Platform.OS === "ios" ? 90 : 60,
           flexDirection: "row",
           alignItems: "flex-end",
           justifyContent: "space-between",
@@ -573,7 +573,7 @@ let val = 0
             bottom: 0,
             alignItems: "center",
             justifyContent: Platform.OS === "ios" ? "flex-end" : "center",
-            paddingBottom: Platform.OS === "ios" ? 20 : 0,
+            paddingBottom: Platform.OS === "ios" ? 20 : 15,
             paddingTop: Platform.OS === "ios" ? 0 : 20,
 
             opacity: scrollY.interpolate({
@@ -671,11 +671,6 @@ let val = 0
     );
   }
 
-  // {
-  //   !isReady ?
-  //   return( <ActivityIndicator/>)
-  //   : null
-  // }
 
   return !isReady ? (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -905,64 +900,24 @@ let val = 0
         modalStyle={{
           paddingHorizontal: SIZES.padding,
         }}
-        adjustToContentHeight={true}
+        // adjustToContentHeight={true}
         HeaderComponent={renderCartModalHeader()}
         FooterComponent={renderCartModalFooter()}
+        childrenStyle={{
+          marginBottom: 100
+        }}
         flatListProps={{
           data: cartItems,
           renderItem: renderCartItem,
           keyExtractor: (item) => item.id + item.name,
-          showsVerticalScrollIndicator: false,
+
         }}
       />
 
-      {/* <SwipeablePanel
-        fullWidth
-        closeOnTouchOutside
-        onlyLarge
-        scrollViewProps={{
-          showsVerticalScrollIndicator: false,
-        }}
-        isActive={isCartPanelActive}
-        onClose={closeCartPanel}
-        onPressCloseButton={closeCartPanel}
-        style={{
-          flex: 1,
-          marginTop: 50,
-          paddingHorizontal: SIZES.padding,
-        }}
-      >
-        <View
-          style={{
-            flex: 1,
-            flexDirection: "column",
-            justifyContent: "center",
-          }}
-        >
-          <View
-            style={{
-              flex: 3,
-            }}
-          >
-            <CartTab />
-          </View>
-          <View
-            style={{
-              flex: 3,
-              backgroundColor: "red",
-            }}
-          ></View>
-        </View>
-      </SwipeablePanel> */}
+     
 
       {renderHeaderBar()}
-      {cartModalData.isVisible && (
-        <AddToCartModal
-          isVisible={cartModalData.isVisible}
-          product={cartModalData.product}
-          onClose={() => SetCartModalData({ isVisible: false, product: null })}
-        />
-      )}
+    
     </View>
   );
 };

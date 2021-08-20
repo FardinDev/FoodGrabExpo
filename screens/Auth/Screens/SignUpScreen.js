@@ -117,20 +117,24 @@ const SignInScreen = ({ navigation }) => {
   };
 
   const textInputChange = (val) => {
-    if (val.trim().length >= 4) {
-      setData({
-        ...data,
-        name: val,
-        check_textInputChange: true,
-        isValidName: true,
-      });
-    } else {
-      setData({
-        ...data,
-        name: val,
-        check_textInputChange: false,
-        isValidName: false,
-      });
+
+    if(/^[\.a-zA-Z ]*$/.test(val)){
+
+      if (val.trim().length >= 4) {
+        setData({
+          ...data,
+          name: val,
+          check_textInputChange: true,
+          isValidName: true,
+        });
+      } else {
+        setData({
+          ...data,
+          name: val,
+          check_textInputChange: false,
+          isValidName: false,
+        });
+      }
     }
   };
 
@@ -222,6 +226,7 @@ const SignInScreen = ({ navigation }) => {
                   placeholder="Enter Your Name"
                   style={styles.textInput}
                   autoCapitalize="words"
+                  value={data.name}
                   onChangeText={(val) => textInputChange(val)}
                   onEndEditing={(e) => handleValidName(e.nativeEvent.text)}
                 />
