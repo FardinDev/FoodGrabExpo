@@ -27,9 +27,9 @@ However this is a multi-vendor app
   * OTP verification
   * Login
   * Recover password flow
-* Locaton and category wise restaurant listing and sorting
+* Location and category wise restaurant listing and sorting
 * Full order flow
-  * Add to cart, remove from cart, dstroy cart
+  * Add to cart, remove from cart, destroy cart
   * Place order
   * Check order status
 * Notification
